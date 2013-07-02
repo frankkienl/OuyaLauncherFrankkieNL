@@ -4,12 +4,14 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Resources;
 import android.graphics.*;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PaintDrawable;
 import android.os.Bundle;
 import android.app.Activity;
+import android.util.Log;
 import android.view.*;
 import android.widget.*;
 
@@ -80,7 +82,9 @@ public class MainActivity extends Activity {
         LayoutInflater inflater = getLayoutInflater();
         for (int i = 0; i < mApplications.size(); i++) {
             if (i % 4 == 0) {
-                if (row != null) {table.addView(row);}
+                if (row != null) {
+                    table.addView(row);
+                }
                 row = (ViewGroup) inflater.inflate(R.layout.table_row, table, false);
             }
             View v = fillTable(i);
@@ -145,6 +149,20 @@ public class MainActivity extends Activity {
                 icon = info.icon = new BitmapDrawable(thumb);
                 info.filtered = true;
             }
+        }
+        /////////////
+        //TEST ICON//
+        /////////////
+        try {
+            String packageName = info.intent.getComponent().getPackageName();
+            android.content.pm.ApplicationInfo applicationInfo = getPackageManager().getApplicationInfo(packageName, 0);
+            Resources resources = getPackageManager().getResourcesForApplication(applicationInfo);
+            int identifier = resources.getIdentifier("ouya_icon", "drawable-xhdpi", packageName);
+            int identifier2 = resources.getIdentifier(packageName + ":drawable-xhdpi/ouya_icon","","");
+            int identifier3 = resources.getIdentifier(packageName + ":drawable/ouya_icon","","");
+            info.icon = getPackageManager().getResourcesForApplication(applicationInfo).getDrawable(identifier3);
+        } catch (Exception e) {
+            Log.e("FRANKKIE_LAUNCHER", "ERROR", e);
         }
         ////////
         ////////

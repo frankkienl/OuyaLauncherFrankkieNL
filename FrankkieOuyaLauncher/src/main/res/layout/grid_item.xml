@@ -11,8 +11,10 @@
               android:layout_height="match_parent">
 
     <ImageView
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
             android:id="@+id/item_image"
-            android:minHeight="32dp"
+            android:minHeight="412px"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
