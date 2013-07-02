@@ -3,6 +3,8 @@ Alternative OUYA Launcher by FrankkieNL
 
 Download APK: https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/FrankkieOuyaLauncher/FrankkieOuyaLauncher.apk
 
+Note: it very Beta ! It will have bugs !
+
 Want your normal OUYA Launcher back? Just uninstall this app.
 Go to Advanced Settings, Apps, FrankkieOuyaLauncher, click Uninstall
 
