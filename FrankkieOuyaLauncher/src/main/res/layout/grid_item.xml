@@ -3,9 +3,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:focusable="true"
+              android:layout_margin="5dp"
               android:background="@drawable/state_color_back"
               android:focusableInTouchMode="true"
-              android:layout_width="match_parent"
+              android:layout_weight="1"
+              android:layout_width="0dp"
               android:layout_height="match_parent">
 
     <ImageView
@@ -16,6 +18,8 @@
 
     <TextView
             android:id="@+id/item_text"
+            android:textSize="25sp"
+            android:textStyle="bold"
             android:text="App Name Here"
             android:gravity="center_horizontal"
             android:layout_width="match_parent"
