@@ -59,12 +59,15 @@ public class MainActivity extends Activity {
     public void filter() {
         mFilteredApplications.clear();
         for (ApplicationInfo info : mApplications) {
-            if (appType == APP_ALL || appType == APP_OUYA_ONLY) {
+            if (appType == APP_ALL){
+                mFilteredApplications.add(info);
+                continue;
+            }
+            if (appType == APP_OUYA_ONLY) {
                 if (info.isOUYA) {
                     mFilteredApplications.add(info);
                 }
-            }
-            if (appType == APP_ALL || appType == APP_APP_ONLY) {
+            } else if (appType == APP_APP_ONLY) {
                 if (!info.isOUYA) {
                     mFilteredApplications.add(info);
                 }
@@ -217,8 +220,6 @@ public class MainActivity extends Activity {
             packageName = info.intent.getComponent().getPackageName();
             android.content.pm.ApplicationInfo applicationInfo = getPackageManager().getApplicationInfo(packageName, 0);
             Resources resources = getPackageManager().getResourcesForApplication(applicationInfo);
-            int identifier = resources.getIdentifier("ouya_icon", "drawable-xhdpi", packageName);
-            int identifier2 = resources.getIdentifier(packageName + ":drawable-xhdpi/ouya_icon", "", "");
             int identifier3 = resources.getIdentifier(packageName + ":drawable/ouya_icon", "", "");
             if (identifier3 != 0) {
                 return true;
@@ -246,6 +247,9 @@ public class MainActivity extends Activity {
             }
             View v = fillTable(mFilteredApplications.get(i));
             row.addView(v);
+            if (i == mFilteredApplications.size()-1){
+                table.addView(row);
+            }
         }
     }
 
@@ -261,6 +265,7 @@ public class MainActivity extends Activity {
 
         Drawable icon = info.icon;
         String packageName = info.intent.getComponent().getPackageName();
+        info.packagename = packageName;
         if (!info.filtered) {
             //final Resources resources = getContext().getResources();
             int width = 180;//(int) resources.getDimension(android.R.dimen.app_icon_size);

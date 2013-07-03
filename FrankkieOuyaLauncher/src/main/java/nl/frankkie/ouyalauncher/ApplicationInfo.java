@@ -51,7 +51,9 @@ class ApplicationInfo {
     /**
      *
      */
-    boolean isOUYA;
+    boolean isOUYA = false; //no more null
+
+    String packagename = "";
 
     /**
      * Creates the application intent based on a component name and various launch flags.
