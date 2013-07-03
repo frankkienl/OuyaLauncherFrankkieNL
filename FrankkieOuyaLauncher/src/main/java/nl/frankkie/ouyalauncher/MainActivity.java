@@ -14,6 +14,7 @@ import android.app.Activity;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
+import tv.ouya.console.api.OuyaController;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,12 +27,79 @@ public class MainActivity extends Activity {
     //MyAdapter adapter;
     private static ArrayList<ApplicationInfo> mApplications = new ArrayList<ApplicationInfo>();
 
+    public void showAppInfo() {
+    }
+
+    public void showFilters() {
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        OuyaController.init(this);
         initUI();
         loadApplications();
         fillTable();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //Dont consume DPAD, and O
+        int[] ignoreList = new int[]{OuyaController.BUTTON_DPAD_DOWN,
+                OuyaController.BUTTON_DPAD_UP,
+                OuyaController.BUTTON_DPAD_LEFT,
+                OuyaController.BUTTON_DPAD_RIGHT,
+                OuyaController.BUTTON_O};
+        for (int i : ignoreList) {
+            if (event.getKeyCode() == i) {
+                return super.onKeyDown(keyCode, event); //let the OUYA take care of it.
+            }
+        }
+        //Do consume U and Y
+        if (event.getKeyCode() == OuyaController.BUTTON_U) {
+            showAppInfo();
+            return true;
+        }
+        if (event.getKeyCode() == OuyaController.BUTTON_Y) {
+            showFilters();
+            return true;
+        }
+        //Let the SDK take care of the rest
+        boolean handled = OuyaController.onKeyDown(keyCode, event);
+        return handled || super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        //Dont consume DPAD, and O
+        int[] ignoreList = new int[]{OuyaController.BUTTON_DPAD_DOWN,
+                OuyaController.BUTTON_DPAD_UP,
+                OuyaController.BUTTON_DPAD_LEFT,
+                OuyaController.BUTTON_DPAD_RIGHT,
+                OuyaController.BUTTON_O};
+        for (int i : ignoreList) {
+            if (event.getKeyCode() == i) {
+                return super.onKeyDown(keyCode, event); //let the OUYA take care of it.
+            }
+        }
+        //Do consume U and Y
+        if (event.getKeyCode() == OuyaController.BUTTON_U) {
+            return true;
+        }
+        if (event.getKeyCode() == OuyaController.BUTTON_Y) {
+            return true;
+        }
+        //Let the SDK take care of the rest
+        boolean handled = OuyaController.onKeyUp(keyCode, event);
+        return handled || super.onKeyUp(keyCode, event);
+    }
+
+    @Override
+    public boolean onGenericMotionEvent(MotionEvent event) {
+        //Dont consume LS, RS, L2, R2 events
+        //boolean handled = OuyaController.onGenericMotionEvent(event);
+        //return handled || super.onGenericMotionEvent(event);
+        return super.onGenericMotionEvent(event);
     }
 
     protected void initUI() {
@@ -78,6 +146,7 @@ public class MainActivity extends Activity {
     }
 
     public void fillTable() {
+        table.removeAllViews(); //clear
         ViewGroup row = null;
         LayoutInflater inflater = getLayoutInflater();
         for (int i = 0; i < mApplications.size(); i++) {
@@ -158,8 +227,8 @@ public class MainActivity extends Activity {
             android.content.pm.ApplicationInfo applicationInfo = getPackageManager().getApplicationInfo(packageName, 0);
             Resources resources = getPackageManager().getResourcesForApplication(applicationInfo);
             int identifier = resources.getIdentifier("ouya_icon", "drawable-xhdpi", packageName);
-            int identifier2 = resources.getIdentifier(packageName + ":drawable-xhdpi/ouya_icon","","");
-            int identifier3 = resources.getIdentifier(packageName + ":drawable/ouya_icon","","");
+            int identifier2 = resources.getIdentifier(packageName + ":drawable-xhdpi/ouya_icon", "", "");
+            int identifier3 = resources.getIdentifier(packageName + ":drawable/ouya_icon", "", "");
             info.icon = getPackageManager().getResourcesForApplication(applicationInfo).getDrawable(identifier3);
         } catch (Exception e) {
             Log.e("FRANKKIE_LAUNCHER", "ERROR", e);
