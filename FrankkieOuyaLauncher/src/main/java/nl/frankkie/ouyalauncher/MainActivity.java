@@ -1,6 +1,7 @@
 package nl.frankkie.ouyalauncher;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -9,8 +10,11 @@ import android.graphics.*;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PaintDrawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.Activity;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
@@ -26,11 +30,71 @@ public class MainActivity extends Activity {
     //    ListView gridView;
     //MyAdapter adapter;
     private static ArrayList<ApplicationInfo> mApplications = new ArrayList<ApplicationInfo>();
+    private static ArrayList<ApplicationInfo> mFilteredApplications = new ArrayList<ApplicationInfo>();
+    //FILTERS
+    public static final int APP_ALL = 0;
+    public static final int APP_OUYA_ONLY = 1;
+    public static final int APP_APP_ONLY = 2;
+    int appType = APP_ALL;
+
 
     public void showAppInfo() {
+        View v = getCurrentFocus();
+        if (v != null) {
+            TextView tv_packagename = (TextView) ((ViewGroup) v).findViewById(R.id.item_packagename);
+            String packagename = tv_packagename.getText().toString();
+            showInstalledAppDetails(this, packagename);
+        }
     }
 
     public void showFilters() {
+        appType++;
+        if (appType > 2) {
+            appType = 0;
+        }
+        filter();
+        fillTable();
+    }
+
+    public void filter() {
+        mFilteredApplications.clear();
+        for (ApplicationInfo info : mApplications) {
+            if (appType == APP_ALL || appType == APP_OUYA_ONLY) {
+                if (info.isOUYA) {
+                    mFilteredApplications.add(info);
+                }
+            }
+            if (appType == APP_ALL || appType == APP_APP_ONLY) {
+                if (!info.isOUYA) {
+                    mFilteredApplications.add(info);
+                }
+            }
+        }
+    }
+
+
+    private static final String SCHEME = "package";
+    private static final String APP_PKG_NAME_21 = "com.android.settings.ApplicationPkgName";
+    private static final String APP_PKG_NAME_22 = "pkg";
+    private static final String APP_DETAILS_PACKAGE_NAME = "com.android.settings";
+    private static final String APP_DETAILS_CLASS_NAME = "com.android.settings.InstalledAppDetails";
+
+    public static void showInstalledAppDetails(Context context, String packageName) {
+        Intent intent = new Intent();
+        final int apiLevel = Build.VERSION.SDK_INT;
+        if (apiLevel >= 9) { // above 2.3
+            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            Uri uri = Uri.fromParts(SCHEME, packageName, null);
+            intent.setData(uri);
+        } else { // below 2.3
+            final String appPkgName = (apiLevel == 8 ? APP_PKG_NAME_22
+                    : APP_PKG_NAME_21);
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setClassName(APP_DETAILS_PACKAGE_NAME,
+                    APP_DETAILS_CLASS_NAME);
+            intent.putExtra(appPkgName, packageName);
+        }
+        context.startActivity(intent);
     }
 
     @Override
@@ -39,6 +103,7 @@ public class MainActivity extends Activity {
         OuyaController.init(this);
         initUI();
         loadApplications();
+        filter();
         fillTable();
     }
 
@@ -127,6 +192,7 @@ public class MainActivity extends Activity {
                 mApplications = new ArrayList<ApplicationInfo>(count);
             }
             mApplications.clear();
+            Runtime.getRuntime().gc();
 
             for (int i = 0; i < count; i++) {
                 ApplicationInfo application = new ApplicationInfo();
@@ -139,44 +205,62 @@ public class MainActivity extends Activity {
                         Intent.FLAG_ACTIVITY_NEW_TASK
                                 | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
                 application.icon = info.activityInfo.loadIcon(manager);
-
+                application.isOUYA = checkIsOUYAAppByIcon(application);
                 mApplications.add(application);
             }
         }
     }
 
+    public boolean checkIsOUYAAppByIcon(ApplicationInfo info) {
+        String packageName = "";
+        try {
+            packageName = info.intent.getComponent().getPackageName();
+            android.content.pm.ApplicationInfo applicationInfo = getPackageManager().getApplicationInfo(packageName, 0);
+            Resources resources = getPackageManager().getResourcesForApplication(applicationInfo);
+            int identifier = resources.getIdentifier("ouya_icon", "drawable-xhdpi", packageName);
+            int identifier2 = resources.getIdentifier(packageName + ":drawable-xhdpi/ouya_icon", "", "");
+            int identifier3 = resources.getIdentifier(packageName + ":drawable/ouya_icon", "", "");
+            if (identifier3 != 0) {
+                return true;
+            }
+//            info.icon = getPackageManager().getResourcesForApplication(applicationInfo).getDrawable(identifier3);
+            //Runtime.getRuntime().gc();
+            //return true;
+        } catch (Exception e) {
+            //  Log.e("FRANKKIE_LAUNCHER", "ERROR", e);
+        }
+        return false;
+    }
+
     public void fillTable() {
         table.removeAllViews(); //clear
+        Runtime.getRuntime().gc();
         ViewGroup row = null;
         LayoutInflater inflater = getLayoutInflater();
-        for (int i = 0; i < mApplications.size(); i++) {
+        for (int i = 0; i < mFilteredApplications.size(); i++) {
             if (i % 4 == 0) {
                 if (row != null) {
                     table.addView(row);
                 }
                 row = (ViewGroup) inflater.inflate(R.layout.table_row, table, false);
             }
-            View v = fillTable(i);
+            View v = fillTable(mFilteredApplications.get(i));
             row.addView(v);
         }
     }
 
     private Rect mOldBounds = new Rect();
 
-    public Object getItem(int i) {
-        return mApplications.get(i);
-    }
-
-    public View fillTable(int id) {
+    public View fillTable(final ApplicationInfo info) {
         LinearLayout layout;
         LayoutInflater inflater = getLayoutInflater();
         layout = (LinearLayout) inflater.inflate(R.layout.grid_item, table, false);
-        final ApplicationInfo info = (ApplicationInfo) getItem(id);
+        //final ApplicationInfo info = (ApplicationInfo) getItem(id);
         ////////
         ////////
 
         Drawable icon = info.icon;
-
+        String packageName = info.intent.getComponent().getPackageName();
         if (!info.filtered) {
             //final Resources resources = getContext().getResources();
             int width = 180;//(int) resources.getDimension(android.R.dimen.app_icon_size);
@@ -218,25 +302,27 @@ public class MainActivity extends Activity {
                 icon = info.icon = new BitmapDrawable(thumb);
                 info.filtered = true;
             }
-        }
-        /////////////
-        //TEST ICON//
-        /////////////
-        try {
-            String packageName = info.intent.getComponent().getPackageName();
-            android.content.pm.ApplicationInfo applicationInfo = getPackageManager().getApplicationInfo(packageName, 0);
-            Resources resources = getPackageManager().getResourcesForApplication(applicationInfo);
-            int identifier = resources.getIdentifier("ouya_icon", "drawable-xhdpi", packageName);
-            int identifier2 = resources.getIdentifier(packageName + ":drawable-xhdpi/ouya_icon", "", "");
-            int identifier3 = resources.getIdentifier(packageName + ":drawable/ouya_icon", "", "");
-            info.icon = getPackageManager().getResourcesForApplication(applicationInfo).getDrawable(identifier3);
-        } catch (Exception e) {
-            Log.e("FRANKKIE_LAUNCHER", "ERROR", e);
+
+            /////////////
+            //TEST ICON//
+            /////////////
+            try {
+                android.content.pm.ApplicationInfo applicationInfo = getPackageManager().getApplicationInfo(packageName, 0);
+                Resources resources = getPackageManager().getResourcesForApplication(applicationInfo);
+                int identifier3 = resources.getIdentifier(packageName + ":drawable/ouya_icon", "", "");
+                info.icon = getPackageManager().getResourcesForApplication(applicationInfo).getDrawable(identifier3);
+                info.filtered = true;
+                Runtime.getRuntime().gc();
+            } catch (Exception e) {
+                Log.e("FrankkieOuyaLauncher", "ERROR", e);
+            }
         }
         ////////
         ////////
         TextView tv = (TextView) layout.findViewById(R.id.item_text);
         tv.setText(info.title);
+        TextView tv_packagename = (TextView) layout.findViewById(R.id.item_packagename);
+        tv_packagename.setText(packageName);
         ImageView img = (ImageView) layout.findViewById(R.id.item_image);
         img.setImageDrawable(info.icon);
         ///

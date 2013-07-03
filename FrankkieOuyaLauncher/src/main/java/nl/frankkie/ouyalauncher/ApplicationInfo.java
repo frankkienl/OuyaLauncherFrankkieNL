@@ -47,6 +47,12 @@ class ApplicationInfo {
      */
     boolean filtered;
 
+
+    /**
+     *
+     */
+    boolean isOUYA;
+
     /**
      * Creates the application intent based on a component name and various launch flags.
      *
