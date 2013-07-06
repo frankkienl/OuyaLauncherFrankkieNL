@@ -43,24 +43,7 @@
                         android:layout_height="35dp"/>
 
                 <TextView
-                        android:text="Start"
-                        android:gravity="bottom"
-                        android:layout_marginBottom="5dp"
-                        android:layout_marginRight="20dp"
-                        android:textSize="22sp"
-                        android:layout_height="match_parent"
-                        android:layout_width="wrap_content"/>
-
-                <ImageView
-                        android:src="@drawable/btn_ouya_u"
-                        android:scaleType="fitStart"
-                        android:adjustViewBounds="true"
-                        android:layout_gravity="bottom"
-                        android:layout_width="wrap_content"
-                        android:layout_height="35dp"/>
-
-                <TextView
-                        android:text="App Info"
+                        android:text="OK"
                         android:gravity="bottom"
                         android:layout_marginBottom="5dp"
                         android:layout_marginRight="20dp"
@@ -77,7 +60,7 @@
                         android:layout_height="35dp"/>
 
                 <TextView
-                        android:text="Filters"
+                        android:text="Turn Off"
                         android:gravity="bottom"
                         android:layout_marginBottom="5dp"
                         android:textSize="22sp"
@@ -86,21 +69,69 @@
             </LinearLayout>
         </RelativeLayout>
 
+        <!--
         <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+                //-->
+
+        <LinearLayout
+                android:id="@+id/start_container"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
             <LinearLayout
-                    android:id="@+id/table"
                     android:orientation="vertical"
-                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent">
-                <ProgressBar
+                <!-- spacer //-->
+                <LinearLayout
                         android:layout_width="match_parent"
-                        android:minHeight="250dp"
+                        android:layout_height="25dp"/>
+
+                <Button
+                        android:text="Games"
+                        android:id="@+id/start_games"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                <Button
+                        android:text="Apps"
+                        android:id="@+id/start_apps"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                <Button
+                        android:text="All"
+                        android:id="@+id/start_all"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                <Button
+                        android:text="Discover"
+                        android:id="@+id/start_discover"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent">
+                <!-- spacer //-->
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="25dp"/>
+                <AnalogClock
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         />
             </LinearLayout>
+        </LinearLayout>
+        <!--
         </ScrollView>
+        //-->
     </LinearLayout>
 </LinearLayout>

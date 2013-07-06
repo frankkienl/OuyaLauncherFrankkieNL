@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.app.Activity;
+import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.*;
@@ -36,6 +37,8 @@ public class MainActivity extends Activity {
     public static final int APP_OUYA_ONLY = 1;
     public static final int APP_APP_ONLY = 2;
     int appType = APP_ALL;
+    ////
+    Handler handler = new Handler();
 
 
     public void showAppInfo() {
@@ -59,7 +62,7 @@ public class MainActivity extends Activity {
     public void filter() {
         mFilteredApplications.clear();
         for (ApplicationInfo info : mApplications) {
-            if (appType == APP_ALL){
+            if (appType == APP_ALL) {
                 mFilteredApplications.add(info);
                 continue;
             }
@@ -105,19 +108,28 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         OuyaController.init(this);
         initUI();
-        loadApplications();
-        filter();
-        fillTable();
+        appType = getIntent().getIntExtra("type", APP_ALL);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                loadApplications();
+                filter();
+                fillTable();
+            }
+        }, 500);
     }
+
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        //Dont consume DPAD, and O
+        //Dont consume DPAD
         int[] ignoreList = new int[]{OuyaController.BUTTON_DPAD_DOWN,
                 OuyaController.BUTTON_DPAD_UP,
                 OuyaController.BUTTON_DPAD_LEFT,
                 OuyaController.BUTTON_DPAD_RIGHT,
-                OuyaController.BUTTON_O};
+                OuyaController.BUTTON_O,
+                OuyaController.BUTTON_A
+        };
         for (int i : ignoreList) {
             if (event.getKeyCode() == i) {
                 return super.onKeyDown(keyCode, event); //let the OUYA take care of it.
@@ -132,9 +144,37 @@ public class MainActivity extends Activity {
             showFilters();
             return true;
         }
+        if (event.getKeyCode() == OuyaController.BUTTON_A) {
+            pressedA();
+            return true;
+        }
+        //check menu-key
+        if (event.getKeyCode() == OuyaController.BUTTON_MENU) {
+            pressedMenu();
+            return true;
+        }
         //Let the SDK take care of the rest
         boolean handled = OuyaController.onKeyDown(keyCode, event);
         return handled || super.onKeyDown(keyCode, event);
+    }
+
+    public void pressedMenu() {
+
+    }
+
+    public void pressedA() {
+//        startDiscover();
+    }
+
+    public void startDiscover() {
+        Intent i = new Intent();
+//        i.setClassName("tv.ouya.console","tv.ouya.console.launcher.store.adapter.DiscoverActivity");
+        i.setClassName("tv.ouya.console", "tv.ouya.console.launcher.store.OldDiscoverActivity");
+        try {
+            startActivity(i);
+        } catch (Exception e) {
+            Log.e("FrankkieLauncher", "ERROR", e);
+        }
     }
 
     @Override
@@ -144,7 +184,9 @@ public class MainActivity extends Activity {
                 OuyaController.BUTTON_DPAD_UP,
                 OuyaController.BUTTON_DPAD_LEFT,
                 OuyaController.BUTTON_DPAD_RIGHT,
-                OuyaController.BUTTON_O};
+                OuyaController.BUTTON_O,
+                OuyaController.BUTTON_A
+        };
         for (int i : ignoreList) {
             if (event.getKeyCode() == i) {
                 return super.onKeyDown(keyCode, event); //let the OUYA take care of it.
@@ -247,7 +289,7 @@ public class MainActivity extends Activity {
             }
             View v = fillTable(mFilteredApplications.get(i));
             row.addView(v);
-            if (i == mFilteredApplications.size()-1){
+            if (i == mFilteredApplications.size() - 1) {
                 table.addView(row);
             }
         }
