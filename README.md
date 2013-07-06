@@ -16,5 +16,7 @@ You can now filter on OUYA apps and Non-OUYA apps. (Press Y)
 
 ![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher6.png "Screenshot")
 
+![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher7.png "Screenshot")
+
 
 This file was created by Android Studio (I/O Preview) AI-130.729444 for binding GitHub repository
