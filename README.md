@@ -6,6 +6,9 @@ Download APK: https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/Fr
 Want your normal OUYA Launcher back? Just uninstall this app.
 Go to Advanced Settings, Apps, FrankkieOuyaLauncher, click Uninstall
 
+Note: you must install SuperUser or SuperSu to turn off the console via this Launcher.
+(Or just press the power button, or open the stock launcher)
+
 Screenshot:
 
 ![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher7.jpg "Screenshot")
