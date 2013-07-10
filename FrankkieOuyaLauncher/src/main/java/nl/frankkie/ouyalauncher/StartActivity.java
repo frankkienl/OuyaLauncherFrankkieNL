@@ -21,11 +21,16 @@ public class StartActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         OuyaController.init(this);
+        initUI();
+    }
+
+    private void initUI(){
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.main);
+//        setContentView(R.layout.main);
         setContentView(R.layout.start);
+        Util.setBackground(this);
         Button btnAll = (Button) findViewById(R.id.start_all);
         Button btnGames = (Button) findViewById(R.id.start_games);
         Button btnApps = (Button) findViewById(R.id.start_apps);
@@ -110,9 +115,20 @@ public class StartActivity extends Activity {
             return true;
         }
 
+        if (event.getKeyCode() == OuyaController.BUTTON_A) {
+            goToSettings();
+            return true;
+        }
+
         //Let the SDK take care of the rest
         boolean handled = OuyaController.onKeyDown(keyCode, event);
         return handled || super.onKeyDown(keyCode, event);
+    }
+
+    private void goToSettings(){
+        Intent i = new Intent();
+        i.setClass(this,BackgroundActivity.class);
+        startActivity(i);
     }
 
     private void turnOuyaOff() {
