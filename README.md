@@ -25,7 +25,9 @@ It is now possible to change the background.
 
 ![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher10.png "Screenshot")
 
-Background:
-http://lebannehn.deviantart.com/art/OUYA-controller-wallpaper-320123284
+Backgrounds:  
+http://lebannehn.deviantart.com/art/OUYA-controller-wallpaper-320123284   
+http://browse.deviantart.com/art/MLP-wallpaper-288574310  
+http://browse.deviantart.com/art/Tux-Wallpaper-56168169
 
 This file was created by Android Studio (I/O Preview) AI-130.729444 for binding GitHub repository
