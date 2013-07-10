@@ -9,8 +9,6 @@ Go to Advanced Settings, Apps, FrankkieOuyaLauncher, click Uninstall
 Note: you must install SuperUser or SuperSu to turn off the console via this Launcher.
 (Or just press the power button, or open the stock launcher)
 
-It is now possible to change the background.
-
 Screenshot:
 
 ![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher7.jpg "Screenshot")
@@ -23,6 +21,9 @@ You can now filter on OUYA apps and Non-OUYA apps. (Press Y)
 
 ![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher4.png "Screenshot")
 
+It is now possible to change the background.
+
+![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher10.png "Screenshot")
 
 Background:
 http://lebannehn.deviantart.com/art/OUYA-controller-wallpaper-320123284
