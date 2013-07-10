@@ -38,13 +38,14 @@ public class Util {
             File folder = new File("/sdcard/FrankkieOuyaLauncher/backgrounds/");
             folder.mkdirs();
             try {
-                copyResourceToFile(c, R.raw.ouya_background, new File("/sdcard/FrankkieOuyaLauncher/backgrounds/default.png"));
+                copyResourceToFile(c, R.raw.bg, new File("/sdcard/FrankkieOuyaLauncher/backgrounds/default.png"));
+                copyResourceToFile(c, R.raw.ouya_background, new File("/sdcard/FrankkieOuyaLauncher/backgrounds/ouya_controller.png"));
                 copyResourceToFile(c, R.raw.ouya_console_wallpaper, new File("/sdcard/FrankkieOuyaLauncher/backgrounds/ouya_console.png"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
             //Return Default !
-            return c.getResources().getDrawable(R.drawable.ouya_background);
+            return c.getResources().getDrawable(R.drawable.bg);
         }
 
         //Check preference
@@ -55,7 +56,7 @@ public class Util {
             //The selected custom background does not exist..
             //Return Default !
             Log.e("FrankkieOuyaLauncher", "Selected Background does not exist !! (return default)");
-            return c.getResources().getDrawable(R.drawable.ouya_background);
+            return c.getResources().getDrawable(R.drawable.bg);
         }
         //File does exist
         //Check if already loaded
@@ -74,7 +75,7 @@ public class Util {
             e.printStackTrace();
         }
         //Default
-        return c.getResources().getDrawable(R.drawable.ouya_background);
+        return c.getResources().getDrawable(R.drawable.bg);
     }
 
     public static void copyResourceToFile(Context c, int resourceId, File file) throws IOException {

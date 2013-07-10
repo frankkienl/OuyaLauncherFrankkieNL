@@ -3,7 +3,7 @@
               android:layout_width="match_parent"
               android:orientation="vertical"
               android:id="@+id/layout_background"
-              android:background="@drawable/ouya_background"
+              android:background="@drawable/bg"
               android:layout_height="match_parent">
 
     <LinearLayout
@@ -19,7 +19,7 @@
                 android:layout_height="wrap_content">
 
             <ImageView
-                    android:src="@drawable/ouya_logo"
+                    android:src="@drawable/baxy_white_shad"
                     android:layout_margin="10dp"
                     android:scaleType="fitStart"
                     android:adjustViewBounds="true"
@@ -35,55 +35,83 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
-                <ImageView
-                        android:src="@drawable/btn_ouya_o"
-                        android:scaleType="fitStart"
-                        android:adjustViewBounds="true"
-                        android:layout_gravity="bottom"
+                <LinearLayout
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@drawable/textback_small"
                         android:layout_width="wrap_content"
-                        android:layout_height="35dp"/>
+                        android:layout_marginRight="20dp">
 
-                <TextView
-                        android:text="Start"
-                        android:gravity="bottom"
-                        android:layout_marginBottom="5dp"
-                        android:layout_marginRight="20dp"
-                        android:textSize="22sp"
-                        android:layout_height="match_parent"
-                        android:layout_width="wrap_content"/>
+                    <ImageView
+                            android:src="@drawable/btn_ouya_o"
+                            android:scaleType="fitStart"
+                            android:adjustViewBounds="true"
+                            android:layout_gravity="bottom"
+                            android:layout_width="wrap_content"
+                            android:layout_height="35dp"/>
 
-                <ImageView
-                        android:src="@drawable/btn_ouya_u"
-                        android:scaleType="fitStart"
-                        android:adjustViewBounds="true"
-                        android:layout_gravity="bottom"
+                    <TextView
+                            android:text="Start"
+                            android:gravity="bottom"
+                            android:layout_marginBottom="5dp"
+                            android:layout_marginRight="5dp"
+                            android:textColor="#fff"
+                            android:textSize="20sp"
+                            android:layout_height="match_parent"
+                            android:layout_width="wrap_content"/>
+                </LinearLayout>
+
+                <LinearLayout
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@drawable/textback_small"
                         android:layout_width="wrap_content"
-                        android:layout_height="35dp"/>
+                        android:layout_marginRight="20dp">
 
-                <TextView
-                        android:text="App Info"
-                        android:gravity="bottom"
-                        android:layout_marginBottom="5dp"
-                        android:layout_marginRight="20dp"
-                        android:textSize="22sp"
-                        android:layout_height="match_parent"
-                        android:layout_width="wrap_content"/>
+                    <ImageView
+                            android:src="@drawable/btn_ouya_u"
+                            android:scaleType="fitStart"
+                            android:adjustViewBounds="true"
+                            android:layout_gravity="bottom"
+                            android:layout_width="wrap_content"
+                            android:layout_height="35dp"/>
 
-                <ImageView
-                        android:src="@drawable/btn_ouya_y"
-                        android:scaleType="fitStart"
-                        android:adjustViewBounds="true"
-                        android:layout_gravity="bottom"
+                    <TextView
+                            android:text="App Info"
+                            android:gravity="bottom"
+                            android:layout_marginBottom="5dp"
+                            android:layout_marginRight="5dp"
+                            android:textColor="#fff"
+                            android:textSize="20sp"
+                            android:layout_height="match_parent"
+                            android:layout_width="wrap_content"/>
+                </LinearLayout>
+
+                <LinearLayout
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@drawable/textback_small"
                         android:layout_width="wrap_content"
-                        android:layout_height="35dp"/>
+                        android:layout_marginRight="5dp">
 
-                <TextView
-                        android:text="Filters"
-                        android:gravity="bottom"
-                        android:layout_marginBottom="5dp"
-                        android:textSize="22sp"
-                        android:layout_height="match_parent"
-                        android:layout_width="wrap_content"/>
+                    <ImageView
+                            android:src="@drawable/btn_ouya_y"
+                            android:scaleType="fitStart"
+                            android:adjustViewBounds="true"
+                            android:layout_gravity="bottom"
+                            android:layout_width="wrap_content"
+                            android:layout_height="35dp"/>
+
+                    <TextView
+                            android:text="Filters"
+                            android:gravity="bottom"
+                            android:layout_marginBottom="5dp"
+                            android:layout_marginRight="5dp"
+                            android:textColor="#fff"
+                            android:textSize="20sp"
+                            android:layout_height="match_parent"
+                            android:layout_width="wrap_content"/>
+                </LinearLayout>
             </LinearLayout>
         </RelativeLayout>
 
@@ -96,6 +124,7 @@
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
+
                 <ProgressBar
                         android:layout_width="match_parent"
                         android:minHeight="250dp"
