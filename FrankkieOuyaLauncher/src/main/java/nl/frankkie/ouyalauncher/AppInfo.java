@@ -1,7 +1,6 @@
 /*
  * Copyright (c) 2013. FrankkieNL
  */
-
 package nl.frankkie.ouyalauncher;
 
 import android.content.ComponentName;
