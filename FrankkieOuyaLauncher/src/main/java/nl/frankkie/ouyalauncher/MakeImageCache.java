@@ -42,6 +42,12 @@ public class MakeImageCache extends AsyncTask<Void, Void, Void> {
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
         mainIntent.addCategory("tv.ouya.intent.category.GAME");
         List<ResolveInfo> infos = packageManager.queryIntentActivities(mainIntent, 0);
+        //Dont forget the OUYA Apps !
+        Intent mainIntent2 = new Intent(Intent.ACTION_MAIN, null);
+        mainIntent2.addCategory(Intent.CATEGORY_LAUNCHER);
+        mainIntent2.addCategory("tv.ouya.intent.category.APP");
+        List<ResolveInfo> infos2 = packageManager.queryIntentActivities(mainIntent2, 0);
+        infos.addAll(infos2);
         Resources resources;
         String packageName;
         for (ResolveInfo info : infos) {

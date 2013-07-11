@@ -48,9 +48,18 @@ class AppInfo {
 
 
     /**
-     *
+     * OUYA compatible, so:
+     * tv.ouya.intent.category.GAME
+     * tv.ouya.intent.category.APP
      */
     boolean isOUYA = false; //no more null
+
+    /**
+     * OUYA compatible, so:
+     * tv.ouya.intent.category.GAME
+     * && ! tv.ouya.intent.category.APP
+     */
+    boolean isOUYAGame = false; //no more null
 
     String packagename = "";
 

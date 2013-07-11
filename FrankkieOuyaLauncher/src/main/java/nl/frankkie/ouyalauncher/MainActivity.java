@@ -14,7 +14,6 @@ import android.graphics.*;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PaintDrawable;
-import android.media.CamcorderProfile;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -43,8 +42,10 @@ public class MainActivity extends Activity {
     private static ArrayList<AppInfo> mFilteredApplications = new ArrayList<AppInfo>();
     //FILTERS
     public static final int APP_ALL = 0;
-    public static final int APP_OUYA_ONLY = 1;
-    public static final int APP_APP_ONLY = 2;
+    public static final int APP_OUYA_GAMES_ONLY = 1;
+    public static final int APP_OUYA_APPS_ONLY = 2;
+    public static final int APP_OUYA_ONLY = 3; //APPS && GAMES
+    public static final int APP_ANDROID_APPS_ONLY = 4;
     int appType = APP_ALL;
     ////
     Handler handler = new Handler();
@@ -61,7 +62,7 @@ public class MainActivity extends Activity {
 
     public void showFilters() {
         appType++;
-        if (appType > 2) {
+        if (appType > 4) {
             appType = 0;
         }
         filter();
@@ -79,8 +80,16 @@ public class MainActivity extends Activity {
                 if (info.isOUYA) {
                     mFilteredApplications.add(info);
                 }
-            } else if (appType == APP_APP_ONLY) {
+            } else if (appType == APP_ANDROID_APPS_ONLY) {
                 if (!info.isOUYA) {
+                    mFilteredApplications.add(info);
+                }
+            } else if (appType == APP_OUYA_GAMES_ONLY) {
+                if (info.isOUYA && info.isOUYAGame){
+                    mFilteredApplications.add(info);
+                }
+            } else if (appType == APP_OUYA_APPS_ONLY){
+                if (info.isOUYA && !info.isOUYAGame){
                     mFilteredApplications.add(info);
                 }
             }
@@ -268,11 +277,11 @@ public class MainActivity extends Activity {
                         if (thumbFile.exists()) {
                             info.icon = new BitmapDrawable(BitmapFactory.decodeFile(thumbFile.getPath()));
                         } else {
-                            getIconImageGame(info);
+                            getIconImageOUYA(info);
                         }
                     } else {
                         info.icon = rinfo.loadIcon(manager);
-                        getIconImageNonGames(info);
+                        getIconImageAndroidApps(info);
                     }
                     info.filtered = true;
                 }
@@ -289,10 +298,22 @@ public class MainActivity extends Activity {
         List<ResolveInfo> infos = getPackageManager().queryIntentActivities(mainIntent, 0);
         for (ResolveInfo ri : infos) {
             if (ri.activityInfo.applicationInfo.packageName.equals(info.packagename)) {
-                return true;
+                info.isOUYA = true;
+                info.isOUYAGame = true;
             }
         }
-        return false;
+        //////
+        Intent mainIntent2 = new Intent(Intent.ACTION_MAIN, null);
+        mainIntent2.addCategory(Intent.CATEGORY_LAUNCHER);
+        mainIntent2.addCategory("tv.ouya.intent.category.APP");
+        List<ResolveInfo> infos2 = getPackageManager().queryIntentActivities(mainIntent2, 0);
+        for (ResolveInfo ri : infos2) {
+            if (ri.activityInfo.applicationInfo.packageName.equals(info.packagename)) {
+                info.isOUYA = true;
+                info.isOUYAGame = false;
+            }
+        }
+        return info.isOUYA;
     }
 
     /**
@@ -373,7 +394,7 @@ public class MainActivity extends Activity {
         return layout;
     }
 
-    public void getIconImageNonGames(AppInfo info) {
+    public void getIconImageAndroidApps(AppInfo info) {
         Drawable icon = info.icon;
         //final Resources resources = getContext().getResources();
         int width = 180;//(int) resources.getDimension(android.R.dimen.app_icon_size);
@@ -417,7 +438,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void getIconImageGame(AppInfo info) {
+    public void getIconImageOUYA(AppInfo info) {
         String packageName = info.intent.getComponent().getPackageName();
         try {
             android.content.pm.ApplicationInfo applicationInfo = getPackageManager().getApplicationInfo(packageName, 0);

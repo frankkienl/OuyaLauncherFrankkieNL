@@ -45,6 +45,7 @@ public class StartActivity extends Activity {
         Button btnAll = (Button) findViewById(R.id.start_all);
         Button btnGames = (Button) findViewById(R.id.start_games);
         Button btnApps = (Button) findViewById(R.id.start_apps);
+        Button btnAndroid = (Button) findViewById(R.id.start_android);
         Button btnDiscover = (Button) findViewById(R.id.start_discover);
         btnAll.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,7 +61,7 @@ public class StartActivity extends Activity {
             public void onClick(View view) {
                 Intent i = new Intent();
                 i.setClass(StartActivity.this, MainActivity.class);
-                i.putExtra("type", MainActivity.APP_OUYA_ONLY);
+                i.putExtra("type", MainActivity.APP_OUYA_GAMES_ONLY);
                 startActivity(i);
             }
         });
@@ -69,7 +70,16 @@ public class StartActivity extends Activity {
             public void onClick(View view) {
                 Intent i = new Intent();
                 i.setClass(StartActivity.this, MainActivity.class);
-                i.putExtra("type", MainActivity.APP_APP_ONLY);
+                i.putExtra("type", MainActivity.APP_OUYA_APPS_ONLY);
+                startActivity(i);
+            }
+        });
+        btnAndroid.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent();
+                i.setClass(StartActivity.this, MainActivity.class);
+                i.putExtra("type", MainActivity.APP_ANDROID_APPS_ONLY);
                 startActivity(i);
             }
         });

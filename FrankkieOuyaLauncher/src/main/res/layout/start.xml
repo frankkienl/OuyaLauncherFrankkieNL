@@ -144,19 +144,25 @@
                         android:layout_height="25dp"/>
 
                 <Button
-                        android:text="Games"
+                        android:text="OUYA Games"
                         android:id="@+id/start_games"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
 
                 <Button
-                        android:text="Apps"
+                        android:text="OUYA Apps"
                         android:id="@+id/start_apps"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
 
                 <Button
-                        android:text="All"
+                        android:text="Android Apps"
+                        android:id="@+id/start_android"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                <Button
+                        android:text="All Apps"
                         android:id="@+id/start_all"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
