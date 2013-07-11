@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<!--
+  ~ Copyright (c) 2013. FrankkieNL
+  -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:focusable="true"
@@ -20,7 +24,7 @@
 
     <TextView
             android:id="@+id/item_text"
-            android:textSize="25sp"
+            android:textSize="23sp"
             android:textStyle="bold"
             android:text="App Name Here"
             android:gravity="center_horizontal"

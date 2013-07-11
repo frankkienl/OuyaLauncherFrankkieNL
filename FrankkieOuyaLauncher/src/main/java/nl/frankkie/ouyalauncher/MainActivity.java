@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2013. FrankkieNL
+ */
+
 package nl.frankkie.ouyalauncher;
 
 import android.content.ComponentName;
@@ -10,7 +14,9 @@ import android.graphics.*;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PaintDrawable;
+import android.media.CamcorderProfile;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.app.Activity;
@@ -21,17 +27,20 @@ import android.view.*;
 import android.widget.*;
 import tv.ouya.console.api.OuyaController;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends Activity {
 
+    public static int numberOfItemsPerRow = 5;
     LinearLayout table;
     //    ListView gridView;
     //MyAdapter adapter;
-    private static ArrayList<ApplicationInfo> mApplications = new ArrayList<ApplicationInfo>();
-    private static ArrayList<ApplicationInfo> mFilteredApplications = new ArrayList<ApplicationInfo>();
+    private static ArrayList<AppInfo> mApplications = new ArrayList<AppInfo>();
+    private static ArrayList<AppInfo> mFilteredApplications = new ArrayList<AppInfo>();
     //FILTERS
     public static final int APP_ALL = 0;
     public static final int APP_OUYA_ONLY = 1;
@@ -61,7 +70,7 @@ public class MainActivity extends Activity {
 
     public void filter() {
         mFilteredApplications.clear();
-        for (ApplicationInfo info : mApplications) {
+        for (AppInfo info : mApplications) {
             if (appType == APP_ALL) {
                 mFilteredApplications.add(info);
                 continue;
@@ -112,11 +121,10 @@ public class MainActivity extends Activity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                loadApplications();
-                filter();
-                fillTable();
+                LoadApplication task = new LoadApplication();
+                task.execute();
             }
-        }, 500);
+        }, 10);
     }
 
 
@@ -235,29 +243,67 @@ public class MainActivity extends Activity {
             final int count = apps.size();
 
             if (mApplications == null) {
-                mApplications = new ArrayList<ApplicationInfo>(count);
+                mApplications = new ArrayList<AppInfo>(count);
             }
             mApplications.clear();
             Runtime.getRuntime().gc();
 
             for (int i = 0; i < count; i++) {
-                ApplicationInfo application = new ApplicationInfo();
-                ResolveInfo info = apps.get(i);
+                AppInfo info = new AppInfo();
+                ResolveInfo rinfo = apps.get(i);
 
-                application.title = info.loadLabel(manager);
-                application.setActivity(new ComponentName(
-                        info.activityInfo.applicationInfo.packageName,
-                        info.activityInfo.name),
+                info.title = rinfo.loadLabel(manager);
+                info.setActivity(new ComponentName(
+                        rinfo.activityInfo.applicationInfo.packageName,
+                        rinfo.activityInfo.name),
                         Intent.FLAG_ACTIVITY_NEW_TASK
                                 | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-                application.icon = info.activityInfo.loadIcon(manager);
-                application.isOUYA = checkIsOUYAAppByIcon(application);
-                mApplications.add(application);
+
+                info.packagename = info.intent.getComponent().getPackageName();
+                info.isOUYA = checkIsOUYAAppByIntent(info);
+                ////
+                if (!info.filtered) {
+                    if (info.isOUYA) {
+                        File thumbFile = new File("/sdcard/FrankkieOuyaLauncher/thumbnails/" + info.packagename + ".png");
+                        if (thumbFile.exists()) {
+                            info.icon = new BitmapDrawable(BitmapFactory.decodeFile(thumbFile.getPath()));
+                        } else {
+                            getIconImageGame(info);
+                        }
+                    } else {
+                        info.icon = rinfo.loadIcon(manager);
+                        getIconImageNonGames(info);
+                    }
+                    info.filtered = true;
+                }
+                ////
+                mApplications.add(info);
             }
         }
     }
 
-    public boolean checkIsOUYAAppByIcon(ApplicationInfo info) {
+    public boolean checkIsOUYAAppByIntent(AppInfo info) {
+        Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+        mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        mainIntent.addCategory("tv.ouya.intent.category.GAME");
+        List<ResolveInfo> infos = getPackageManager().queryIntentActivities(mainIntent, 0);
+        for (ResolveInfo ri : infos) {
+            if (ri.activityInfo.applicationInfo.packageName.equals(info.packagename)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * to memory intensive
+     *
+     * @param info
+     * @return boolean
+     * @deprecated
+     */
+    @Deprecated
+    public boolean checkIsOUYAAppByIcon(AppInfo info) {
         String packageName = "";
         try {
             packageName = info.intent.getComponent().getPackageName();
@@ -278,11 +324,10 @@ public class MainActivity extends Activity {
 
     public void fillTable() {
         table.removeAllViews(); //clear
-        Runtime.getRuntime().gc();
         ViewGroup row = null;
         LayoutInflater inflater = getLayoutInflater();
         for (int i = 0; i < mFilteredApplications.size(); i++) {
-            if (i % 4 == 0) {
+            if (i % numberOfItemsPerRow == 0) {
                 if (row != null) {
                     table.addView(row);
                 }
@@ -298,73 +343,14 @@ public class MainActivity extends Activity {
 
     private Rect mOldBounds = new Rect();
 
-    public View fillTable(final ApplicationInfo info) {
+    public View fillTable(final AppInfo info) {
         LinearLayout layout;
         LayoutInflater inflater = getLayoutInflater();
         layout = (LinearLayout) inflater.inflate(R.layout.grid_item, table, false);
-        //final ApplicationInfo info = (ApplicationInfo) getItem(id);
+        //final AppInfo info = (AppInfo) getItem(id);
         ////////
-        ////////
-
-        Drawable icon = info.icon;
         String packageName = info.intent.getComponent().getPackageName();
         info.packagename = packageName;
-        if (!info.filtered) {
-            //final Resources resources = getContext().getResources();
-            int width = 180;//(int) resources.getDimension(android.R.dimen.app_icon_size);
-            int height = 180;//(int) resources.getDimension(android.R.dimen.app_icon_size);
-
-            final int iconWidth = icon.getIntrinsicWidth();
-            final int iconHeight = icon.getIntrinsicHeight();
-
-            if (icon instanceof PaintDrawable) {
-                PaintDrawable painter = (PaintDrawable) icon;
-                painter.setIntrinsicWidth(width);
-                painter.setIntrinsicHeight(height);
-            }
-
-            if (width > 0 && height > 0 && (width < iconWidth || height < iconHeight)) {
-                final float ratio = (float) iconWidth / iconHeight;
-
-                if (iconWidth > iconHeight) {
-                    height = (int) (width / ratio);
-                } else if (iconHeight > iconWidth) {
-                    width = (int) (height * ratio);
-                }
-
-                final Bitmap.Config c =
-                        icon.getOpacity() != PixelFormat.OPAQUE ?
-                                Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
-                final Bitmap thumb = Bitmap.createBitmap(width, height, c);
-                final Canvas canvas = new Canvas(thumb);
-                canvas.setDrawFilter(new PaintFlagsDrawFilter(Paint.DITHER_FLAG, 0));
-                // Copy the old bounds to restore them later
-                // If we were to do oldBounds = icon.getBounds(),
-                // the call to setBounds() that follows would
-                // change the same instance and we would lose the
-                // old bounds
-                mOldBounds.set(icon.getBounds());
-                icon.setBounds(0, 0, width, height);
-                icon.draw(canvas);
-                icon.setBounds(mOldBounds);
-                icon = info.icon = new BitmapDrawable(thumb);
-                info.filtered = true;
-            }
-
-            /////////////
-            //TEST ICON//
-            /////////////
-            try {
-                android.content.pm.ApplicationInfo applicationInfo = getPackageManager().getApplicationInfo(packageName, 0);
-                Resources resources = getPackageManager().getResourcesForApplication(applicationInfo);
-                int identifier3 = resources.getIdentifier(packageName + ":drawable/ouya_icon", "", "");
-                info.icon = getPackageManager().getResourcesForApplication(applicationInfo).getDrawable(identifier3);
-                info.filtered = true;
-                Runtime.getRuntime().gc();
-            } catch (Exception e) {
-                Log.e("FrankkieOuyaLauncher", "ERROR", e);
-            }
-        }
         ////////
         ////////
         TextView tv = (TextView) layout.findViewById(R.id.item_text);
@@ -385,6 +371,85 @@ public class MainActivity extends Activity {
             }
         });
         return layout;
+    }
+
+    public void getIconImageNonGames(AppInfo info) {
+        Drawable icon = info.icon;
+        //final Resources resources = getContext().getResources();
+        int width = 180;//(int) resources.getDimension(android.R.dimen.app_icon_size);
+        int height = 180;//(int) resources.getDimension(android.R.dimen.app_icon_size);
+
+        final int iconWidth = icon.getIntrinsicWidth();
+        final int iconHeight = icon.getIntrinsicHeight();
+
+        if (icon instanceof PaintDrawable) {
+            PaintDrawable painter = (PaintDrawable) icon;
+            painter.setIntrinsicWidth(width);
+            painter.setIntrinsicHeight(height);
+        }
+
+        if (width > 0 && height > 0 && (width < iconWidth || height < iconHeight)) {
+            final float ratio = (float) iconWidth / iconHeight;
+
+            if (iconWidth > iconHeight) {
+                height = (int) (width / ratio);
+            } else if (iconHeight > iconWidth) {
+                width = (int) (height * ratio);
+            }
+
+            final Bitmap.Config c =
+                    icon.getOpacity() != PixelFormat.OPAQUE ?
+                            Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
+            final Bitmap thumb = Bitmap.createBitmap(width, height, c);
+            final Canvas canvas = new Canvas(thumb);
+            canvas.setDrawFilter(new PaintFlagsDrawFilter(Paint.DITHER_FLAG, 0));
+            // Copy the old bounds to restore them later
+            // If we were to do oldBounds = icon.getBounds(),
+            // the call to setBounds() that follows would
+            // change the same instance and we would lose the
+            // old bounds
+            mOldBounds.set(icon.getBounds());
+            icon.setBounds(0, 0, width, height);
+            icon.draw(canvas);
+            icon.setBounds(mOldBounds);
+            icon = info.icon = new BitmapDrawable(thumb);
+            info.filtered = true;
+        }
+    }
+
+    public void getIconImageGame(AppInfo info) {
+        String packageName = info.intent.getComponent().getPackageName();
+        try {
+            android.content.pm.ApplicationInfo applicationInfo = getPackageManager().getApplicationInfo(packageName, 0);
+            Resources resources = getPackageManager().getResourcesForApplication(applicationInfo);
+            int identifier3 = resources.getIdentifier(packageName + ":drawable/ouya_icon", "", "");
+            info.icon = getPackageManager().getResourcesForApplication(applicationInfo).getDrawable(identifier3);
+            info.filtered = true;
+            ///////////////////
+            Bitmap bitmap = ((BitmapDrawable) info.icon).getBitmap();
+            // Scale it //http://stackoverflow.com/questions/4609456/android-set-drawable-size-programatically
+            BitmapDrawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, 480, 270, true));
+            //Save to file //http://stackoverflow.com/questions/649154/save-bitmap-to-location
+            FileOutputStream out = new FileOutputStream("/sdcard/FrankkieOuyaLauncher/thumbnails/" + packageName + ".png");
+            d.getBitmap().compress(Bitmap.CompressFormat.PNG, 90, out);
+            Runtime.getRuntime().gc(); //important
+        } catch (Exception e) {
+            Log.e("FrankkieOuyaLauncher", "ERROR", e);
+        }
+    }
+
+    public class LoadApplication extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            loadApplications();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            filter();
+            fillTable();
+        }
     }
 
 }

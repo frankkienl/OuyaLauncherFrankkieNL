@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2013. FrankkieNL
+ */
+
 package nl.frankkie.ouyalauncher;
 
 import android.content.ComponentName;
@@ -22,7 +26,7 @@ public class MainOld extends Activity {
     GridView gridView;
     //    ListView gridView;
     MyAdapter adapter;
-    private static ArrayList<ApplicationInfo> mApplications = new ArrayList<ApplicationInfo>();
+    private static ArrayList<AppInfo> mApplications = new ArrayList<AppInfo>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,12 +62,12 @@ public class MainOld extends Activity {
             final int count = apps.size();
 
             if (mApplications == null) {
-                mApplications = new ArrayList<ApplicationInfo>(count);
+                mApplications = new ArrayList<AppInfo>(count);
             }
             mApplications.clear();
 
             for (int i = 0; i < count; i++) {
-                ApplicationInfo application = new ApplicationInfo();
+                AppInfo application = new AppInfo();
                 ResolveInfo info = apps.get(i);
 
                 application.title = info.loadLabel(manager);
@@ -108,7 +112,7 @@ public class MainOld extends Activity {
             if (layout == null) {
                 layout = (LinearLayout) inflater.inflate(R.layout.grid_item, gridView, false);
             }
-            final ApplicationInfo info = (ApplicationInfo) getItem(i);
+            final AppInfo info = (AppInfo) getItem(i);
             ////////
             ////////
 

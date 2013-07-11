@@ -31,7 +31,8 @@ public class StartActivity extends Activity {
     }
 
     private void startImageCaching() {
-        //TODO
+        MakeImageCache task = new MakeImageCache(this);
+        task.execute();
     }
 
     private void initUI(){
