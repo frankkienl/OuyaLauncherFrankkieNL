@@ -2,6 +2,7 @@ Alternative OUYA Launcher by FrankkieNL
 ---------------------------------------
 
 The name of this Launcher: BAXY !
+
 ![Logo](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/FrankkieOuyaLauncher/src/main/res/drawable/baxy_white_shad.png "Logo")
 
 
