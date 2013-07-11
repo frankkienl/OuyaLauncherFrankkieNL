@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2013. FrankkieNL
+  -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:orientation="vertical"
@@ -92,6 +96,7 @@
                     android:orientation="horizontal"
                     android:background="@drawable/textback_small"
                     android:layout_width="wrap_content"
+                    android:id="@+id/start_goto_settings"
                     android:layout_marginRight="5dp">
                 <ImageView
                         android:src="@drawable/btn_ouya_a"

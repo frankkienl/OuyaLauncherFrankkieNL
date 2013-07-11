@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2013. FrankkieNL
+ */
+
 package nl.frankkie.ouyalauncher;
 
 import android.app.Activity;
@@ -10,7 +14,7 @@ import android.util.Log;
 import java.io.*;
 
 /**
- * Created by Gebruiker on 10-7-13.
+ * Created by FrankkieNL on 10-7-13.
  * http://stackoverflow.com/questions/5834221/android-drawable-from-file-path
  */
 public class Util {

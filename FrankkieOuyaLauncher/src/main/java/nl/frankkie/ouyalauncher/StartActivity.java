@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2013. FrankkieNL
+ */
+
 package nl.frankkie.ouyalauncher;
 
 import android.app.Activity;
@@ -8,13 +12,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import eu.chainfire.libsuperuser.Shell;
 import tv.ouya.console.api.OuyaController;
 
 import java.util.List;
 
 /**
- * Created by Gebruiker on 6-7-13.
+ * Created by FrankkieNL on 6-7-13.
  */
 public class StartActivity extends Activity {
     @Override
@@ -66,6 +71,13 @@ public class StartActivity extends Activity {
             @Override
             public void onClick(View view) {
                 startDiscover();
+            }
+        });
+        ///FIX for non-OUYA Devices :P
+        ((LinearLayout)findViewById(R.id.start_goto_settings)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                goToSettings();
             }
         });
     }
