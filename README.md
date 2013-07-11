@@ -1,6 +1,10 @@
 Alternative OUYA Launcher by FrankkieNL
 ---------------------------------------
 
+The name of this Launcher: BAXY !
+![Logo](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/FrankkieOuyaLauncher/src/main/res/drawable/baxy_white_shad.png "Logo")
+
+
 Download APK: https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/FrankkieOuyaLauncher/FrankkieOuyaLauncher.apk
 
 Want your normal OUYA Launcher back? Just uninstall this app.
