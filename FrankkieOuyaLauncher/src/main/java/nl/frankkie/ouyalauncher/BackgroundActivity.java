@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2013. FrankkieNL
+ */
+
 package nl.frankkie.ouyalauncher;
 
 import android.app.Activity;
@@ -16,7 +20,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 /**
- * Created by Gebruiker on 10-7-13.
+ * Created by FrankkieNL on 10-7-13.
  */
 public class BackgroundActivity extends Activity {
 

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2013. FrankkieNL
+ */
+
 package nl.frankkie.ouyalauncher;
 
 import android.app.Activity;
@@ -10,7 +14,7 @@ import android.util.Log;
 import java.io.*;
 
 /**
- * Created by Gebruiker on 10-7-13.
+ * Created by FrankkieNL on 10-7-13.
  * http://stackoverflow.com/questions/5834221/android-drawable-from-file-path
  */
 public class Util {
@@ -38,13 +42,14 @@ public class Util {
             File folder = new File("/sdcard/FrankkieOuyaLauncher/backgrounds/");
             folder.mkdirs();
             try {
-                copyResourceToFile(c, R.raw.ouya_background, new File("/sdcard/FrankkieOuyaLauncher/backgrounds/default.png"));
+                copyResourceToFile(c, R.raw.bg, new File("/sdcard/FrankkieOuyaLauncher/backgrounds/default.png"));
+                copyResourceToFile(c, R.raw.ouya_background, new File("/sdcard/FrankkieOuyaLauncher/backgrounds/ouya_controller.png"));
                 copyResourceToFile(c, R.raw.ouya_console_wallpaper, new File("/sdcard/FrankkieOuyaLauncher/backgrounds/ouya_console.png"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
             //Return Default !
-            return c.getResources().getDrawable(R.drawable.ouya_background);
+            return c.getResources().getDrawable(R.drawable.bg);
         }
 
         //Check preference
@@ -55,7 +60,7 @@ public class Util {
             //The selected custom background does not exist..
             //Return Default !
             Log.e("FrankkieOuyaLauncher", "Selected Background does not exist !! (return default)");
-            return c.getResources().getDrawable(R.drawable.ouya_background);
+            return c.getResources().getDrawable(R.drawable.bg);
         }
         //File does exist
         //Check if already loaded
@@ -74,7 +79,7 @@ public class Util {
             e.printStackTrace();
         }
         //Default
-        return c.getResources().getDrawable(R.drawable.ouya_background);
+        return c.getResources().getDrawable(R.drawable.bg);
     }
 
     public static void copyResourceToFile(Context c, int resourceId, File file) throws IOException {
