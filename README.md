@@ -11,7 +11,9 @@ Note: you must install SuperUser or SuperSu to turn off the console via this Lau
 
 Screenshot:
 
-![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher7.jpg "Screenshot")
+![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher11.jpg "Screenshot")
+
+![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher12.jpg "Screenshot")
 
 You can now filter on OUYA apps and Non-OUYA apps. (Press Y)
 
