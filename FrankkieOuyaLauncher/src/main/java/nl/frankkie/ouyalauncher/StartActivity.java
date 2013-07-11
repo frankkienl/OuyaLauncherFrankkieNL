@@ -27,6 +27,11 @@ public class StartActivity extends Activity {
         super.onCreate(savedInstanceState);
         OuyaController.init(this);
         initUI();
+        startImageCaching();
+    }
+
+    private void startImageCaching() {
+        //TODO
     }
 
     private void initUI(){
