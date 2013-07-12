@@ -24,6 +24,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
+import com.flurry.android.FlurryAgent;
 import tv.ouya.console.api.OuyaController;
 
 import java.io.File;
@@ -471,6 +472,20 @@ public class MainActivity extends Activity {
             filter();
             fillTable();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //ANALYTICS
+        FlurryAgent.onStartSession(this, "MDHSMF65TV4JCSW3QN63");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        //ANALYTICS
+        FlurryAgent.onEndSession(this);
     }
 
 }
