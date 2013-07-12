@@ -68,6 +68,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="android-support-v4" level="project" />
     <orderEntry type="library" name="ouya-sdk" level="project" />
+    <orderEntry type="library" name="Flurry_3.2.1" level="project" />
   </component>
 </module>
 

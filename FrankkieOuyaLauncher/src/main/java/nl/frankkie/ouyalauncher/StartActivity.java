@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.view.*;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import com.flurry.android.FlurryAgent;
 import eu.chainfire.libsuperuser.Shell;
 import tv.ouya.console.api.OuyaController;
 
@@ -35,7 +36,7 @@ public class StartActivity extends Activity {
         task.execute();
     }
 
-    private void initUI(){
+    private void initUI() {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -90,7 +91,7 @@ public class StartActivity extends Activity {
             }
         });
         ///FIX for non-OUYA Devices :P
-        ((LinearLayout)findViewById(R.id.start_goto_settings)).setOnClickListener(new View.OnClickListener() {
+        ((LinearLayout) findViewById(R.id.start_goto_settings)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 goToSettings();
@@ -153,9 +154,9 @@ public class StartActivity extends Activity {
         return handled || super.onKeyDown(keyCode, event);
     }
 
-    private void goToSettings(){
+    private void goToSettings() {
         Intent i = new Intent();
-        i.setClass(this,BackgroundActivity.class);
+        i.setClass(this, BackgroundActivity.class);
         startActivity(i);
     }
 
@@ -186,6 +187,20 @@ public class StartActivity extends Activity {
         return super.onGenericMotionEvent(event);
     }
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //ANALYTICS
+        FlurryAgent.onStartSession(this, "MDHSMF65TV4JCSW3QN63");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        //ANALYTICS
+        FlurryAgent.onEndSession(this);
+    }
 
     private class StartDiscoverRootAsyncTask extends AsyncTask<Void, Void, Void> {
 
