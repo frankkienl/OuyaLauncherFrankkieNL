@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="nl.frankkie.ouyalauncher"
-    android:versionCode="2"
+    android:versionCode="3"
     android:versionName="1.0" >
 
     <uses-sdk
         android:minSdkVersion="16"
         android:targetSdkVersion="16" />
 
-    <!-- Backgrounds //-->
+    <!-- Backgrounds and Thumbnails //-->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
     <!-- Turn off and Discover //-->
     <uses-permission android:name="android.permission.ACCESS_SUPERUSER" />
     <!-- Analytics //-->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Get list of Running Apps //-->
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <!-- Kill running apps //-->
+    <uses-permission android:name="android.permission.RESTART_PACKAGES" />
 
     <application
         android:allowBackup="true"
@@ -33,6 +37,7 @@
         </activity>
         <activity android:name=".MainActivity"/>
         <activity android:name=".BackgroundActivity"/>
+        <activity android:name=".RunningAppsActivity" />
     </application>
 
 </manifest>

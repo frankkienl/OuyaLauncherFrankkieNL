@@ -183,7 +183,7 @@ public class StartActivity extends Activity {
     private void showMenuDialog(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Menu");
-        String[] items = new String[]{"Settings", "Turn Off"};
+        String[] items = new String[]{"Settings", "Running Applications", "Turn Off"};
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -193,6 +193,10 @@ public class StartActivity extends Activity {
                         break;
                     }
                     case 1: {
+                        goToRunningApps();
+                        break;
+                    }
+                    case 2: {
                         turnOuyaOff();
                         break;
                     }
@@ -200,6 +204,12 @@ public class StartActivity extends Activity {
             }
         });
         builder.create().show();
+    }
+
+    private void goToRunningApps(){
+        Intent i = new Intent();
+        i.setClass(this, RunningAppsActivity.class);
+        startActivity(i);
     }
 
     private void goToSettings() {
