@@ -134,6 +134,7 @@ public class BackgroundActivity extends Activity {
     private void selectBackground(String path) {
         SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         defaultSharedPreferences.edit().putString("backgroundFile", path).commit();
+        Util.logSetBackground(this, path);
         Util.setBackground(this);
     }
 

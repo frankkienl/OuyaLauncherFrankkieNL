@@ -6,13 +6,16 @@ package nl.frankkie.ouyalauncher;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import com.flurry.android.FlurryAgent;
 
 import java.io.*;
+import java.util.HashMap;
 
 /**
  * Created by FrankkieNL on 10-7-13.
@@ -43,14 +46,14 @@ public class Util {
             File folder = new File("/sdcard/FrankkieOuyaLauncher/backgrounds/");
             folder.mkdirs();
             try {
-                copyResourceToFile(c, R.raw.bg, new File("/sdcard/FrankkieOuyaLauncher/backgrounds/default.png"));
+                copyResourceToFile(c, R.raw.bg_color, new File("/sdcard/FrankkieOuyaLauncher/backgrounds/default.png"));
                 copyResourceToFile(c, R.raw.ouya_background, new File("/sdcard/FrankkieOuyaLauncher/backgrounds/ouya_controller.png"));
                 copyResourceToFile(c, R.raw.ouya_console_wallpaper, new File("/sdcard/FrankkieOuyaLauncher/backgrounds/ouya_console.png"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
             //Return Default !
-            return c.getResources().getDrawable(R.drawable.bg);
+            return c.getResources().getDrawable(R.drawable.bg_color);
         }
 
         //Check preference
@@ -61,7 +64,7 @@ public class Util {
             //The selected custom background does not exist..
             //Return Default !
             Log.e("FrankkieOuyaLauncher", "Selected Background does not exist !! (return default)");
-            return c.getResources().getDrawable(R.drawable.bg);
+            return c.getResources().getDrawable(R.drawable.bg_color);
         }
         //File does exist
         //Check if already loaded
@@ -80,7 +83,7 @@ public class Util {
             e.printStackTrace();
         }
         //Default
-        return c.getResources().getDrawable(R.drawable.bg);
+        return c.getResources().getDrawable(R.drawable.bg_color);
     }
 
     public static void copyResourceToFile(Context c, int resourceId, File file) throws IOException {
@@ -98,4 +101,54 @@ public class Util {
             out.close();
         }
     }
+
+
+    //Analytics
+
+    public static void logAppLaunch(Context context, AppInfo info){
+        //Log this applaunch to Analytics
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("packagename", info.packagename);
+        params.put("appname", info.title.toString());
+        params.put("isOUYA", "" + info.isOUYA);
+        params.put("isOUYAGame", "" + info.isOUYAGame);
+        FlurryAgent.logEvent("AppLaunch", params);
+    }
+
+    public static void logAppInfo(Context context, String packagename){
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("packagename", packagename);
+        FlurryAgent.logEvent("AppInfo", params);
+    }
+
+    public static void logFilterChange(Context context, int newFilter){
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("filter", "" + newFilter);
+        FlurryAgent.logEvent("AppFilterChange", params);
+    }
+
+    public static void logStartDiscover(Context context){
+        FlurryAgent.logEvent("startDiscover");
+    }
+
+    public static void logTurnOff(Context context){
+        FlurryAgent.logEvent("turnOff");
+    }
+
+    public static void logGoToSettings(Context context){
+        FlurryAgent.logEvent("goToSettings");
+    }
+
+    public static void logGoToApplist(Context context, int newFilter){
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("filter", "" + newFilter);
+        FlurryAgent.logEvent("Applist", params);
+    }
+
+    public static void logSetBackground(Context context, String path){
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("path", path);
+        FlurryAgent.logEvent("setBackground", params);
+    }
+
 }

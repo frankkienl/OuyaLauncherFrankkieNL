@@ -4,8 +4,10 @@
 
 package nl.frankkie.ouyalauncher;
 
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -58,16 +60,30 @@ public class MainActivity extends Activity {
             TextView tv_packagename = (TextView) ((ViewGroup) v).findViewById(R.id.item_packagename);
             String packagename = tv_packagename.getText().toString();
             showInstalledAppDetails(this, packagename);
+            Util.logAppInfo(MainActivity.this, packagename);
         }
     }
 
     public void showFilters() {
-        appType++;
-        if (appType > 4) {
-            appType = 0;
-        }
-        filter();
-        fillTable();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Filters");
+        String[] items = new String[]{"All Apps", "OUYA Games", "OUYA Apps", "OUYA Apps and Games", "Android Apps and Games"};
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                appType = i;
+                filter();
+                fillTable();
+                Util.logFilterChange(MainActivity.this, i);
+            }
+        });
+        builder.create().show();
+//        appType++;
+//        if (appType > 4) {
+//            appType = 0;
+//        }
+//        filter();
+//        fillTable();
     }
 
     public void filter() {
@@ -86,11 +102,11 @@ public class MainActivity extends Activity {
                     mFilteredApplications.add(info);
                 }
             } else if (appType == APP_OUYA_GAMES_ONLY) {
-                if (info.isOUYA && info.isOUYAGame){
+                if (info.isOUYA && info.isOUYAGame) {
                     mFilteredApplications.add(info);
                 }
-            } else if (appType == APP_OUYA_APPS_ONLY){
-                if (info.isOUYA && !info.isOUYAGame){
+            } else if (appType == APP_OUYA_APPS_ONLY) {
+                if (info.isOUYA && !info.isOUYAGame) {
                     mFilteredApplications.add(info);
                 }
             }
@@ -167,7 +183,7 @@ public class MainActivity extends Activity {
             return true;
         }
         //check menu-key
-        if (event.getKeyCode() == OuyaController.BUTTON_MENU) {
+        if (event.getKeyCode() == OuyaController.BUTTON_MENU || event.getKeyCode() == KeyEvent.KEYCODE_MENU) {
             pressedMenu();
             return true;
         }
@@ -177,7 +193,21 @@ public class MainActivity extends Activity {
     }
 
     public void pressedMenu() {
-
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Menu");
+        String[] items = new String[]{"Filters"};
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                switch (i) {
+                    case 0: {
+                        showFilters();
+                        break;
+                    }
+                }
+            }
+        });
+        builder.create().show();
     }
 
     public void pressedA() {
@@ -387,6 +417,8 @@ public class MainActivity extends Activity {
             public void onClick(View view) {
                 Intent i = info.intent;
                 try {
+                    //Analytics
+                    Util.logAppLaunch(MainActivity.this, info);
                     startActivity(i);
                 } catch (Exception e) {
                 }

@@ -6,17 +6,34 @@ package nl.frankkie.ouyalauncher;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
 import android.view.*;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import com.flurry.android.FlurryAgent;
 import eu.chainfire.libsuperuser.Shell;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 import tv.ouya.console.api.OuyaController;
 
+import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 
 /**
@@ -54,6 +71,7 @@ public class StartActivity extends Activity {
                 Intent i = new Intent();
                 i.setClass(StartActivity.this, MainActivity.class);
                 i.putExtra("type", MainActivity.APP_ALL);
+                Util.logGoToApplist(StartActivity.this,MainActivity.APP_ALL);
                 startActivity(i);
             }
         });
@@ -63,6 +81,7 @@ public class StartActivity extends Activity {
                 Intent i = new Intent();
                 i.setClass(StartActivity.this, MainActivity.class);
                 i.putExtra("type", MainActivity.APP_OUYA_GAMES_ONLY);
+                Util.logGoToApplist(StartActivity.this,MainActivity.APP_OUYA_GAMES_ONLY);
                 startActivity(i);
             }
         });
@@ -72,6 +91,7 @@ public class StartActivity extends Activity {
                 Intent i = new Intent();
                 i.setClass(StartActivity.this, MainActivity.class);
                 i.putExtra("type", MainActivity.APP_OUYA_APPS_ONLY);
+                Util.logGoToApplist(StartActivity.this,MainActivity.APP_OUYA_APPS_ONLY);
                 startActivity(i);
             }
         });
@@ -81,6 +101,7 @@ public class StartActivity extends Activity {
                 Intent i = new Intent();
                 i.setClass(StartActivity.this, MainActivity.class);
                 i.putExtra("type", MainActivity.APP_ANDROID_APPS_ONLY);
+                Util.logGoToApplist(StartActivity.this,MainActivity.APP_ANDROID_APPS_ONLY);
                 startActivity(i);
             }
         });
@@ -149,14 +170,42 @@ public class StartActivity extends Activity {
             return true;
         }
 
+        if (event.getKeyCode() == KeyEvent.KEYCODE_MENU || event.getKeyCode() == OuyaController.BUTTON_MENU){
+            showMenuDialog();
+            return true;
+        }
+
         //Let the SDK take care of the rest
         boolean handled = OuyaController.onKeyDown(keyCode, event);
         return handled || super.onKeyDown(keyCode, event);
     }
 
+    private void showMenuDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Menu");
+        String[] items = new String[]{"Settings", "Turn Off"};
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                switch (i){
+                    case 0: {
+                        goToSettings();
+                        break;
+                    }
+                    case 1: {
+                        turnOuyaOff();
+                        break;
+                    }
+                }
+            }
+        });
+        builder.create().show();
+    }
+
     private void goToSettings() {
         Intent i = new Intent();
         i.setClass(this, BackgroundActivity.class);
+        Util.logGoToSettings(this);
         startActivity(i);
     }
 
@@ -193,6 +242,9 @@ public class StartActivity extends Activity {
         super.onStart();
         //ANALYTICS
         FlurryAgent.onStartSession(this, "MDHSMF65TV4JCSW3QN63");
+        //Update Check
+        Updater updater = Updater.getInstance(this);
+        updater.startUpdateCheck();
     }
 
     @Override
@@ -211,10 +263,10 @@ public class StartActivity extends Activity {
             if (suAvailable) {
                 //String suVersion = Shell.SU.version(false);
                 //String suVersionInternal = Shell.SU.version(true);
+                Util.logStartDiscover(StartActivity.this);
                 List<String> suResult = Shell.SU.run(new String[]{
                         "am start --user 0 -n tv.ouya.console/tv.ouya.console.launcher.store.adapter.DiscoverActivity"
                 });
-
             }
             return null;
         }
@@ -230,13 +282,12 @@ public class StartActivity extends Activity {
             if (suAvailable) {
                 //String suVersion = Shell.SU.version(false);
                 //String suVersionInternal = Shell.SU.version(true);
+                Util.logTurnOff(StartActivity.this);
                 List<String> suResult = Shell.SU.run(new String[]{
                         "am broadcast --user 0 -a tv.ouya.console.action.TURN_OFF"
                 });
-
             }
             return null;
         }
-
     }
 }
