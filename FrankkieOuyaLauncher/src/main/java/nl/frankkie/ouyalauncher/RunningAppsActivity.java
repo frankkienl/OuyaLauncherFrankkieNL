@@ -252,7 +252,6 @@ public class RunningAppsActivity extends Activity {
         try {
             //Method 1: ActivityManager
             activityManager.killBackgroundProcesses(packagename); //THIS DOES NOT WORK ?! :C !
-//            android.os.Process.killProcess();
             //Method 2: ActivityManager via Root # am kill --user 0 <packagename>
             KillAppAsyncTask task = new KillAppAsyncTask(); //THIS DOES NOT WORK ?! :C !
             task.execute(packagename);
