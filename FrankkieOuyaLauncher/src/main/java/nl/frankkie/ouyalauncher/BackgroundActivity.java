@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.*;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.flurry.android.FlurryAgent;
 import tv.ouya.console.api.OuyaController;
@@ -25,7 +24,7 @@ import java.util.ArrayList;
  */
 public class BackgroundActivity extends Activity {
 
-    LinearLayout table;
+    ViewGroup table;
     ArrayList<MyBackground> backgrounds = new ArrayList<MyBackground>();
 
     @Override
@@ -63,7 +62,7 @@ public class BackgroundActivity extends Activity {
 
     private View fillTable(MyBackground background) {
         LayoutInflater inflater = getLayoutInflater();
-        LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.grid_item, table, false);
+        ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.grid_item, table, false);
         ImageView imageView = (ImageView) layout.findViewById(R.id.item_image);
         TextView textView = (TextView) layout.findViewById(R.id.item_text);
         TextView hiddenTextView = (TextView) layout.findViewById(R.id.item_packagename);
@@ -86,7 +85,7 @@ public class BackgroundActivity extends Activity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.background_chooser);
         Util.setBackground(this);
-        table = (LinearLayout) findViewById(R.id.table);
+        table = (ViewGroup) findViewById(R.id.table);
     }
 
     @Override

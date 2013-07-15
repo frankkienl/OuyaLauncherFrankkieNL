@@ -10,11 +10,13 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.widget.Toast;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -78,7 +80,7 @@ public class Updater {
         @Override
         protected JSONObject doInBackground(Object... objects) {
             HttpClient client = new DefaultHttpClient();
-            HttpGet request = new HttpGet("https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/version.json");
+            HttpGet request = new HttpGet(versionJsonUrl);
             try {
                 HttpResponse response = client.execute(request);
                 JSONObject jsonObject = new JSONObject(EntityUtils.toString(response.getEntity()));
@@ -111,8 +113,8 @@ public class Updater {
             } catch (Exception e) {
                 //ignore
             }
-
-            if (jsonObject != null) {
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            if (jsonObject != null && System.currentTimeMillis() > prefs.getLong("updater_stfu_till", 0l)) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle("New Version Available !");
                 String changes = "";
@@ -133,6 +135,9 @@ public class Updater {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         //nothing, just remove dialog
+                        //Don't annoy the user for another hour or so !
+                        prefs.edit().putLong("updater_stfu_till", System.currentTimeMillis() + (1000 * 60 * 60)).commit();
+//                        toast("Ok, I will not alert you about updates for an hour.");
                     }
                 });
                 builder.create().show();
@@ -167,7 +172,7 @@ public class Updater {
             try {
                 //Thanks to:
                 //http://stackoverflow.com/questions/3028306/download-a-file-with-android-and-showing-the-progress-in-a-progressdialog
-                URL url = new URL("https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/FrankkieOuyaLauncher/FrankkieOuyaLauncher.apk");
+                URL url = new URL(apkUrl);
                 URLConnection connection = url.openConnection();
                 connection.connect();
                 // this will be useful so that you can show a typical 0-100% progress bar
@@ -175,7 +180,7 @@ public class Updater {
 
                 // download the file
                 InputStream input = new BufferedInputStream(url.openStream());
-                OutputStream output = new FileOutputStream(Environment.getExternalStorageDirectory() + "/FrankkieOuyaLauncher.apk");
+                OutputStream output = new FileOutputStream(Environment.getExternalStorageDirectory() + "/" + apkName);
 
                 byte data[] = new byte[1024];
                 long total = 0;
@@ -213,10 +218,10 @@ public class Updater {
                 try {
                     Intent i = new Intent();
                     i.setAction(Intent.ACTION_INSTALL_PACKAGE);
-                    i.setData(Uri.parse("file://" + Environment.getExternalStorageDirectory().getPath() + "/FrankkieOuyaLauncher.apk"));
+                    i.setData(Uri.parse("file://" + Environment.getExternalStorageDirectory().getPath() + "/" + apkName));
                     context.startActivity(i);
                 } catch (Exception e) {
-                    toast("Cannot update application.. Please use a filemanager (like Total Commander) and select 'FrankkieOuyaLauncher.apk'.");
+                    toast("Cannot update application.. Please use a filemanager (like Total Commander) and select '"+apkName+"'.");
                 }
             }
         }

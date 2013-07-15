@@ -26,7 +26,9 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
+
 import com.flurry.android.FlurryAgent;
+
 import tv.ouya.console.api.OuyaController;
 
 import java.io.File;
@@ -39,6 +41,7 @@ public class MainActivity extends Activity {
 
     public static int numberOfItemsPerRow = 5;
     LinearLayout table;
+    View selectedItem;
     //    ListView gridView;
     //MyAdapter adapter;
     private static ArrayList<AppInfo> mApplications = new ArrayList<AppInfo>();
@@ -49,15 +52,18 @@ public class MainActivity extends Activity {
     public static final int APP_OUYA_APPS_ONLY = 2;
     public static final int APP_OUYA_ONLY = 3; //APPS && GAMES
     public static final int APP_ANDROID_APPS_ONLY = 4;
+    public static final int APP_FAVORITES_ONLY = 5;
     int appType = APP_ALL;
     ////
     Handler handler = new Handler();
 
 
     public void showAppInfo() {
-        View v = getCurrentFocus();
-        if (v != null) {
-            TextView tv_packagename = (TextView) ((ViewGroup) v).findViewById(R.id.item_packagename);
+//        View v = getCurrentFocus();
+        if (selectedItem != null) {
+            selectedItem = getCurrentFocus(); //via Y, not via Menu
+            if (selectedItem == null){return;}
+            TextView tv_packagename = (TextView) ((ViewGroup) selectedItem).findViewById(R.id.item_packagename);
             String packagename = tv_packagename.getText().toString();
             showInstalledAppDetails(this, packagename);
             Util.logAppInfo(MainActivity.this, packagename);
@@ -67,7 +73,7 @@ public class MainActivity extends Activity {
     public void showFilters() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Filters");
-        String[] items = new String[]{"All Apps", "OUYA Games", "OUYA Apps", "OUYA Apps and Games", "Android Apps and Games"};
+        String[] items = new String[]{"All Apps", "OUYA Games", "OUYA Apps", "OUYA Apps and Games", "Android Apps and Games", "Favorites"};
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -87,6 +93,7 @@ public class MainActivity extends Activity {
     }
 
     public void filter() {
+        cachedFavorites = Util.getFavorites(this);
         mFilteredApplications.clear();
         for (AppInfo info : mApplications) {
             if (appType == APP_ALL) {
@@ -107,6 +114,10 @@ public class MainActivity extends Activity {
                 }
             } else if (appType == APP_OUYA_APPS_ONLY) {
                 if (info.isOUYA && !info.isOUYAGame) {
+                    mFilteredApplications.add(info);
+                }
+            } else if (appType == APP_FAVORITES_ONLY){
+                if (cachedFavorites.contains(info.packagename)){
                     mFilteredApplications.add(info);
                 }
             }
@@ -193,9 +204,10 @@ public class MainActivity extends Activity {
     }
 
     public void pressedMenu() {
+        selectedItem = getCurrentFocus();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Menu");
-        String[] items = new String[]{"Filters"};
+        String[] items = new String[]{"Filters", "App Info", ((Util.getFavorites(MainActivity.this).contains(((TextView) selectedItem.findViewById(R.id.item_packagename)).getText().toString())) ? "Remove from" : "Add to") + " Favorites"};
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -204,10 +216,48 @@ public class MainActivity extends Activity {
                         showFilters();
                         break;
                     }
+                    case 1: {
+                        showAppInfo();
+                        break;
+                    }
+                    case 2: {
+                        if (Util.getFavorites(MainActivity.this).contains(((TextView) selectedItem.findViewById(R.id.item_packagename)).getText().toString())) {
+                            removeFromFavorites();
+                        } else {
+                            addToFavorites();
+                        }
+                        break;
+                    }
                 }
             }
         });
         builder.create().show();
+    }
+
+    public void addToFavorites() {
+        if (selectedItem != null) {
+            selectedItem = getCurrentFocus(); // not via Menu
+            if (selectedItem == null){return;}
+            Util.addToFavorites(this, ((TextView) selectedItem.findViewById(R.id.item_packagename)).getText().toString());
+            Util.logAddFavorite(this, ((TextView) selectedItem.findViewById(R.id.item_packagename)).getText().toString());
+            Toast.makeText(this,"Added to Favorites",Toast.LENGTH_SHORT).show();
+        }
+        //Refresh
+        filter();
+        fillTable();
+    }
+
+    public void removeFromFavorites(){
+        if (selectedItem != null) {
+            selectedItem = getCurrentFocus(); // not via Menu
+            if (selectedItem == null){return;}
+            Util.removeFromFavorites(this, ((TextView) selectedItem.findViewById(R.id.item_packagename)).getText().toString());
+            Util.logRemoveFavorite(this, ((TextView) selectedItem.findViewById(R.id.item_packagename)).getText().toString());
+            Toast.makeText(this,"Removed from Favorites",Toast.LENGTH_SHORT).show();
+        }
+        //Refresh
+        filter();
+        fillTable();
     }
 
     public void pressedA() {
@@ -374,7 +424,10 @@ public class MainActivity extends Activity {
         return false;
     }
 
+    List<String> cachedFavorites = null;
+
     public void fillTable() {
+        cachedFavorites = Util.getFavorites(this);
         table.removeAllViews(); //clear
         ViewGroup row = null;
         LayoutInflater inflater = getLayoutInflater();
@@ -388,6 +441,12 @@ public class MainActivity extends Activity {
             View v = fillTable(mFilteredApplications.get(i));
             row.addView(v);
             if (i == mFilteredApplications.size() - 1) {
+                //last row
+                //Fill up !
+                for (int j = i % numberOfItemsPerRow; j < numberOfItemsPerRow-1; j++){
+                    View w = inflater.inflate(R.layout.grid_item_empty, table, false);
+                    row.addView(w);
+                }
                 table.addView(row);
             }
         }
@@ -396,9 +455,9 @@ public class MainActivity extends Activity {
     private Rect mOldBounds = new Rect();
 
     public View fillTable(final AppInfo info) {
-        LinearLayout layout;
+        ViewGroup layout;
         LayoutInflater inflater = getLayoutInflater();
-        layout = (LinearLayout) inflater.inflate(R.layout.grid_item, table, false);
+        layout = (ViewGroup) inflater.inflate(R.layout.grid_item, table, false);
         //final AppInfo info = (AppInfo) getItem(id);
         ////////
         String packageName = info.intent.getComponent().getPackageName();
@@ -424,6 +483,10 @@ public class MainActivity extends Activity {
                 }
             }
         });
+        //
+        if (cachedFavorites.contains(packageName)){
+            layout.findViewById(R.id.item_star).setVisibility(View.VISIBLE);
+        }
         return layout;
     }
 

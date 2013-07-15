@@ -12,10 +12,17 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
 import com.flurry.android.FlurryAgent;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by FrankkieNL on 10-7-13.
@@ -102,10 +109,74 @@ public class Util {
         }
     }
 
+    // Favorites
+
+    public static void addToFavorites(Context context, String packagename) {
+        List<String> list = getFavorites(context);
+        list.add(packagename);
+        JSONArray arr = new JSONArray();
+        for (String s : list){
+            arr.put(s);
+        }
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("favorites", arr);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String json = obj.toString();
+        setFavoritesJSON(context,json);
+    }
+
+    public static void removeFromFavorites(Context context, String packagename) {
+        List<String> list = getFavorites(context);
+        list.remove(packagename);
+        JSONArray arr = new JSONArray();
+        for (String s : list){
+            arr.put(s);
+        }
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("favorites", arr);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String json = obj.toString();
+        setFavoritesJSON(context,json);
+    }
+
+    public static List<String> getFavorites(Context context) {
+        String json = getFavoritesJSON(context);
+        try {
+            JSONObject obj = new JSONObject(json);
+            JSONArray arr = obj.getJSONArray("favorites");
+            ArrayList<String> list = new ArrayList<String>();
+            for (int i = 0; i < arr.length(); i++){
+                list.add(arr.getString(i));
+            }
+            return list;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static String getFavoritesJSON(Context context) {
+        //Just use prefs, no need for a DB for such a small list
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString("favorites", "{\"favorites\":[]}"); //empty array
+    }
+
+    private static void setFavoritesJSON(Context context, String json) {
+        //Just use prefs, no need for a DB for such a small list
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().putString("favorites", json).commit();
+    }
+
 
     //Analytics
 
-    public static void logAppLaunch(Context context, AppInfo info){
+    public static void logAppLaunch(Context context, AppInfo info) {
         //Log this applaunch to Analytics
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("packagename", info.packagename);
@@ -115,40 +186,52 @@ public class Util {
         FlurryAgent.logEvent("AppLaunch", params);
     }
 
-    public static void logAppInfo(Context context, String packagename){
+    public static void logAppInfo(Context context, String packagename) {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("packagename", packagename);
         FlurryAgent.logEvent("AppInfo", params);
     }
 
-    public static void logFilterChange(Context context, int newFilter){
+    public static void logFilterChange(Context context, int newFilter) {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("filter", "" + newFilter);
         FlurryAgent.logEvent("AppFilterChange", params);
     }
 
-    public static void logStartDiscover(Context context){
+    public static void logStartDiscover(Context context) {
         FlurryAgent.logEvent("startDiscover");
     }
 
-    public static void logTurnOff(Context context){
+    public static void logTurnOff(Context context) {
         FlurryAgent.logEvent("turnOff");
     }
 
-    public static void logGoToSettings(Context context){
+    public static void logGoToSettings(Context context) {
         FlurryAgent.logEvent("goToSettings");
     }
 
-    public static void logGoToApplist(Context context, int newFilter){
+    public static void logGoToApplist(Context context, int newFilter) {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("filter", "" + newFilter);
         FlurryAgent.logEvent("Applist", params);
     }
 
-    public static void logSetBackground(Context context, String path){
+    public static void logSetBackground(Context context, String path) {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("path", path);
         FlurryAgent.logEvent("setBackground", params);
+    }
+
+    public static void logAddFavorite(Context context, String packagename){
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("packagename", packagename);
+        FlurryAgent.logEvent("AddFavorite", params);
+    }
+
+    public static void logRemoveFavorite(Context context, String packagename){
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("packagename", packagename);
+        FlurryAgent.logEvent("AddRemove", params);
     }
 
 }

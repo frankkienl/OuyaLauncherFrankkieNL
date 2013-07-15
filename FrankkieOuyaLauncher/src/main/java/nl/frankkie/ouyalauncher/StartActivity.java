@@ -16,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.Settings;
 import android.view.*;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -183,7 +184,7 @@ public class StartActivity extends Activity {
     private void showMenuDialog(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Menu");
-        String[] items = new String[]{"Settings", "Running Applications", "Turn Off"};
+        String[] items = new String[]{"Launcher Settings", "Running Applications", "Advanced Settings", "Turn Off"};
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -197,6 +198,10 @@ public class StartActivity extends Activity {
                         break;
                     }
                     case 2: {
+                        goToAdvancedSettings();
+                        break;
+                    }
+                    case 3: {
                         turnOuyaOff();
                         break;
                     }
@@ -204,6 +209,12 @@ public class StartActivity extends Activity {
             }
         });
         builder.create().show();
+    }
+
+    private void goToAdvancedSettings(){
+        Intent i = new Intent(Intent.ACTION_MAIN);
+        i.setAction(Settings.ACTION_SETTINGS);
+        startActivity(i);
     }
 
     private void goToRunningApps(){

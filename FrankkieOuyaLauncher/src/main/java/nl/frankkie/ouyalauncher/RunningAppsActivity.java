@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import eu.chainfire.libsuperuser.Shell;
@@ -30,7 +29,7 @@ import java.util.List;
  */
 public class RunningAppsActivity extends Activity {
 
-    LinearLayout table;
+    ViewGroup table;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +45,7 @@ public class RunningAppsActivity extends Activity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.running_apps);
         Util.setBackground(this);
-        table = (LinearLayout) findViewById(R.id.table);
+        table = (ViewGroup) findViewById(R.id.table);
     }
 
     public static final int numberOfItemsPerRow = 5;
@@ -74,9 +73,9 @@ public class RunningAppsActivity extends Activity {
     }
 
     public View getView(final ActivityManager.RunningTaskInfo info) {
-        LinearLayout layout;
+        ViewGroup layout;
         LayoutInflater inflater = getLayoutInflater();
-        layout = (LinearLayout) inflater.inflate(R.layout.grid_item, table, false);
+        layout = (ViewGroup) inflater.inflate(R.layout.grid_item, table, false);
         //final AppInfo info = (AppInfo) getItem(id);
         ////////
         String packageName = info.baseActivity.getPackageName();
