@@ -3,6 +3,7 @@
   ~ Copyright (c) 2013. FrankkieNL
   -->
 
+<!-- Layout for the First screen //-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:orientation="vertical"
@@ -91,30 +92,31 @@
                             android:layout_width="wrap_content"/>
                 </LinearLayout>
 
-            <LinearLayout
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:background="@drawable/textback_small"
-                    android:layout_width="wrap_content"
-                    android:id="@+id/start_goto_settings"
-                    android:layout_marginRight="5dp">
-                <ImageView
-                        android:src="@drawable/btn_ouya_a"
-                        android:scaleType="fitStart"
-                        android:adjustViewBounds="true"
-                        android:layout_gravity="bottom"
+                <LinearLayout
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@drawable/textback_small"
                         android:layout_width="wrap_content"
-                        android:layout_height="35dp"/>
+                        android:id="@+id/start_goto_settings"
+                        android:layout_marginRight="5dp">
 
-                <TextView
-                        android:text="Settings"
-                        android:gravity="bottom"
-                        android:layout_marginBottom="5dp"
-                        android:textColor="#FFF"
-                        android:textSize="20sp"
-                        android:layout_marginRight="5dp"
-                        android:layout_height="match_parent"
-                        android:layout_width="wrap_content"/>
+                    <ImageView
+                            android:src="@drawable/btn_ouya_a"
+                            android:scaleType="fitStart"
+                            android:adjustViewBounds="true"
+                            android:layout_gravity="bottom"
+                            android:layout_width="wrap_content"
+                            android:layout_height="35dp"/>
+
+                    <TextView
+                            android:text="Settings"
+                            android:gravity="bottom"
+                            android:layout_marginBottom="5dp"
+                            android:textColor="#FFF"
+                            android:textSize="20sp"
+                            android:layout_marginRight="5dp"
+                            android:layout_height="match_parent"
+                            android:layout_width="wrap_content"/>
                 </LinearLayout>
             </LinearLayout>
         </RelativeLayout>
