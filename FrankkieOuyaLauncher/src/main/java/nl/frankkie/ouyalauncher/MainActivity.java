@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.*;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -29,6 +30,8 @@ import android.widget.*;
 
 import com.flurry.android.FlurryAgent;
 
+import nl.frankkie.ouyalauncher.databaserows.DatabaseAppInfo;
+import nl.wotuu.database.DatabaseOpenHelper;
 import tv.ouya.console.api.OuyaController;
 
 import java.io.File;
@@ -62,7 +65,9 @@ public class MainActivity extends Activity {
 //        View v = getCurrentFocus();
         if (selectedItem != null) {
             selectedItem = getCurrentFocus(); //via Y, not via Menu
-            if (selectedItem == null){return;}
+            if (selectedItem == null) {
+                return;
+            }
             TextView tv_packagename = (TextView) ((ViewGroup) selectedItem).findViewById(R.id.item_packagename);
             String packagename = tv_packagename.getText().toString();
             showInstalledAppDetails(this, packagename);
@@ -116,8 +121,8 @@ public class MainActivity extends Activity {
                 if (info.isOUYA && !info.isOUYAGame) {
                     mFilteredApplications.add(info);
                 }
-            } else if (appType == APP_FAVORITES_ONLY){
-                if (cachedFavorites.contains(info.packagename)){
+            } else if (appType == APP_FAVORITES_ONLY) {
+                if (cachedFavorites.contains(info.packagename)) {
                     mFilteredApplications.add(info);
                 }
             }
@@ -158,7 +163,7 @@ public class MainActivity extends Activity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                LoadApplication task = new LoadApplication();
+                LoadApplicationsTask task = new LoadApplicationsTask();
                 task.execute();
             }
         }, 10);
@@ -237,23 +242,27 @@ public class MainActivity extends Activity {
     public void addToFavorites() {
         if (selectedItem != null) {
             selectedItem = getCurrentFocus(); // not via Menu
-            if (selectedItem == null){return;}
+            if (selectedItem == null) {
+                return;
+            }
             Util.addToFavorites(this, ((TextView) selectedItem.findViewById(R.id.item_packagename)).getText().toString());
             Util.logAddFavorite(this, ((TextView) selectedItem.findViewById(R.id.item_packagename)).getText().toString());
-            Toast.makeText(this,"Added to Favorites",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Added to Favorites", Toast.LENGTH_SHORT).show();
         }
         //Refresh
         filter();
         fillTable();
     }
 
-    public void removeFromFavorites(){
+    public void removeFromFavorites() {
         if (selectedItem != null) {
             selectedItem = getCurrentFocus(); // not via Menu
-            if (selectedItem == null){return;}
+            if (selectedItem == null) {
+                return;
+            }
             Util.removeFromFavorites(this, ((TextView) selectedItem.findViewById(R.id.item_packagename)).getText().toString());
             Util.logRemoveFavorite(this, ((TextView) selectedItem.findViewById(R.id.item_packagename)).getText().toString());
-            Toast.makeText(this,"Removed from Favorites",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Removed from Favorites", Toast.LENGTH_SHORT).show();
         }
         //Refresh
         filter();
@@ -339,8 +348,8 @@ public class MainActivity extends Activity {
             Runtime.getRuntime().gc();
 
             for (int i = 0; i < count; i++) {
-                AppInfo info = new AppInfo();
                 ResolveInfo rinfo = apps.get(i);
+                AppInfo info = new AppInfo();
 
                 info.title = rinfo.loadLabel(manager);
                 info.setActivity(new ComponentName(
@@ -368,6 +377,30 @@ public class MainActivity extends Activity {
                 }
                 ////
                 mApplications.add(info);
+            }
+        }
+    }
+
+    public void checkIsOUYAAppByIntent(DatabaseAppInfo info) {
+        Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+        mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        mainIntent.addCategory("tv.ouya.intent.category.GAME");
+        List<ResolveInfo> infos = getPackageManager().queryIntentActivities(mainIntent, 0);
+        for (ResolveInfo ri : infos) {
+            if (ri.activityInfo.applicationInfo.packageName.equals(info.packageName)) {
+                info.isOUYA = true;
+                info.isOUYAGame = true;
+            }
+        }
+        //////
+        Intent mainIntent2 = new Intent(Intent.ACTION_MAIN, null);
+        mainIntent2.addCategory(Intent.CATEGORY_LAUNCHER);
+        mainIntent2.addCategory("tv.ouya.intent.category.APP");
+        List<ResolveInfo> infos2 = getPackageManager().queryIntentActivities(mainIntent2, 0);
+        for (ResolveInfo ri : infos2) {
+            if (ri.activityInfo.applicationInfo.packageName.equals(info.packageName)) {
+                info.isOUYA = true;
+                info.isOUYAGame = false;
             }
         }
     }
@@ -443,7 +476,7 @@ public class MainActivity extends Activity {
             if (i == mFilteredApplications.size() - 1) {
                 //last row
                 //Fill up !
-                for (int j = i % numberOfItemsPerRow; j < numberOfItemsPerRow-1; j++){
+                for (int j = i % numberOfItemsPerRow; j < numberOfItemsPerRow - 1; j++) {
                     View w = inflater.inflate(R.layout.grid_item_empty, table, false);
                     row.addView(w);
                 }
@@ -484,7 +517,7 @@ public class MainActivity extends Activity {
             }
         });
         //
-        if (cachedFavorites.contains(packageName)){
+        if (cachedFavorites.contains(packageName)) {
             layout.findViewById(R.id.item_star).setVisibility(View.VISIBLE);
         }
         return layout;
@@ -534,6 +567,50 @@ public class MainActivity extends Activity {
         }
     }
 
+    public void getIconImageAndroidApps(DatabaseAppInfo info) {
+        Drawable icon = info.icon;
+        //final Resources resources = getContext().getResources();
+        int width = 180;//(int) resources.getDimension(android.R.dimen.app_icon_size);
+        int height = 180;//(int) resources.getDimension(android.R.dimen.app_icon_size);
+
+        final int iconWidth = icon.getIntrinsicWidth();
+        final int iconHeight = icon.getIntrinsicHeight();
+
+        if (icon instanceof PaintDrawable) {
+            PaintDrawable painter = (PaintDrawable) icon;
+            painter.setIntrinsicWidth(width);
+            painter.setIntrinsicHeight(height);
+        }
+
+        if (width > 0 && height > 0 && (width < iconWidth || height < iconHeight)) {
+            final float ratio = (float) iconWidth / iconHeight;
+
+            if (iconWidth > iconHeight) {
+                height = (int) (width / ratio);
+            } else if (iconHeight > iconWidth) {
+                width = (int) (height * ratio);
+            }
+
+            final Bitmap.Config c =
+                    icon.getOpacity() != PixelFormat.OPAQUE ?
+                            Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
+            final Bitmap thumb = Bitmap.createBitmap(width, height, c);
+            final Canvas canvas = new Canvas(thumb);
+            canvas.setDrawFilter(new PaintFlagsDrawFilter(Paint.DITHER_FLAG, 0));
+            // Copy the old bounds to restore them later
+            // If we were to do oldBounds = icon.getBounds(),
+            // the call to setBounds() that follows would
+            // change the same instance and we would lose the
+            // old bounds
+            mOldBounds.set(icon.getBounds());
+            icon.setBounds(0, 0, width, height);
+            icon.draw(canvas);
+            icon.setBounds(mOldBounds);
+            icon = info.icon = new BitmapDrawable(thumb);
+            //info.filtered = true;
+        }
+    }
+
     public void getIconImageOUYA(AppInfo info) {
         String packageName = info.intent.getComponent().getPackageName();
         try {
@@ -555,7 +632,28 @@ public class MainActivity extends Activity {
         }
     }
 
-    public class LoadApplication extends AsyncTask<Void, Void, Void> {
+    public void getIconImageOUYA(DatabaseAppInfo info) {
+        String packageName = info.intent.getComponent().getPackageName();
+        try {
+            android.content.pm.ApplicationInfo applicationInfo = getPackageManager().getApplicationInfo(packageName, 0);
+            Resources resources = getPackageManager().getResourcesForApplication(applicationInfo);
+            int identifier3 = resources.getIdentifier(packageName + ":drawable/ouya_icon", "", "");
+            info.icon = getPackageManager().getResourcesForApplication(applicationInfo).getDrawable(identifier3);
+            //info.filtered = true;
+            ///////////////////
+            Bitmap bitmap = ((BitmapDrawable) info.icon).getBitmap();
+            // Scale it //http://stackoverflow.com/questions/4609456/android-set-drawable-size-programatically
+            BitmapDrawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, 480, 270, true));
+            //Save to file //http://stackoverflow.com/questions/649154/save-bitmap-to-location
+            FileOutputStream out = new FileOutputStream("/sdcard/FrankkieOuyaLauncher/thumbnails/" + packageName + ".png");
+            d.getBitmap().compress(Bitmap.CompressFormat.PNG, 90, out);
+            Runtime.getRuntime().gc(); //important
+        } catch (Exception e) {
+            Log.e("FrankkieOuyaLauncher", "ERROR", e);
+        }
+    }
+
+    public class LoadApplicationsTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... voids) {
             loadApplications();
@@ -581,6 +679,47 @@ public class MainActivity extends Activity {
         super.onStop();
         //ANALYTICS
         FlurryAgent.onEndSession(this);
+    }
+
+    /**
+     * Get DatabaseAppInfo, will be made when not in DB
+     */
+    public DatabaseAppInfo getDatabaseAppInfo(ResolveInfo resolveInfo) {
+        DatabaseAppInfo appInfo = null;
+        DatabaseOpenHelper helper = DatabaseOpenHelper.CreateInstance(this);
+        Cursor cursor = helper.WriteableDatabase.rawQuery("SELECT id FROM appinfo WHERE packageName = '"
+                + resolveInfo.activityInfo.applicationInfo.packageName + "'", null);
+        if (cursor.getCount() == 0){
+            appInfo = new DatabaseAppInfo();
+            //Fill info
+            appInfo.packageName = resolveInfo.activityInfo.applicationInfo.packageName;
+            checkIsOUYAAppByIntent(appInfo);
+        } else {
+            cursor.moveToFirst();
+            appInfo = new DatabaseAppInfo(cursor.getInt(0));
+        }
+        cursor.close();
+        //(Re)set the stuff that is not in Database
+        //Intent
+        appInfo.setActivity(new ComponentName(
+                appInfo.packageName,
+                resolveInfo.activityInfo.name),
+                Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+        //Image
+        if (appInfo.isOUYA) {
+            File thumbFile = new File("/sdcard/FrankkieOuyaLauncher/thumbnails/" + appInfo.packageName + ".png");
+            if (thumbFile.exists()) {
+                appInfo.icon = new BitmapDrawable(BitmapFactory.decodeFile(thumbFile.getPath()));
+            } else {
+                getIconImageOUYA(appInfo);
+            }
+        } else {
+            appInfo.icon = resolveInfo.loadIcon(getPackageManager());
+            getIconImageAndroidApps(appInfo);
+        }
+
+        return appInfo;
     }
 
 }
