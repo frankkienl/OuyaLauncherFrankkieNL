@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import nl.frankkie.ouyalauncher.databaserows.DatabaseAppInfo;
+
 /**
  * Created by FrankkieNL on 10-7-13.
  * http://stackoverflow.com/questions/5834221/android-drawable-from-file-path
@@ -52,6 +54,13 @@ public class Util {
             //make that file
             File folder = new File("/sdcard/FrankkieOuyaLauncher/backgrounds/");
             folder.mkdirs();
+            try {
+                //add .nomedia
+                File noMedia = new File("/sdcard/FrankkieOuyaLauncher/thumbnails/.nomedia");
+                noMedia.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             try {
                 copyResourceToFile(c, R.raw.bg_color, new File("/sdcard/FrankkieOuyaLauncher/backgrounds/default.png"));
                 copyResourceToFile(c, R.raw.ouya_background, new File("/sdcard/FrankkieOuyaLauncher/backgrounds/ouya_controller.png"));
@@ -173,6 +182,11 @@ public class Util {
         prefs.edit().putString("favorites", json).commit();
     }
 
+    public static void killFavorites(Context context){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().putString("favorites", "{\"favorites\":[]}").commit();
+    }
+
 
     //Analytics
 
@@ -183,6 +197,18 @@ public class Util {
         params.put("appname", info.title.toString());
         params.put("isOUYA", "" + info.isOUYA);
         params.put("isOUYAGame", "" + info.isOUYAGame);
+        params.put("title", info.title.toString());
+        FlurryAgent.logEvent("AppLaunch", params);
+    }
+
+    public static void logAppLaunch(Context context, DatabaseAppInfo info) {
+        //Log this applaunch to Analytics
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("packagename", info.packageName);
+        params.put("appname", info.title.toString());
+        params.put("isOUYA", "" + info.isOUYA());
+        params.put("isOUYAGame", "" + info.isOUYAGame());
+        params.put("title", info.getTitle());
         FlurryAgent.logEvent("AppLaunch", params);
     }
 

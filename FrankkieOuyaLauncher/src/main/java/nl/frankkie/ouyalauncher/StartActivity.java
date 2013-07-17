@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -46,6 +47,7 @@ public class StartActivity extends Activity {
         super.onCreate(savedInstanceState);
         OuyaController.init(this);
         initUI();
+        context = this;
         startImageCaching();
     }
 
@@ -65,6 +67,7 @@ public class StartActivity extends Activity {
         Button btnGames = (Button) findViewById(R.id.start_games);
         Button btnApps = (Button) findViewById(R.id.start_apps);
         Button btnAndroid = (Button) findViewById(R.id.start_android);
+        Button btnFavorites = (Button) findViewById(R.id.start_favorites);
         Button btnDiscover = (Button) findViewById(R.id.start_discover);
         btnAll.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,6 +106,16 @@ public class StartActivity extends Activity {
                 i.setClass(StartActivity.this, MainActivity.class);
                 i.putExtra("type", MainActivity.APP_ANDROID_APPS_ONLY);
                 Util.logGoToApplist(StartActivity.this,MainActivity.APP_ANDROID_APPS_ONLY);
+                startActivity(i);
+            }
+        });
+        btnFavorites.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent();
+                i.setClass(StartActivity.this, MainActivity.class);
+                i.putExtra("type", MainActivity.APP_FAVORITES_ONLY);
+                Util.logGoToApplist(StartActivity.this,MainActivity.APP_FAVORITES_ONLY);
                 startActivity(i);
             }
         });
@@ -288,6 +301,15 @@ public class StartActivity extends Activity {
                 List<String> suResult = Shell.SU.run(new String[]{
                         "am start --user 0 -n tv.ouya.console/tv.ouya.console.launcher.store.adapter.DiscoverActivity"
                 });
+            } else {
+                toast(context, "Root is not Available.. Starting Stock Launcher");
+                Intent i = new Intent();
+                i.setClassName("tv.ouya.console", "tv.ouya.console.launcher.OverlayMenuActivity");
+                try {
+                    context.startActivity(i);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
             }
             return null;
         }
@@ -307,8 +329,21 @@ public class StartActivity extends Activity {
                 List<String> suResult = Shell.SU.run(new String[]{
                         "am broadcast --user 0 -a tv.ouya.console.action.TURN_OFF"
                 });
+            } else {
+                toast(context, "Root is not Available..");
             }
             return null;
         }
+    }
+
+    Handler handler = new Handler();
+    Context context;
+    public void toast(final Context context, final String s) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(context, s, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

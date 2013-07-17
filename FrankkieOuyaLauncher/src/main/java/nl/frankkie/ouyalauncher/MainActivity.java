@@ -47,6 +47,8 @@ public class MainActivity extends Activity {
     View selectedItem;
     //    ListView gridView;
     //MyAdapter adapter;
+    private static ArrayList<IGridItem> gridItems = new ArrayList<IGridItem>();
+    private static ArrayList<IGridItem> filteredGridItems = new ArrayList<IGridItem>();
     private static ArrayList<AppInfo> mApplications = new ArrayList<AppInfo>();
     private static ArrayList<AppInfo> mFilteredApplications = new ArrayList<AppInfo>();
     //FILTERS
@@ -98,37 +100,73 @@ public class MainActivity extends Activity {
     }
 
     public void filter() {
-        cachedFavorites = Util.getFavorites(this);
-        mFilteredApplications.clear();
-        for (AppInfo info : mApplications) {
+        //cachedFavorites = Util.getFavorites(this);
+        //mFilteredApplications.clear();
+        filteredGridItems.clear();
+//        for (AppInfo info : mApplications) {
+//            if (appType == APP_ALL) {
+//                mFilteredApplications.add(info);
+//                continue;
+//            }
+//            if (appType == APP_OUYA_ONLY) {
+//                if (info.isOUYA) {
+//                    mFilteredApplications.add(info);
+//                }
+//            } else if (appType == APP_ANDROID_APPS_ONLY) {
+//                if (!info.isOUYA) {
+//                    mFilteredApplications.add(info);
+//                }
+//            } else if (appType == APP_OUYA_GAMES_ONLY) {
+//                if (info.isOUYA && info.isOUYAGame) {
+//                    mFilteredApplications.add(info);
+//                }
+//            } else if (appType == APP_OUYA_APPS_ONLY) {
+//                if (info.isOUYA && !info.isOUYAGame) {
+//                    mFilteredApplications.add(info);
+//                }
+//            } else if (appType == APP_FAVORITES_ONLY) {
+//                if (cachedFavorites.contains(info.packagename)) {
+//                    mFilteredApplications.add(info);
+//                }
+//            }
+//        }
+
+        for (IGridItem info : gridItems) {
             if (appType == APP_ALL) {
-                mFilteredApplications.add(info);
+                filteredGridItems.add(info);
+                continue;
+            }
+            if (info.isFolder()) { //always add folders
+                filteredGridItems.add(info);
+                continue;
+            }
+            if (info.isInFolder()) {
+                //don't add
                 continue;
             }
             if (appType == APP_OUYA_ONLY) {
-                if (info.isOUYA) {
-                    mFilteredApplications.add(info);
+                if (info.isOUYA()) {
+                    filteredGridItems.add(info);
                 }
             } else if (appType == APP_ANDROID_APPS_ONLY) {
-                if (!info.isOUYA) {
-                    mFilteredApplications.add(info);
+                if (!info.isOUYA()) {
+                    filteredGridItems.add(info);
                 }
             } else if (appType == APP_OUYA_GAMES_ONLY) {
-                if (info.isOUYA && info.isOUYAGame) {
-                    mFilteredApplications.add(info);
+                if (info.isOUYA() && info.isOUYAGame()) {
+                    filteredGridItems.add(info);
                 }
             } else if (appType == APP_OUYA_APPS_ONLY) {
-                if (info.isOUYA && !info.isOUYAGame) {
-                    mFilteredApplications.add(info);
+                if (info.isOUYA() && !info.isOUYAGame()) {
+                    filteredGridItems.add(info);
                 }
             } else if (appType == APP_FAVORITES_ONLY) {
-                if (cachedFavorites.contains(info.packagename)) {
-                    mFilteredApplications.add(info);
+                if (info.isFavorite()) {
+                    filteredGridItems.add(info);
                 }
             }
         }
     }
-
 
     private static final String SCHEME = "package";
     private static final String APP_PKG_NAME_21 = "com.android.settings.ApplicationPkgName";
@@ -245,8 +283,16 @@ public class MainActivity extends Activity {
             if (selectedItem == null) {
                 return;
             }
-            Util.addToFavorites(this, ((TextView) selectedItem.findViewById(R.id.item_packagename)).getText().toString());
-            Util.logAddFavorite(this, ((TextView) selectedItem.findViewById(R.id.item_packagename)).getText().toString());
+            String pak = ((TextView) selectedItem.findViewById(R.id.item_packagename)).getText().toString();
+            DatabaseAppInfo info = getDatabaseAppInfo(pak);
+            if (info != null) {
+                info.setFavorite(true);
+            }
+
+            info.OnUpdate();
+
+            Util.addToFavorites(this, pak);
+            Util.logAddFavorite(this, pak);
             Toast.makeText(this, "Added to Favorites", Toast.LENGTH_SHORT).show();
         }
         //Refresh
@@ -331,7 +377,7 @@ public class MainActivity extends Activity {
 
     private void loadApplications() {
         PackageManager manager = getPackageManager();
-
+        cachedFavorites = Util.getFavorites(this); // only once to convert to new format
         Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
@@ -341,43 +387,50 @@ public class MainActivity extends Activity {
         if (apps != null) {
             final int count = apps.size();
 
-            if (mApplications == null) {
-                mApplications = new ArrayList<AppInfo>(count);
+//            if (mApplications == null) {
+//                mApplications = new ArrayList<AppInfo>(count);
+//            }
+            if (gridItems == null) {
+                gridItems = new ArrayList<IGridItem>(count);
             }
-            mApplications.clear();
+//            mApplications.clear();
+            gridItems.clear();
             Runtime.getRuntime().gc();
 
             for (int i = 0; i < count; i++) {
                 ResolveInfo rinfo = apps.get(i);
-                AppInfo info = new AppInfo();
-
-                info.title = rinfo.loadLabel(manager);
-                info.setActivity(new ComponentName(
-                        rinfo.activityInfo.applicationInfo.packageName,
-                        rinfo.activityInfo.name),
-                        Intent.FLAG_ACTIVITY_NEW_TASK
-                                | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-
-                info.packagename = info.intent.getComponent().getPackageName();
-                info.isOUYA = checkIsOUYAAppByIntent(info);
-                ////
-                if (!info.filtered) {
-                    if (info.isOUYA) {
-                        File thumbFile = new File("/sdcard/FrankkieOuyaLauncher/thumbnails/" + info.packagename + ".png");
-                        if (thumbFile.exists()) {
-                            info.icon = new BitmapDrawable(BitmapFactory.decodeFile(thumbFile.getPath()));
-                        } else {
-                            getIconImageOUYA(info);
-                        }
-                    } else {
-                        info.icon = rinfo.loadIcon(manager);
-                        getIconImageAndroidApps(info);
-                    }
-                    info.filtered = true;
-                }
-                ////
-                mApplications.add(info);
+                //AppInfo info = new AppInfo();
+                DatabaseAppInfo databaseAppInfo = getDatabaseAppInfo(rinfo);
+//                info.title = rinfo.loadLabel(manager);
+//                info.setActivity(new ComponentName(
+//                        rinfo.activityInfo.applicationInfo.packageName,
+//                        rinfo.activityInfo.name),
+//                        Intent.FLAG_ACTIVITY_NEW_TASK
+//                                | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+//
+//                info.packagename = info.intent.getComponent().getPackageName();
+//                info.isOUYA = checkIsOUYAAppByIntent(info);
+//                ////
+//                if (!info.filtered) {
+//                    if (info.isOUYA) {
+//                        File thumbFile = new File("/sdcard/FrankkieOuyaLauncher/thumbnails/" + info.packagename + ".png");
+//                        if (thumbFile.exists()) {
+//                            info.icon = new BitmapDrawable(BitmapFactory.decodeFile(thumbFile.getPath()));
+//                        } else {
+//                            getIconImageOUYA(info);
+//                        }
+//                    } else {
+//                        info.icon = rinfo.loadIcon(manager);
+//                        getIconImageAndroidApps(info);
+//                    }
+//                    info.filtered = true;
+//                }
+//                ////
+//                mApplications.add(info);
+                gridItems.add(databaseAppInfo);
             }
+            //Kill old Favorites method
+            Util.killFavorites(this);
         }
     }
 
@@ -388,8 +441,8 @@ public class MainActivity extends Activity {
         List<ResolveInfo> infos = getPackageManager().queryIntentActivities(mainIntent, 0);
         for (ResolveInfo ri : infos) {
             if (ri.activityInfo.applicationInfo.packageName.equals(info.packageName)) {
-                info.isOUYA = true;
-                info.isOUYAGame = true;
+                info.setOUYA(true);
+                info.setOUYAGame(true);
             }
         }
         //////
@@ -399,8 +452,8 @@ public class MainActivity extends Activity {
         List<ResolveInfo> infos2 = getPackageManager().queryIntentActivities(mainIntent2, 0);
         for (ResolveInfo ri : infos2) {
             if (ri.activityInfo.applicationInfo.packageName.equals(info.packageName)) {
-                info.isOUYA = true;
-                info.isOUYAGame = false;
+                info.setOUYA(true);
+                info.setOUYAGame(false);
             }
         }
     }
@@ -460,20 +513,39 @@ public class MainActivity extends Activity {
     List<String> cachedFavorites = null;
 
     public void fillTable() {
-        cachedFavorites = Util.getFavorites(this);
+        //cachedFavorites = Util.getFavorites(this);
         table.removeAllViews(); //clear
         ViewGroup row = null;
         LayoutInflater inflater = getLayoutInflater();
-        for (int i = 0; i < mFilteredApplications.size(); i++) {
+//        for (int i = 0; i < mFilteredApplications.size(); i++) {
+//            if (i % numberOfItemsPerRow == 0) {
+//                if (row != null) {
+//                    table.addView(row);
+//                }
+//                row = (ViewGroup) inflater.inflate(R.layout.table_row, table, false);
+//            }
+//            View v = fillTable(mFilteredApplications.get(i));
+//            row.addView(v);
+//            if (i == mFilteredApplications.size() - 1) {
+//                //last row
+//                //Fill up !
+//                for (int j = i % numberOfItemsPerRow; j < numberOfItemsPerRow - 1; j++) {
+//                    View w = inflater.inflate(R.layout.grid_item_empty, table, false);
+//                    row.addView(w);
+//                }
+//                table.addView(row);
+//            }
+//        }
+        for (int i = 0; i < filteredGridItems.size(); i++) {
             if (i % numberOfItemsPerRow == 0) {
                 if (row != null) {
                     table.addView(row);
                 }
                 row = (ViewGroup) inflater.inflate(R.layout.table_row, table, false);
             }
-            View v = fillTable(mFilteredApplications.get(i));
+            View v = fillTable(filteredGridItems.get(i));
             row.addView(v);
-            if (i == mFilteredApplications.size() - 1) {
+            if (i == filteredGridItems.size() - 1) {
                 //last row
                 //Fill up !
                 for (int j = i % numberOfItemsPerRow; j < numberOfItemsPerRow - 1; j++) {
@@ -487,37 +559,74 @@ public class MainActivity extends Activity {
 
     private Rect mOldBounds = new Rect();
 
-    public View fillTable(final AppInfo info) {
+//    public View fillTable(final AppInfo info) {
+//        ViewGroup layout;
+//        LayoutInflater inflater = getLayoutInflater();
+//        layout = (ViewGroup) inflater.inflate(R.layout.grid_item, table, false);
+//        //final AppInfo info = (AppInfo) getItem(id);
+//        ////////
+//        String packageName = info.intent.getComponent().getPackageName();
+//        info.packagename = packageName;
+//        ////////
+//        ////////
+//        TextView tv = (TextView) layout.findViewById(R.id.item_text);
+//        tv.setText(info.title);
+//        TextView tv_packagename = (TextView) layout.findViewById(R.id.item_packagename);
+//        tv_packagename.setText(packageName);
+//        ImageView img = (ImageView) layout.findViewById(R.id.item_image);
+//        img.setImageDrawable(info.icon);
+//        ///
+//        layout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent i = info.intent;
+//                try {
+//                    //Analytics
+//                    Util.logAppLaunch(MainActivity.this, info);
+//                    startActivity(i);
+//                } catch (Exception e) {
+//                }
+//            }
+//        });
+//        //
+//        if (cachedFavorites.contains(packageName)) {
+//            layout.findViewById(R.id.item_star).setVisibility(View.VISIBLE);
+//        }
+//        return layout;
+//    }
+
+    public View fillTable(final IGridItem info) {
         ViewGroup layout;
         LayoutInflater inflater = getLayoutInflater();
         layout = (ViewGroup) inflater.inflate(R.layout.grid_item, table, false);
-        //final AppInfo info = (AppInfo) getItem(id);
         ////////
-        String packageName = info.intent.getComponent().getPackageName();
-        info.packagename = packageName;
         ////////
         ////////
         TextView tv = (TextView) layout.findViewById(R.id.item_text);
-        tv.setText(info.title);
+        tv.setText(info.getTitle());
         TextView tv_packagename = (TextView) layout.findViewById(R.id.item_packagename);
-        tv_packagename.setText(packageName);
+        if (!info.isFolder()) {
+            tv_packagename.setText(((DatabaseAppInfo) info).packageName);
+        } else {
+            tv_packagename.setText("folder");
+        }
         ImageView img = (ImageView) layout.findViewById(R.id.item_image);
-        img.setImageDrawable(info.icon);
+        img.setImageDrawable(info.getImage());
         ///
         layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = info.intent;
+                Intent i = ((DatabaseAppInfo) info).intent;
                 try {
                     //Analytics
-                    Util.logAppLaunch(MainActivity.this, info);
+                    Util.logAppLaunch(MainActivity.this, (DatabaseAppInfo) info);
                     startActivity(i);
                 } catch (Exception e) {
                 }
             }
         });
         //
-        if (cachedFavorites.contains(packageName)) {
+        if (info.isFavorite()) {
             layout.findViewById(R.id.item_star).setVisibility(View.VISIBLE);
         }
         return layout;
@@ -689,17 +798,20 @@ public class MainActivity extends Activity {
         DatabaseOpenHelper helper = DatabaseOpenHelper.CreateInstance(this);
         Cursor cursor = helper.WriteableDatabase.rawQuery("SELECT id FROM appinfo WHERE packageName = '"
                 + resolveInfo.activityInfo.applicationInfo.packageName + "'", null);
-        if (cursor.getCount() == 0){
+        if (cursor.getCount() == 0) {
             appInfo = new DatabaseAppInfo();
             //Fill info
             appInfo.packageName = resolveInfo.activityInfo.applicationInfo.packageName;
-            checkIsOUYAAppByIntent(appInfo);
+            appInfo.title = resolveInfo.loadLabel(getPackageManager()).toString();
+            appInfo.setFavorite(cachedFavorites.contains(appInfo.packageName));
         } else {
             cursor.moveToFirst();
             appInfo = new DatabaseAppInfo(cursor.getInt(0));
+            appInfo.OnLoad();
         }
         cursor.close();
         //(Re)set the stuff that is not in Database
+        checkIsOUYAAppByIntent(appInfo);
         //Intent
         appInfo.setActivity(new ComponentName(
                 appInfo.packageName,
@@ -707,7 +819,7 @@ public class MainActivity extends Activity {
                 Intent.FLAG_ACTIVITY_NEW_TASK
                         | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
         //Image
-        if (appInfo.isOUYA) {
+        if (appInfo.isOUYA()) {
             File thumbFile = new File("/sdcard/FrankkieOuyaLauncher/thumbnails/" + appInfo.packageName + ".png");
             if (thumbFile.exists()) {
                 appInfo.icon = new BitmapDrawable(BitmapFactory.decodeFile(thumbFile.getPath()));
@@ -719,7 +831,25 @@ public class MainActivity extends Activity {
             getIconImageAndroidApps(appInfo);
         }
 
+        if (!appInfo.InDatabase()){
+            appInfo.OnInsert();
+        } else {
+            appInfo.OnUpdate();
+        }
+
         return appInfo;
+    }
+
+    public DatabaseAppInfo getDatabaseAppInfo(String packageName) {
+        for (IGridItem item : gridItems) {
+            if (item.isFolder()) {
+                continue;
+            }
+            if (((DatabaseAppInfo) item).packageName.equals(packageName)) {
+                return (DatabaseAppInfo) item;
+            }
+        }
+        return null;
     }
 
 }

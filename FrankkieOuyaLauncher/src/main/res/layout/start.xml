@@ -158,6 +158,12 @@
                         android:layout_height="wrap_content"/>
 
                 <Button
+                        android:text="Favorites"
+                        android:id="@+id/start_favorites"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                <Button
                         android:text="Android Apps"
                         android:id="@+id/start_android"
                         android:layout_width="match_parent"

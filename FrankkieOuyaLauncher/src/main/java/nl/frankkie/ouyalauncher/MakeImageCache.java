@@ -35,6 +35,13 @@ public class MakeImageCache extends AsyncTask<Void, Void, Void> {
         //Make folder
         File folder = new File("/sdcard/FrankkieOuyaLauncher/thumbnails/");
         folder.mkdirs();
+        try {
+            //add .nomedia
+            File noMedia = new File("/sdcard/FrankkieOuyaLauncher/thumbnails/.nomedia");
+            noMedia.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         //
         PackageManager packageManager = context.getPackageManager();
         //Query Packagmanager to get list of Games

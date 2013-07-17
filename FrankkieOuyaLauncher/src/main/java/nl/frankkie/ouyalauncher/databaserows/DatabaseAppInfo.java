@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 
+import nl.frankkie.ouyalauncher.IGridItem;
 import nl.wotuu.database.DatabaseOpenHelper;
 import nl.wotuu.database.DatabaseRow;
 import nl.wotuu.database.annotations.DatabaseExclude;
@@ -13,17 +14,17 @@ import proguard.annotation.KeepPublicClassMemberNames;
  * Created by FrankkieNL on 16-7-13.
  */
 @KeepPublicClassMemberNames
-public class DatabaseAppInfo extends DatabaseRow {
+public class DatabaseAppInfo extends DatabaseRow implements IGridItem{
 
-    public String title;
-    public String packageName;
+    public String title = "";
+    public String packageName = "";
     public String componentName;
-    public boolean isFavorite;
-    public String folder;
-    public long lastOpened;
-    public int timesOpened;
-    public boolean isOUYA;
-    public boolean isOUYAGame;
+    public int isFavorite = 0;
+    public String folder = "";
+    public String lastOpened = ""; //DatabaseRow does not support long, so String it is.
+    public int timesOpened = 0;
+    public int isOUYA = 0; //DatabaseRow does not support booleans?! int 0 & 1 it is..
+    public int isOUYAGame = 0;
 
     @DatabaseExclude
     public Drawable icon;
@@ -37,6 +38,30 @@ public class DatabaseAppInfo extends DatabaseRow {
 
     public DatabaseAppInfo(int id) {
         super(DatabaseOpenHelper.GetInstance().GetTableName(DatabaseAppInfo.class), id);
+    }
+
+    public void setFavorite(boolean favo){
+        if (favo){
+            isFavorite = 1;
+        } else {
+            isFavorite = 0;
+        }
+    }
+
+    public void setOUYA(boolean ouya){
+        if (ouya){
+            isOUYA = 1;
+        } else {
+            isOUYA = 0;
+        }
+    }
+
+    public void setOUYAGame(boolean ouyaGame){
+        if (ouyaGame){
+            isOUYAGame = 1;
+        } else {
+            isOUYAGame = 0;
+        }
     }
 
     /**
@@ -65,5 +90,45 @@ public class DatabaseAppInfo extends DatabaseRow {
         return title.equals(that.title) &&
                 intent.getComponent().getClassName().equals(
                         that.intent.getComponent().getClassName());
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public Drawable getImage() {
+        return icon;
+    }
+
+    @Override
+    public boolean isOUYA() {
+        return (isOUYA == 1);
+    }
+
+    @Override
+    public boolean isOUYAGame() {
+        return (isOUYAGame == 1);
+    }
+
+    @Override
+    public boolean isFavorite() {
+        return (isFavorite == 1);
+    }
+
+    @Override
+    public boolean isFolder() {
+        return false;
+    }
+
+    @Override
+    public boolean isInFolder() {
+        return false; //(folder != null && folder.length() > 1);
+    }
+
+    @Override
+    public String folderName() {
+        return folder;
     }
 }
