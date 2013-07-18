@@ -22,8 +22,11 @@ import android.view.*;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
 import com.flurry.android.FlurryAgent;
+
 import eu.chainfire.libsuperuser.Shell;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -31,6 +34,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import tv.ouya.console.api.OuyaController;
 
 import java.io.*;
@@ -63,19 +67,21 @@ public class StartActivity extends Activity {
 //        setContentView(R.layout.main);
         setContentView(R.layout.start);
         Util.setBackground(this);
+        Util.setLogo(this);
         Button btnAll = (Button) findViewById(R.id.start_all);
         Button btnGames = (Button) findViewById(R.id.start_games);
         Button btnApps = (Button) findViewById(R.id.start_apps);
         Button btnAndroid = (Button) findViewById(R.id.start_android);
         Button btnFavorites = (Button) findViewById(R.id.start_favorites);
         Button btnDiscover = (Button) findViewById(R.id.start_discover);
+        Button btnSettings = (Button) findViewById(R.id.start_settings);
         btnAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent();
                 i.setClass(StartActivity.this, MainActivity.class);
                 i.putExtra("type", MainActivity.APP_ALL);
-                Util.logGoToApplist(StartActivity.this,MainActivity.APP_ALL);
+                Util.logGoToApplist(StartActivity.this, MainActivity.APP_ALL);
                 startActivity(i);
             }
         });
@@ -85,7 +91,7 @@ public class StartActivity extends Activity {
                 Intent i = new Intent();
                 i.setClass(StartActivity.this, MainActivity.class);
                 i.putExtra("type", MainActivity.APP_OUYA_GAMES_ONLY);
-                Util.logGoToApplist(StartActivity.this,MainActivity.APP_OUYA_GAMES_ONLY);
+                Util.logGoToApplist(StartActivity.this, MainActivity.APP_OUYA_GAMES_ONLY);
                 startActivity(i);
             }
         });
@@ -95,7 +101,7 @@ public class StartActivity extends Activity {
                 Intent i = new Intent();
                 i.setClass(StartActivity.this, MainActivity.class);
                 i.putExtra("type", MainActivity.APP_OUYA_APPS_ONLY);
-                Util.logGoToApplist(StartActivity.this,MainActivity.APP_OUYA_APPS_ONLY);
+                Util.logGoToApplist(StartActivity.this, MainActivity.APP_OUYA_APPS_ONLY);
                 startActivity(i);
             }
         });
@@ -105,7 +111,7 @@ public class StartActivity extends Activity {
                 Intent i = new Intent();
                 i.setClass(StartActivity.this, MainActivity.class);
                 i.putExtra("type", MainActivity.APP_ANDROID_APPS_ONLY);
-                Util.logGoToApplist(StartActivity.this,MainActivity.APP_ANDROID_APPS_ONLY);
+                Util.logGoToApplist(StartActivity.this, MainActivity.APP_ANDROID_APPS_ONLY);
                 startActivity(i);
             }
         });
@@ -115,7 +121,7 @@ public class StartActivity extends Activity {
                 Intent i = new Intent();
                 i.setClass(StartActivity.this, MainActivity.class);
                 i.putExtra("type", MainActivity.APP_FAVORITES_ONLY);
-                Util.logGoToApplist(StartActivity.this,MainActivity.APP_FAVORITES_ONLY);
+                Util.logGoToApplist(StartActivity.this, MainActivity.APP_FAVORITES_ONLY);
                 startActivity(i);
             }
         });
@@ -125,8 +131,7 @@ public class StartActivity extends Activity {
                 startDiscover();
             }
         });
-        ///FIX for non-OUYA Devices :P
-        ((LinearLayout) findViewById(R.id.start_goto_settings)).setOnClickListener(new View.OnClickListener() {
+        btnSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 goToSettings();
@@ -179,12 +184,7 @@ public class StartActivity extends Activity {
             return true;
         }
 
-        if (event.getKeyCode() == OuyaController.BUTTON_A) {
-            goToSettings();
-            return true;
-        }
-
-        if (event.getKeyCode() == KeyEvent.KEYCODE_MENU || event.getKeyCode() == OuyaController.BUTTON_MENU){
+        if (event.getKeyCode() == KeyEvent.KEYCODE_MENU || event.getKeyCode() == OuyaController.BUTTON_MENU) {
             showMenuDialog();
             return true;
         }
@@ -194,14 +194,14 @@ public class StartActivity extends Activity {
         return handled || super.onKeyDown(keyCode, event);
     }
 
-    private void showMenuDialog(){
+    private void showMenuDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Menu");
         String[] items = new String[]{"Launcher Settings", "Running Applications", "Advanced Settings", "Turn Off"};
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                switch (i){
+                switch (i) {
                     case 0: {
                         goToSettings();
                         break;
@@ -224,13 +224,13 @@ public class StartActivity extends Activity {
         builder.create().show();
     }
 
-    private void goToAdvancedSettings(){
+    private void goToAdvancedSettings() {
         Intent i = new Intent(Intent.ACTION_MAIN);
         i.setAction(Settings.ACTION_SETTINGS);
         startActivity(i);
     }
 
-    private void goToRunningApps(){
+    private void goToRunningApps() {
         Intent i = new Intent();
         i.setClass(this, RunningAppsActivity.class);
         startActivity(i);
@@ -238,7 +238,7 @@ public class StartActivity extends Activity {
 
     private void goToSettings() {
         Intent i = new Intent();
-        i.setClass(this, BackgroundActivity.class);
+        i.setClass(this, SettingsActivity.class);
         Util.logGoToSettings(this);
         startActivity(i);
     }
@@ -307,7 +307,7 @@ public class StartActivity extends Activity {
                 i.setClassName("tv.ouya.console", "tv.ouya.console.launcher.OverlayMenuActivity");
                 try {
                     context.startActivity(i);
-                } catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -338,6 +338,7 @@ public class StartActivity extends Activity {
 
     Handler handler = new Handler();
     Context context;
+
     public void toast(final Context context, final String s) {
         handler.post(new Runnable() {
             @Override

@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright (c) 2013. FrankkieNL
-  -->
-
-<!-- Layout for the First screen //-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:orientation="vertical"
@@ -26,9 +21,9 @@
             <ImageView
                     android:src="@drawable/logo_default"
                     android:layout_margin="10dp"
-                    android:scaleType="matrix"
+                    android:scaleType="fitStart"
+                    android:adjustViewBounds="true"
                     android:id="@+id/logo"
-                    android:adjustViewBounds="false"
                     android:layout_marginRight="40dp"
                     android:layout_width="wrap_content"
                     android:layout_height="80dp"/>
@@ -61,8 +56,8 @@
                             android:gravity="bottom"
                             android:layout_marginBottom="5dp"
                             android:layout_marginRight="5dp"
-                            android:textColor="#FFF"
                             android:textSize="20sp"
+                            android:textColor="#FFF"
                             android:layout_height="match_parent"
                             android:layout_width="wrap_content"/>
                 </LinearLayout>
@@ -72,10 +67,10 @@
                         android:orientation="horizontal"
                         android:background="@drawable/textback_small"
                         android:layout_width="wrap_content"
-                        android:layout_marginRight="20dp">
+                        android:layout_marginRight="5dp">
 
                     <ImageView
-                            android:src="@drawable/btn_ouya_y"
+                            android:src="@drawable/btn_ouya_a"
                             android:scaleType="fitStart"
                             android:adjustViewBounds="true"
                             android:layout_gravity="bottom"
@@ -83,104 +78,38 @@
                             android:layout_height="35dp"/>
 
                     <TextView
-                            android:text="Turn Off"
+                            android:text="Back"
                             android:gravity="bottom"
+                            android:textColor="#FFF"
                             android:layout_marginBottom="5dp"
                             android:layout_marginRight="5dp"
-                            android:textColor="#FFF"
                             android:textSize="20sp"
                             android:layout_height="match_parent"
                             android:layout_width="wrap_content"/>
                 </LinearLayout>
-
             </LinearLayout>
         </RelativeLayout>
 
-        <!--
+
         <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                //-->
-
-        <LinearLayout
-                android:id="@+id/start_container"
-                android:orientation="horizontal"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
 
             <LinearLayout
                     android:orientation="vertical"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent">
-                <!-- spacer //-->
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="25dp"/>
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/table">
 
-                <Button
-                        android:text="OUYA Games"
-                        android:id="@+id/start_games"
+                <ProgressBar
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-
-                <Button
-                        android:text="OUYA Apps"
-                        android:id="@+id/start_apps"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-
-                <Button
-                        android:text="Favorites"
-                        android:id="@+id/start_favorites"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-
-                <Button
-                        android:text="Android Apps"
-                        android:id="@+id/start_android"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-
-                <Button
-                        android:text="All Apps"
-                        android:id="@+id/start_all"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-
-                <Button
-                        android:text="Discover"
-                        android:id="@+id/start_discover"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-
-                <Button
-                        android:text="Settings"
-                        android:id="@+id/start_settings"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-            </LinearLayout>
-
-            <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent">
-                <!-- spacer //-->
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="25dp"/>
-
-                <AnalogClock
-                        android:layout_width="match_parent"
+                        android:minHeight="250dp"
                         android:layout_height="match_parent"
                         />
             </LinearLayout>
-        </LinearLayout>
-        <!--
+
+
         </ScrollView>
-        //-->
+
     </LinearLayout>
 </LinearLayout>

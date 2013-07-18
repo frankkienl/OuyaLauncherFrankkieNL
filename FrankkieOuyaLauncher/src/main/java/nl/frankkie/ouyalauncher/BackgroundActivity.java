@@ -85,6 +85,7 @@ public class BackgroundActivity extends Activity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.background_chooser);
         Util.setBackground(this);
+        Util.setLogo(this);
         table = (ViewGroup) findViewById(R.id.table);
     }
 
@@ -153,6 +154,9 @@ public class BackgroundActivity extends Activity {
             SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(BackgroundActivity.this);
             String selectedBackgroundPath = defaultSharedPreferences.getString("backgroundFile", "/sdcard/FrankkieOuyaLauncher/backgrounds/default.png");
             for (String s : list) {
+                if (s.equals(".nomedia")){
+                    continue;
+                }
                 MyBackground background = new MyBackground();
                 File file = new File("/sdcard/FrankkieOuyaLauncher/backgrounds/" + s);
                 if (!file.exists() || !file.canRead()) {

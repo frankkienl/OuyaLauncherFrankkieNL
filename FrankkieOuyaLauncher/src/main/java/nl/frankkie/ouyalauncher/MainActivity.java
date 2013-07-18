@@ -291,8 +291,8 @@ public class MainActivity extends Activity {
 
             info.OnUpdate();
 
-            Util.addToFavorites(this, pak);
-            Util.logAddFavorite(this, pak);
+            //Util.addToFavorites(this, info);
+            Util.logAddFavorite(this, info);
             Toast.makeText(this, "Added to Favorites", Toast.LENGTH_SHORT).show();
         }
         //Refresh
@@ -306,8 +306,15 @@ public class MainActivity extends Activity {
             if (selectedItem == null) {
                 return;
             }
-            Util.removeFromFavorites(this, ((TextView) selectedItem.findViewById(R.id.item_packagename)).getText().toString());
-            Util.logRemoveFavorite(this, ((TextView) selectedItem.findViewById(R.id.item_packagename)).getText().toString());
+            String pak = ((TextView) selectedItem.findViewById(R.id.item_packagename)).getText().toString();
+            DatabaseAppInfo info = getDatabaseAppInfo(pak);
+            if (info != null) {
+                info.setFavorite(false);
+            }
+
+            info.OnUpdate();
+            //Util.removeFromFavorites(this, ((TextView) selectedItem.findViewById(R.id.item_packagename)).getText().toString());
+            Util.logRemoveFavorite(this, info);
             Toast.makeText(this, "Removed from Favorites", Toast.LENGTH_SHORT).show();
         }
         //Refresh
@@ -371,6 +378,7 @@ public class MainActivity extends Activity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.main);
         Util.setBackground(this);
+        Util.setLogo(this);
         table = (LinearLayout) findViewById(R.id.table);
     }
 

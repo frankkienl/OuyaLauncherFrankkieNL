@@ -3,7 +3,7 @@
   ~ Copyright (c) 2013. FrankkieNL
   -->
 
-<!-- Layout for the First screen //-->
+<!-- Layout for the Settings screen //-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:orientation="vertical"
@@ -26,9 +26,9 @@
             <ImageView
                     android:src="@drawable/logo_default"
                     android:layout_margin="10dp"
-                    android:scaleType="matrix"
+                    android:scaleType="fitStart"
                     android:id="@+id/logo"
-                    android:adjustViewBounds="false"
+                    android:adjustViewBounds="true"
                     android:layout_marginRight="40dp"
                     android:layout_width="wrap_content"
                     android:layout_height="80dp"/>
@@ -72,10 +72,11 @@
                         android:orientation="horizontal"
                         android:background="@drawable/textback_small"
                         android:layout_width="wrap_content"
-                        android:layout_marginRight="20dp">
+                        android:id="@+id/start_goto_settings"
+                        android:layout_marginRight="5dp">
 
                     <ImageView
-                            android:src="@drawable/btn_ouya_y"
+                            android:src="@drawable/btn_ouya_a"
                             android:scaleType="fitStart"
                             android:adjustViewBounds="true"
                             android:layout_gravity="bottom"
@@ -83,16 +84,15 @@
                             android:layout_height="35dp"/>
 
                     <TextView
-                            android:text="Turn Off"
+                            android:text="Back"
                             android:gravity="bottom"
                             android:layout_marginBottom="5dp"
-                            android:layout_marginRight="5dp"
                             android:textColor="#FFF"
                             android:textSize="20sp"
+                            android:layout_marginRight="5dp"
                             android:layout_height="match_parent"
                             android:layout_width="wrap_content"/>
                 </LinearLayout>
-
             </LinearLayout>
         </RelativeLayout>
 
@@ -103,7 +103,7 @@
                 //-->
 
         <LinearLayout
-                android:id="@+id/start_container"
+                android:id="@+id/settings_container"
                 android:orientation="horizontal"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
@@ -121,46 +121,17 @@
                         android:layout_height="25dp"/>
 
                 <Button
-                        android:text="OUYA Games"
-                        android:id="@+id/start_games"
+                        android:text="Background"
+                        android:id="@+id/settings_background"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
 
                 <Button
-                        android:text="OUYA Apps"
-                        android:id="@+id/start_apps"
+                        android:text="Logo"
+                        android:id="@+id/settings_logo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
 
-                <Button
-                        android:text="Favorites"
-                        android:id="@+id/start_favorites"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-
-                <Button
-                        android:text="Android Apps"
-                        android:id="@+id/start_android"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-
-                <Button
-                        android:text="All Apps"
-                        android:id="@+id/start_all"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-
-                <Button
-                        android:text="Discover"
-                        android:id="@+id/start_discover"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-
-                <Button
-                        android:text="Settings"
-                        android:id="@+id/start_settings"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
             </LinearLayout>
 
             <LinearLayout

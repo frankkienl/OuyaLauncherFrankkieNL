@@ -6,12 +6,11 @@ package nl.frankkie.ouyalauncher;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.flurry.android.FlurryAgent;
 
@@ -34,10 +33,30 @@ public class Util {
 
     public static String loadedBackgroundString;
     public static Drawable loadedBackground;
+    public static String loadedLogoString;
+    public static Drawable loadedLogo;
 
     public static void setBackground(Activity activity) {
         try {
             activity.findViewById(R.id.layout_background).setBackground(getBackground(activity));
+        } catch (Exception e) {
+            //If this happens, you have bigger problems than a missing background..
+            //You have a missing layout-root.
+            //The app should crash right about now :P
+            e.printStackTrace();
+        }
+    }
+
+    public static void setLogo(Activity activity) {
+        //if (true){return;}
+        try {
+            ImageView imageView = ((ImageView) activity.findViewById(R.id.logo));
+            imageView.setScaleType(ImageView.ScaleType.FIT_START);
+            imageView.setMaxHeight(80);
+            imageView.setAdjustViewBounds(true);
+            imageView.setImageDrawable(getLogo(activity));
+            imageView.invalidate();
+            //imageView.setBackground(getLogo(activity));
         } catch (Exception e) {
             //If this happens, you have bigger problems than a missing background..
             //You have a missing layout-root.
@@ -56,7 +75,7 @@ public class Util {
             folder.mkdirs();
             try {
                 //add .nomedia
-                File noMedia = new File("/sdcard/FrankkieOuyaLauncher/thumbnails/.nomedia");
+                File noMedia = new File("/sdcard/FrankkieOuyaLauncher/backgrounds/.nomedia");
                 noMedia.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -102,6 +121,65 @@ public class Util {
         return c.getResources().getDrawable(R.drawable.bg_color);
     }
 
+    public static Drawable getLogo(Context c) {
+        //Check if default Background exists
+        //Background file should always exist!
+        File defaultFile = new File("/sdcard/FrankkieOuyaLauncher/logos/logo_default.png");
+        if (!defaultFile.exists()) {
+            //make that file
+            File folder = new File("/sdcard/FrankkieOuyaLauncher/logos/");
+            folder.mkdirs();
+            try {
+                //add .nomedia
+                File noMedia = new File("/sdcard/FrankkieOuyaLauncher/logos/.nomedia");
+                noMedia.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                copyResourceToFile(c, R.raw.logo_default, new File("/sdcard/FrankkieOuyaLauncher/logos/logo_default.png"));
+                copyResourceToFile(c, R.raw.logo_baxy_white_shadow, new File("/sdcard/FrankkieOuyaLauncher/logos/logo_baxy_white_shadow.pngshadow.png"));
+                copyResourceToFile(c, R.raw.logo_baxy_white, new File("/sdcard/FrankkieOuyaLauncher/logos/logo_baxy_white.png"));
+                copyResourceToFile(c, R.raw.logo_ouya_black, new File("/sdcard/FrankkieOuyaLauncher/logos/logo_ouya_black.png"));
+                copyResourceToFile(c, R.raw.logo_ouya_red, new File("/sdcard/FrankkieOuyaLauncher/logos/logo_ouya_red.png"));
+                copyResourceToFile(c, R.raw.logo_ouya_white, new File("/sdcard/FrankkieOuyaLauncher/logos/logo_ouya_white.png"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            //Return Default !
+            return c.getResources().getDrawable(R.drawable.logo_default);
+        }
+
+        //Check preference
+        SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(c);
+        String fileString = defaultSharedPreferences.getString("logoFile", "/sdcard/FrankkieOuyaLauncher/logos/logo_default.png");
+        File file = new File(fileString);
+        if (!file.exists()) {
+            //The selected custom background does not exist..
+            //Return Default !
+            Log.e("FrankkieOuyaLauncher", "Selected Logo does not exist !! (return default)");
+            return c.getResources().getDrawable(R.drawable.logo_default);
+        }
+        //File does exist
+        //Check if already loaded
+        if (loadedLogoString != null && loadedLogo != null) {
+            if (loadedLogoString.equals(fileString)) {
+                return loadedLogo;
+            }
+        }
+        //Not loaded yet, load it, return it
+        try {
+            Drawable d = Drawable.createFromPath(fileString);
+            loadedLogo = d;
+            loadedLogoString = fileString;
+            return d;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //Default
+        return c.getResources().getDrawable(R.drawable.logo_default);
+    }
+
     public static void copyResourceToFile(Context c, int resourceId, File file) throws IOException {
         //http://stackoverflow.com/questions/8664468/copying-raw-file-into-sdcard
         InputStream in = c.getResources().openRawResource(resourceId);
@@ -120,11 +198,13 @@ public class Util {
 
     // Favorites
 
-    public static void addToFavorites(Context context, String packagename) {
+    @Deprecated
+    public static void addToFavorites(Context context, DatabaseAppInfo info) {
+        String packagename = info.packageName;
         List<String> list = getFavorites(context);
         list.add(packagename);
         JSONArray arr = new JSONArray();
-        for (String s : list){
+        for (String s : list) {
             arr.put(s);
         }
         JSONObject obj = new JSONObject();
@@ -134,14 +214,14 @@ public class Util {
             e.printStackTrace();
         }
         String json = obj.toString();
-        setFavoritesJSON(context,json);
+        setFavoritesJSON(context, json);
     }
 
     public static void removeFromFavorites(Context context, String packagename) {
         List<String> list = getFavorites(context);
         list.remove(packagename);
         JSONArray arr = new JSONArray();
-        for (String s : list){
+        for (String s : list) {
             arr.put(s);
         }
         JSONObject obj = new JSONObject();
@@ -151,7 +231,7 @@ public class Util {
             e.printStackTrace();
         }
         String json = obj.toString();
-        setFavoritesJSON(context,json);
+        setFavoritesJSON(context, json);
     }
 
     public static List<String> getFavorites(Context context) {
@@ -160,7 +240,7 @@ public class Util {
             JSONObject obj = new JSONObject(json);
             JSONArray arr = obj.getJSONArray("favorites");
             ArrayList<String> list = new ArrayList<String>();
-            for (int i = 0; i < arr.length(); i++){
+            for (int i = 0; i < arr.length(); i++) {
                 list.add(arr.getString(i));
             }
             return list;
@@ -182,7 +262,7 @@ public class Util {
         prefs.edit().putString("favorites", json).commit();
     }
 
-    public static void killFavorites(Context context){
+    public static void killFavorites(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         prefs.edit().putString("favorites", "{\"favorites\":[]}").commit();
     }
@@ -248,15 +328,17 @@ public class Util {
         FlurryAgent.logEvent("setBackground", params);
     }
 
-    public static void logAddFavorite(Context context, String packagename){
+    public static void logAddFavorite(Context context, DatabaseAppInfo info) {
         HashMap<String, String> params = new HashMap<String, String>();
-        params.put("packagename", packagename);
+        params.put("packagename", info.packageName);
+        params.put("title", info.getTitle());
         FlurryAgent.logEvent("AddFavorite", params);
     }
 
-    public static void logRemoveFavorite(Context context, String packagename){
+    public static void logRemoveFavorite(Context context, DatabaseAppInfo info) {
         HashMap<String, String> params = new HashMap<String, String>();
-        params.put("packagename", packagename);
+        params.put("packagename", info.packageName);
+        params.put("title", info.getTitle());
         FlurryAgent.logEvent("AddRemove", params);
     }
 
