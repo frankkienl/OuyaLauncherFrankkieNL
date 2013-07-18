@@ -31,7 +31,7 @@ You can now filter on OUYA apps and Non-OUYA apps. (Press Y)
 
 ![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher4.png "Screenshot")
 
-It is now possible to change the background.
+It is possible to change the background.
 
 ![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher10.png "Screenshot")
 
