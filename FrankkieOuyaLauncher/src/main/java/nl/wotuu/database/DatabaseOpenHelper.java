@@ -24,7 +24,7 @@ import nl.wotuu.database.exceptions.DatabaseUpgradeException;
  */
 public class DatabaseOpenHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     private static DatabaseOpenHelper instance;
 
@@ -65,7 +65,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 
 
     DatabaseOpenHelper(Context context) {
-        super(context, "galaxy_empire_trainer", null, DATABASE_VERSION);
+        super(context, "frankkie_ouya_launcher", null, DATABASE_VERSION);
 
         this.TableNames = new HashMap<String, TableNameMap>();
         this.TableNames.put("appinfo", new TableNameMap("appinfo", DatabaseAppInfo.class));
@@ -124,7 +124,6 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i2) {
-        //
     }
 
     /**
