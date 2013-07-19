@@ -64,6 +64,11 @@ public class DatabaseAppInfo extends DatabaseRow implements IGridItem{
         }
     }
 
+    @Override
+    public void setFolderName(String folder){
+        this.folder = folder;
+    }
+
     /**
      * Creates the application intent based on a component name and various launch flags.
      *
@@ -124,11 +129,40 @@ public class DatabaseAppInfo extends DatabaseRow implements IGridItem{
 
     @Override
     public boolean isInFolder() {
-        return false; //(folder != null && folder.length() > 1);
+        return (folder != null && folder.length() > 1);
     }
 
     @Override
-    public String folderName() {
+    public String getFolderName() {
         return folder;
+    }
+
+    @Override
+    public int getGridWidth() {
+        return 1;
+    }
+
+    @Override
+    public int getGridHeight() {
+        return 1;
+    }
+
+    @Override
+    public int getGridPosX() {
+        return 0;
+    }
+
+    @Override
+    public int getGridPosY() {
+        return 0;
+    }
+
+    @Override
+    public int compareTo(IGridItem iGridItem){
+        if (iGridItem.isFolder()){
+            return 1;
+        } else {
+            return getTitle().compareTo(iGridItem.getTitle()); //compare by name
+        }
     }
 }

@@ -12,6 +12,10 @@ import nl.wotuu.database.annotations.DatabaseExclude;
  */
 public class DatabaseFolder extends DatabaseRow implements IGridItem {
 
+    public String title;
+    @DatabaseExclude
+    public Drawable icon;
+
     public DatabaseFolder() {
         super(DatabaseOpenHelper.GetInstance().GetTableName(DatabaseFolder.class));
     }
@@ -20,17 +24,17 @@ public class DatabaseFolder extends DatabaseRow implements IGridItem {
         super(DatabaseOpenHelper.GetInstance().GetTableName(DatabaseFolder.class), id);
     }
 
-    public String title;
-    @DatabaseExclude
-    public Drawable icon;
+    public void setIcon(Drawable drawable){
+        this.icon = drawable;
+    }
 
     @Override
-    public String getTitle(){
+    public String getTitle() {
         return title;
     }
 
     @Override
-    public Drawable getImage(){
+    public Drawable getImage() {
         return icon;
     }
 
@@ -46,7 +50,7 @@ public class DatabaseFolder extends DatabaseRow implements IGridItem {
 
     @Override
     public boolean isFavorite() {
-        return true;
+        return false; //folder kan geen favorite zijn
     }
 
     @Override
@@ -60,7 +64,41 @@ public class DatabaseFolder extends DatabaseRow implements IGridItem {
     }
 
     @Override
-    public String folderName() {
+    public String getFolderName() {
         return title;
+    }
+
+    @Override
+    public void setFolderName(String name){
+        this.title = name;
+    }
+
+    @Override
+    public int getGridWidth() {
+        return 1;
+    }
+
+    @Override
+    public int getGridHeight() {
+        return 1;
+    }
+
+    @Override
+    public int getGridPosX() {
+        return 0;
+    }
+
+    @Override
+    public int getGridPosY() {
+        return 0;
+    }
+
+    @Override
+    public int compareTo(IGridItem iGridItem) {
+        if (iGridItem.isFolder()){
+            return getFolderName().compareTo(iGridItem.getFolderName()); //compare by name
+        } else {
+            return -1; //always before non foldes
+        }
     }
 }

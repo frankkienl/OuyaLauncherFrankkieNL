@@ -5,7 +5,7 @@ import android.graphics.drawable.Drawable;
 /**
  * Created by FrankkieNL on 17-7-13.
  */
-public interface IGridItem {
+public interface IGridItem extends Comparable<IGridItem> {
     public String getTitle();
     public Drawable getImage();
     public boolean isOUYA();
@@ -13,5 +13,10 @@ public interface IGridItem {
     public boolean isFavorite();
     public boolean isFolder();
     public boolean isInFolder();
-    public String folderName();
+    public String getFolderName();
+    public void setFolderName(String name);
+    public int getGridWidth();
+    public int getGridHeight();
+    public int getGridPosX();
+    public int getGridPosY();
 }

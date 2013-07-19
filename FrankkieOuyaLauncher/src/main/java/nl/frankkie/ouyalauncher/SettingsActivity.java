@@ -47,6 +47,7 @@ public class SettingsActivity extends Activity {
                 startActivity(i);
             }
         });
+        logoBtn.setEnabled(false);
     }
 
     @Override

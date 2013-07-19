@@ -29,8 +29,10 @@ import android.view.*;
 import android.widget.*;
 
 import com.flurry.android.FlurryAgent;
+import com.flurry.org.codehaus.jackson.map.JsonSerializableWithType;
 
 import nl.frankkie.ouyalauncher.databaserows.DatabaseAppInfo;
+import nl.frankkie.ouyalauncher.databaserows.DatabaseFolder;
 import nl.wotuu.database.DatabaseOpenHelper;
 import tv.ouya.console.api.OuyaController;
 
@@ -59,6 +61,7 @@ public class MainActivity extends Activity {
     public static final int APP_ANDROID_APPS_ONLY = 4;
     public static final int APP_FAVORITES_ONLY = 5;
     int appType = APP_ALL;
+    public String currentFolder = "";
     ////
     Handler handler = new Handler();
 
@@ -91,47 +94,33 @@ public class MainActivity extends Activity {
             }
         });
         builder.create().show();
-//        appType++;
-//        if (appType > 4) {
-//            appType = 0;
-//        }
-//        filter();
-//        fillTable();
     }
 
     public void filter() {
-        //cachedFavorites = Util.getFavorites(this);
-        //mFilteredApplications.clear();
         filteredGridItems.clear();
-//        for (AppInfo info : mApplications) {
-//            if (appType == APP_ALL) {
-//                mFilteredApplications.add(info);
-//                continue;
-//            }
-//            if (appType == APP_OUYA_ONLY) {
-//                if (info.isOUYA) {
-//                    mFilteredApplications.add(info);
-//                }
-//            } else if (appType == APP_ANDROID_APPS_ONLY) {
-//                if (!info.isOUYA) {
-//                    mFilteredApplications.add(info);
-//                }
-//            } else if (appType == APP_OUYA_GAMES_ONLY) {
-//                if (info.isOUYA && info.isOUYAGame) {
-//                    mFilteredApplications.add(info);
-//                }
-//            } else if (appType == APP_OUYA_APPS_ONLY) {
-//                if (info.isOUYA && !info.isOUYAGame) {
-//                    mFilteredApplications.add(info);
-//                }
-//            } else if (appType == APP_FAVORITES_ONLY) {
-//                if (cachedFavorites.contains(info.packagename)) {
-//                    mFilteredApplications.add(info);
-//                }
-//            }
-//        }
+
+        //Sort
+        Collections.sort(gridItems);
+
+        if (currentFolder != null && currentFolder.length() > 1) {
+            for (IGridItem info : gridItems) {
+                if (info instanceof ExitFolderGridItem) {
+                    filteredGridItems.add(info);
+                    continue;
+                }
+                if (!info.isInFolder()) {
+                    continue;
+                } else if (info.getFolderName().equals(currentFolder)) {
+                    filteredGridItems.add(info);
+                }
+            }
+            return;
+        }
 
         for (IGridItem info : gridItems) {
+            if (info instanceof ExitFolderGridItem) {
+                continue;
+            }
             if (appType == APP_ALL) {
                 filteredGridItems.add(info);
                 continue;
@@ -246,11 +235,13 @@ public class MainActivity extends Activity {
         return handled || super.onKeyDown(keyCode, event);
     }
 
-    public void pressedMenu() {
-        selectedItem = getCurrentFocus();
+    public void makeAppMenu(final DatabaseAppInfo info) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Menu");
-        String[] items = new String[]{"Filters", "App Info", ((Util.getFavorites(MainActivity.this).contains(((TextView) selectedItem.findViewById(R.id.item_packagename)).getText().toString())) ? "Remove from" : "Add to") + " Favorites"};
+        String[] items = new String[]{"Filters", "App Info",
+                ((info.isFavorite()) ? "Remove from" : "Add to") + " Favorites",
+                ((info.isInFolder()) ? "Remove from" : "Add to") + " Folder"
+        };
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -264,10 +255,18 @@ public class MainActivity extends Activity {
                         break;
                     }
                     case 2: {
-                        if (Util.getFavorites(MainActivity.this).contains(((TextView) selectedItem.findViewById(R.id.item_packagename)).getText().toString())) {
+                        if (info.isFavorite()) {
                             removeFromFavorites();
                         } else {
                             addToFavorites();
+                        }
+                        break;
+                    }
+                    case 3: {
+                        if (info.isInFolder()) {
+                            removeFromFolder(info);
+                        } else {
+                            addToFolder(info);
                         }
                         break;
                     }
@@ -275,6 +274,128 @@ public class MainActivity extends Activity {
             }
         });
         builder.create().show();
+    }
+
+    public void makeFolderMenu(final String folderName) {
+        if (currentFolder != null && currentFolder.length() > 1) {
+            return; //no menu on the Exit Folder, folder
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Menu");
+        String[] items = new String[]{
+                "Remove this Folder"
+        };
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (i == 0) {
+                    //remove folder
+                    removeFolder(folderName);
+                }
+            }
+        });
+        builder.create().show();
+    }
+
+    public void removeFolder(String folderName) {
+        currentFolder = "";
+        IGridItem toDelete = null;
+        for (IGridItem item : gridItems) {
+            //remove items
+            if (item.isInFolder() && item.getFolderName().equals(folderName)) {
+                item.setFolderName("");
+            }
+            if (item.isFolder() && item.getFolderName().equals(folderName)) {
+                toDelete = item;
+            }
+        }
+        gridItems.remove(toDelete); // fix ConcurrentModificationException
+        DatabaseFolder folder = getDatabaseFolder(folderName);
+        folder.OnDelete();
+        filter();
+        fillTable();
+    }
+
+    public void pressedMenu() {
+        selectedItem = getCurrentFocus();
+        String pak = ((TextView) selectedItem.findViewById(R.id.item_packagename)).getText().toString();
+        String title = ((TextView) selectedItem.findViewById(R.id.item_text)).getText().toString();
+        if (pak.equals("folder")) {
+            makeFolderMenu(title);
+        } else {
+            final DatabaseAppInfo info = getDatabaseAppInfo(pak);
+            makeAppMenu(info);
+        }
+    }
+
+    public void addToFolder(final DatabaseAppInfo info) {
+        //get foldername
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add to Folder");
+        DatabaseOpenHelper helper = DatabaseOpenHelper.CreateInstance(this);
+        Cursor cursor = helper.WriteableDatabase.rawQuery("SELECT id,title FROM folder", null);
+        //cursor.moveToFirst();
+        ArrayList<String> folderNames = new ArrayList<String>();
+        folderNames.add("New Folder ...");
+        while (cursor.moveToNext()) {
+            String title = cursor.getString(1);
+            folderNames.add(title);
+        }
+        cursor.close();
+        final String[] folders = folderNames.toArray(new String[]{});
+        builder.setItems(folders, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (i == 0) { //create new
+                    makeNewFolder(info);
+                } else {
+                    addToFolder(info, folders[i]);
+                }
+            }
+        });
+        builder.create().show();
+    }
+
+    public void makeNewFolder(final  DatabaseAppInfo info){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Enter Folder Name");
+        final EditText editText = new EditText(this);
+        editText.setHint("folder name here");
+        builder.setView(editText);
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                String folderName = editText.getText().toString();
+                addToFolder(info, folderName);
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //nothing just remove dialog
+            }
+        });
+        builder.create().show();
+    }
+
+    public void addToFolder(DatabaseAppInfo info, String folderName) {
+        info.setFolderName(folderName);
+        info.OnUpdate();
+        Toast.makeText(this, "Added to Folder", Toast.LENGTH_LONG).show();
+        //folder check
+        if (!folderExistsInGridItemsList(folderName)) {
+            gridItems.add(getDatabaseFolder(folderName));
+        }
+        filter();
+        fillTable();
+    }
+
+    public void removeFromFolder(DatabaseAppInfo info) {
+        info.setFolderName("");
+        info.OnUpdate();
+        Toast.makeText(this, "Removed from Folder", Toast.LENGTH_LONG).show();
+        filter();
+        fillTable();
     }
 
     public void addToFavorites() {
@@ -385,61 +506,52 @@ public class MainActivity extends Activity {
 
     private void loadApplications() {
         PackageManager manager = getPackageManager();
-        cachedFavorites = Util.getFavorites(this); // only once to convert to new format
         Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
         final List<ResolveInfo> apps = manager.queryIntentActivities(mainIntent, 0);
-        Collections.sort(apps, new ResolveInfo.DisplayNameComparator(manager));
+        //Collections.sort(apps, new ResolveInfo.DisplayNameComparator(manager));
 
         if (apps != null) {
             final int count = apps.size();
 
-//            if (mApplications == null) {
-//                mApplications = new ArrayList<AppInfo>(count);
-//            }
             if (gridItems == null) {
                 gridItems = new ArrayList<IGridItem>(count);
             }
-//            mApplications.clear();
             gridItems.clear();
             Runtime.getRuntime().gc();
 
+            //inject folder exit
+            ExitFolderGridItem exitFolderGridItem = new ExitFolderGridItem();
+            exitFolderGridItem.icon = getResources().getDrawable(R.drawable.folder);
+            gridItems.add(exitFolderGridItem);
+
             for (int i = 0; i < count; i++) {
                 ResolveInfo rinfo = apps.get(i);
-                //AppInfo info = new AppInfo();
                 DatabaseAppInfo databaseAppInfo = getDatabaseAppInfo(rinfo);
-//                info.title = rinfo.loadLabel(manager);
-//                info.setActivity(new ComponentName(
-//                        rinfo.activityInfo.applicationInfo.packageName,
-//                        rinfo.activityInfo.name),
-//                        Intent.FLAG_ACTIVITY_NEW_TASK
-//                                | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-//
-//                info.packagename = info.intent.getComponent().getPackageName();
-//                info.isOUYA = checkIsOUYAAppByIntent(info);
-//                ////
-//                if (!info.filtered) {
-//                    if (info.isOUYA) {
-//                        File thumbFile = new File("/sdcard/FrankkieOuyaLauncher/thumbnails/" + info.packagename + ".png");
-//                        if (thumbFile.exists()) {
-//                            info.icon = new BitmapDrawable(BitmapFactory.decodeFile(thumbFile.getPath()));
-//                        } else {
-//                            getIconImageOUYA(info);
-//                        }
-//                    } else {
-//                        info.icon = rinfo.loadIcon(manager);
-//                        getIconImageAndroidApps(info);
-//                    }
-//                    info.filtered = true;
-//                }
-//                ////
-//                mApplications.add(info);
                 gridItems.add(databaseAppInfo);
+                //check for folders
+                if (databaseAppInfo.isInFolder()) {
+                    if (!folderExistsInGridItemsList(databaseAppInfo.getFolderName())) {
+                        gridItems.add(getDatabaseFolder(databaseAppInfo.getFolderName()));
+                    }
+                }
             }
-            //Kill old Favorites method
-            Util.killFavorites(this);
         }
+    }
+
+    public boolean folderExistsInGridItemsList(String folderName) {
+        //Check if folder already exists
+        for (IGridItem item : gridItems) {
+            if (item.isFolder() && (item instanceof DatabaseFolder)) { //if (item instanceof DatabaseFolder){
+                DatabaseFolder folder = (DatabaseFolder) item;
+                if (folder.getFolderName().equals(folderName)) {
+                    //OK !
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void checkIsOUYAAppByIntent(DatabaseAppInfo info) {
@@ -518,32 +630,11 @@ public class MainActivity extends Activity {
         return false;
     }
 
-    List<String> cachedFavorites = null;
-
     public void fillTable() {
         //cachedFavorites = Util.getFavorites(this);
         table.removeAllViews(); //clear
         ViewGroup row = null;
         LayoutInflater inflater = getLayoutInflater();
-//        for (int i = 0; i < mFilteredApplications.size(); i++) {
-//            if (i % numberOfItemsPerRow == 0) {
-//                if (row != null) {
-//                    table.addView(row);
-//                }
-//                row = (ViewGroup) inflater.inflate(R.layout.table_row, table, false);
-//            }
-//            View v = fillTable(mFilteredApplications.get(i));
-//            row.addView(v);
-//            if (i == mFilteredApplications.size() - 1) {
-//                //last row
-//                //Fill up !
-//                for (int j = i % numberOfItemsPerRow; j < numberOfItemsPerRow - 1; j++) {
-//                    View w = inflater.inflate(R.layout.grid_item_empty, table, false);
-//                    row.addView(w);
-//                }
-//                table.addView(row);
-//            }
-//        }
         for (int i = 0; i < filteredGridItems.size(); i++) {
             if (i % numberOfItemsPerRow == 0) {
                 if (row != null) {
@@ -567,73 +658,55 @@ public class MainActivity extends Activity {
 
     private Rect mOldBounds = new Rect();
 
-//    public View fillTable(final AppInfo info) {
-//        ViewGroup layout;
-//        LayoutInflater inflater = getLayoutInflater();
-//        layout = (ViewGroup) inflater.inflate(R.layout.grid_item, table, false);
-//        //final AppInfo info = (AppInfo) getItem(id);
-//        ////////
-//        String packageName = info.intent.getComponent().getPackageName();
-//        info.packagename = packageName;
-//        ////////
-//        ////////
-//        TextView tv = (TextView) layout.findViewById(R.id.item_text);
-//        tv.setText(info.title);
-//        TextView tv_packagename = (TextView) layout.findViewById(R.id.item_packagename);
-//        tv_packagename.setText(packageName);
-//        ImageView img = (ImageView) layout.findViewById(R.id.item_image);
-//        img.setImageDrawable(info.icon);
-//        ///
-//        layout.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent i = info.intent;
-//                try {
-//                    //Analytics
-//                    Util.logAppLaunch(MainActivity.this, info);
-//                    startActivity(i);
-//                } catch (Exception e) {
-//                }
-//            }
-//        });
-//        //
-//        if (cachedFavorites.contains(packageName)) {
-//            layout.findViewById(R.id.item_star).setVisibility(View.VISIBLE);
-//        }
-//        return layout;
-//    }
-
     public View fillTable(final IGridItem info) {
         ViewGroup layout;
         LayoutInflater inflater = getLayoutInflater();
         layout = (ViewGroup) inflater.inflate(R.layout.grid_item, table, false);
-        ////////
-        ////////
         ////////
         TextView tv = (TextView) layout.findViewById(R.id.item_text);
         tv.setText(info.getTitle());
         TextView tv_packagename = (TextView) layout.findViewById(R.id.item_packagename);
         if (!info.isFolder()) {
             tv_packagename.setText(((DatabaseAppInfo) info).packageName);
+            layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = ((DatabaseAppInfo) info).intent;
+                    try {
+                        //Analytics
+                        Util.logAppLaunch(MainActivity.this, (DatabaseAppInfo) info);
+                        startActivity(i);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         } else {
-            tv_packagename.setText("folder");
+            if (info instanceof ExitFolderGridItem) {
+                tv_packagename.setText("folder");
+                layout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        currentFolder = "";
+                        filter();
+                        fillTable();
+                    }
+                });
+            } else {
+                tv_packagename.setText("folder");
+                layout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        currentFolder = info.getFolderName();
+                        filter();
+                        fillTable();
+                    }
+                });
+            }
         }
         ImageView img = (ImageView) layout.findViewById(R.id.item_image);
         img.setImageDrawable(info.getImage());
         ///
-        layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = ((DatabaseAppInfo) info).intent;
-                try {
-                    //Analytics
-                    Util.logAppLaunch(MainActivity.this, (DatabaseAppInfo) info);
-                    startActivity(i);
-                } catch (Exception e) {
-                }
-            }
-        });
-        //
         if (info.isFavorite()) {
             layout.findViewById(R.id.item_star).setVisibility(View.VISIBLE);
         }
@@ -811,7 +884,6 @@ public class MainActivity extends Activity {
             //Fill info
             appInfo.packageName = resolveInfo.activityInfo.applicationInfo.packageName;
             appInfo.title = resolveInfo.loadLabel(getPackageManager()).toString();
-            appInfo.setFavorite(cachedFavorites.contains(appInfo.packageName));
         } else {
             cursor.moveToFirst();
             appInfo = new DatabaseAppInfo(cursor.getInt(0));
@@ -839,7 +911,7 @@ public class MainActivity extends Activity {
             getIconImageAndroidApps(appInfo);
         }
 
-        if (!appInfo.InDatabase()){
+        if (!appInfo.InDatabase()) {
             appInfo.OnInsert();
         } else {
             appInfo.OnUpdate();
@@ -859,5 +931,27 @@ public class MainActivity extends Activity {
         }
         return null;
     }
+
+    public DatabaseFolder getDatabaseFolder(String folderName) {
+        DatabaseOpenHelper helper = DatabaseOpenHelper.CreateInstance(this);
+        Cursor cursor = helper.WriteableDatabase.rawQuery("SELECT id FROM folder WHERE title = '"
+                + folderName + "'", null);
+        DatabaseFolder folder = null;
+        if (cursor.getCount() == 0) {
+            //Make folder
+            folder = new DatabaseFolder();
+            folder.setFolderName(folderName);
+            folder.OnInsert(); //add to DB
+            //gridItems.add(folder);
+        } else {
+            cursor.moveToFirst();
+            folder = new DatabaseFolder(cursor.getInt(0));
+            folder.OnLoad();
+        }
+        folder.setIcon(getResources().getDrawable(R.drawable.folder));
+        cursor.close();
+        return folder;
+    }
+
 
 }

@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import nl.frankkie.ouyalauncher.databaserows.DatabaseFolder;
 import nl.wotuu.database.annotations.DatabaseExclude;
 import nl.wotuu.database.annotations.DatabasePrimaryKey;
 import nl.frankkie.ouyalauncher.databaserows.DatabaseAppInfo;
@@ -68,6 +69,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 
         this.TableNames = new HashMap<String, TableNameMap>();
         this.TableNames.put("appinfo", new TableNameMap("appinfo", DatabaseAppInfo.class));
+        this.TableNames.put("folder", new TableNameMap("folder", DatabaseFolder.class));
 
         this.WriteableDatabase = this.getWritableDatabase();
         this.ReadableDatabase = this.getReadableDatabase();
