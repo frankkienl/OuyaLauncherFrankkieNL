@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.flurry.android.FlurryAgent;
@@ -36,6 +37,25 @@ public class Util {
     public static String loadedLogoString;
     public static Drawable loadedLogo;
 
+    public static void setClock(Activity activity) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        try {
+            String clockType = prefs.getString("clockType", "analog");
+            if (clockType.equals("analog")) {
+                activity.findViewById(R.id.analog_clock).setVisibility(View.VISIBLE);
+                activity.findViewById(R.id.digital_clock).setVisibility(View.GONE);
+            } else if (clockType.equals("digital")){
+                activity.findViewById(R.id.analog_clock).setVisibility(View.GONE);
+                activity.findViewById(R.id.digital_clock).setVisibility(View.VISIBLE);
+            }
+        } catch (Exception e) {
+            //If this happens, you have bigger problems than a missing background..
+            //You have a missing layout-root.
+            //The app should crash right about now :P
+            e.printStackTrace();
+        }
+    }
+
     public static void setBackground(Activity activity) {
         try {
             activity.findViewById(R.id.layout_background).setBackground(getBackground(activity));
@@ -48,7 +68,9 @@ public class Util {
     }
 
     public static void setLogo(Activity activity) {
-        if (true){return;}
+        if (true) {
+            return;
+        }
         try {
             ImageView imageView = ((ImageView) activity.findViewById(R.id.logo));
             imageView.setScaleType(ImageView.ScaleType.FIT_START);
@@ -195,79 +217,6 @@ public class Util {
             out.close();
         }
     }
-
-    // Favorites
-
-//    @Deprecated
-//    public static void addToFavorites(Context context, DatabaseAppInfo info) {
-//        String packagename = info.packageName;
-//        List<String> list = getFavorites(context);
-//        list.add(packagename);
-//        JSONArray arr = new JSONArray();
-//        for (String s : list) {
-//            arr.put(s);
-//        }
-//        JSONObject obj = new JSONObject();
-//        try {
-//            obj.put("favorites", arr);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        String json = obj.toString();
-//        setFavoritesJSON(context, json);
-//    }
-//
-//    public static void removeFromFavorites(Context context, String packagename) {
-//        List<String> list = getFavorites(context);
-//        list.remove(packagename);
-//        JSONArray arr = new JSONArray();
-//        for (String s : list) {
-//            arr.put(s);
-//        }
-//        JSONObject obj = new JSONObject();
-//        try {
-//            obj.put("favorites", arr);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        String json = obj.toString();
-//        setFavoritesJSON(context, json);
-//    }
-//
-//    @Deprecated
-//    public static List<String> getFavorites(Context context) {
-//        String json = getFavoritesJSON(context);
-//        try {
-//            JSONObject obj = new JSONObject(json);
-//            JSONArray arr = obj.getJSONArray("favorites");
-//            ArrayList<String> list = new ArrayList<String>();
-//            for (int i = 0; i < arr.length(); i++) {
-//                list.add(arr.getString(i));
-//            }
-//            return list;
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
-
-//    private static String getFavoritesJSON(Context context) {
-//        //Just use prefs, no need for a DB for such a small list
-//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-//        return prefs.getString("favorites", "{\"favorites\":[]}"); //empty array
-//    }
-
-//    private static void setFavoritesJSON(Context context, String json) {
-//        //Just use prefs, no need for a DB for such a small list
-//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-//        prefs.edit().putString("favorites", json).commit();
-//    }
-//
-//    public static void killFavorites(Context context) {
-//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-//        prefs.edit().putString("favorites", "{\"favorites\":[]}").commit();
-//    }
-
 
     //Analytics
 

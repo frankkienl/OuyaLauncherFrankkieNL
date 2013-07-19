@@ -126,9 +126,22 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
 
+                <!--
                 <Button
                         android:text="Logo"
                         android:id="@+id/settings_logo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                     //-->
+
+                <Button
+                        android:text="Analog Clock"
+                        android:id="@+id/settings_analog_clock"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                <Button
+                        android:text="Digital Clock"
+                        android:id="@+id/settings_digital_clock"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
 
@@ -145,9 +158,18 @@
                         android:layout_height="25dp"/>
 
                 <AnalogClock
+                        android:id="@+id/analog_clock"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         />
+                <DigitalClock
+                        android:id="@+id/digital_clock"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        style="@style/ShadowText"
+                        android:visibility="gone"
+                        android:textSize="42sp" />
             </LinearLayout>
         </LinearLayout>
         <!--

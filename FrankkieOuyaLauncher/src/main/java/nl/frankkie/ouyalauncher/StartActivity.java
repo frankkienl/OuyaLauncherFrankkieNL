@@ -68,6 +68,7 @@ public class StartActivity extends Activity {
         setContentView(R.layout.start);
         Util.setBackground(this);
         Util.setLogo(this);
+        Util.setClock(this);
         Button btnAll = (Button) findViewById(R.id.start_all);
         Button btnGames = (Button) findViewById(R.id.start_games);
         Button btnApps = (Button) findViewById(R.id.start_apps);
