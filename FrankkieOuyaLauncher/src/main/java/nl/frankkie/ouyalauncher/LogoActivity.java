@@ -44,7 +44,7 @@ public class LogoActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.logo_settings_screen);
-        Util.setBackground(this);
+        //Util.setBackground(this);
         Util.setLogo(this);
         table = (ViewGroup) findViewById(R.id.table);
     }

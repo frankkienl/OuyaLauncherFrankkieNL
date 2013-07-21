@@ -47,7 +47,7 @@ public class RunningAppsActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.running_apps);
-        Util.setBackground(this);
+        //Util.setBackground(this);
         Util.setLogo(this);
         table = (ViewGroup) findViewById(R.id.table);
     }

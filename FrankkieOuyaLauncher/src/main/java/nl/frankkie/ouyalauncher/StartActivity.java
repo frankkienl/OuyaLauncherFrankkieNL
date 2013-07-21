@@ -8,15 +8,18 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.view.*;
 import android.widget.Button;
@@ -60,13 +63,34 @@ public class StartActivity extends Activity {
         task.execute();
     }
 
+    private void fixBackgroundOnFirstUse(){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean isFirstRun = prefs.getBoolean("isFirstRun", true);
+        if (isFirstRun){
+            prefs.edit().putBoolean("isFirstRun", false).commit();
+            Util.getBackground(this); //place background files on SD
+            SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            String path = defaultSharedPreferences.getString("backgroundFile", "/sdcard/FrankkieOuyaLauncher/backgrounds/default.png");
+            try {
+                FileInputStream fis = new FileInputStream(new File(path));
+                setWallpaper(fis);
+                WallpaperManager.getInstance(this).suggestDesiredDimensions(1920,1080);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void initUI() {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 //        setContentView(R.layout.main);
         setContentView(R.layout.start);
-        Util.setBackground(this);
+        //Util.setBackground(this);
+        //Fix Background on First Use (update)
+        fixBackgroundOnFirstUse();
+        ///
         Util.setLogo(this);
         Util.setClock(this);
         Button btnAll = (Button) findViewById(R.id.start_all);

@@ -1,46 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="nl.frankkie.ouyalauncher"
-    android:versionCode="6"
-    android:versionName="1.0.1" >
+          package="nl.frankkie.ouyalauncher"
+          android:versionCode="7"
+          android:versionName="1.0.2">
 
     <uses-sdk
-        android:minSdkVersion="16"
-        android:targetSdkVersion="16" />
+            android:minSdkVersion="16"
+            android:targetSdkVersion="16"/>
 
     <!-- Backgrounds and Thumbnails //-->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
     <!-- Turn off and Discover //-->
-    <uses-permission android:name="android.permission.ACCESS_SUPERUSER" />
+    <uses-permission android:name="android.permission.ACCESS_SUPERUSER"/>
     <!-- Analytics //-->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <!-- Get list of Running Apps //-->
-    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.GET_TASKS"/>
     <!-- Kill running apps //-->
-    <uses-permission android:name="android.permission.RESTART_PACKAGES" />
+    <uses-permission android:name="android.permission.RESTART_PACKAGES"/>
+    <!-- Wallpapers //-->
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS"/>
+    <uses-permission android:name="com.android.launcher.permission.WRITE_SETTINGS"/>
+    <uses-permission android:name="android.permission.SET_WALLPAPER"/>
+    <uses-permission android:name="android.permission.SET_WALLPAPER_HINTS"/>
+    <!--
+    This will only be granted to system apps
+    <uses-permission android:name="android.permission.BIND_WALLPAPER" />
+    //-->
+    <!--
+    http://developer.android.com/guide/topics/appwidgets/host.html
+    <uses-permission android:name="android.permission.BIND_APPWIDGET" />
+    //-->
 
     <application
-        android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+            android:allowBackup="true"
+            android:icon="@drawable/ic_launcher"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme">
         <activity
-            android:name=".StartActivity"
-            android:label="@string/app_name" >
+                android:name=".StartActivity"
+                android:theme="@style/WallpapaerStyle"
+                android:label="@string/app_name">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.HOME" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.HOME"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
                 <category android:name="tv.ouya.intent.category.APP"/>
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"/>
-        <activity android:name=".BackgroundActivity"/>
-        <activity android:name=".RunningAppsActivity" />
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".LogoActivity" />
+        <activity
+                android:name=".MainActivity"
+                android:theme="@style/WallpapaerStyle"/>
+        <activity
+                android:name=".BackgroundActivity"
+                android:label="Static Background"
+                android:theme="@style/WallpapaerStyle">
+            <intent-filter>
+                <action android:name="android.intent.action.SET_WALLPAPER"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity
+                android:name=".RunningAppsActivity"
+                android:theme="@style/WallpapaerStyle"/>
+        <activity
+                android:name=".SettingsActivity"
+                android:theme="@style/WallpapaerStyle"/>
+        <activity
+                android:name=".LogoActivity"
+                android:theme="@style/WallpapaerStyle"/>
     </application>
 
 </manifest>

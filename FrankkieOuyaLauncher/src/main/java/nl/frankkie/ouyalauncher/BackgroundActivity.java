@@ -88,7 +88,7 @@ public class BackgroundActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.background_chooser);
-        Util.setBackground(this);
+        //Util.setBackground(this);
         Util.setLogo(this);
         table = (ViewGroup) findViewById(R.id.table);
     }
@@ -139,7 +139,7 @@ public class BackgroundActivity extends Activity {
         SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         defaultSharedPreferences.edit().putString("backgroundFile", path).commit();
         Util.logSetBackground(this, path);
-        Util.setBackground(this);
+        //Util.setBackground(this);
         //
         try {
             FileInputStream fis = new FileInputStream(new File(path));

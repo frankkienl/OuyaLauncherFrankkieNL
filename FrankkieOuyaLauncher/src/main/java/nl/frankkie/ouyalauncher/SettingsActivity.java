@@ -29,7 +29,7 @@ public class SettingsActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.settings);
-        Util.setBackground(this);
+        //Util.setBackground(this);
         Util.setLogo(this);
         Util.setClock(this);
 

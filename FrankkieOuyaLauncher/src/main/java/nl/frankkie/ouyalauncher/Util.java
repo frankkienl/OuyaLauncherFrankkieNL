@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.nfc.tech.IsoDep;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -58,6 +59,7 @@ public class Util {
         }
     }
 
+    @Deprecated
     public static void setBackground(Activity activity) {
         if (true){return;}
         try {
@@ -75,6 +77,7 @@ public class Util {
         imageView.setImageResource(getLogo(activity));
     }
 
+    @Deprecated
     public static void setLogoOLD(Activity activity) {
         if (true) {
             return;
@@ -95,6 +98,7 @@ public class Util {
         }
     }
 
+    @Deprecated
     public static Drawable getBackground(Context c) {
         //Check if default Background exists
         //Background file should always exist!
@@ -162,6 +166,7 @@ public class Util {
         return R.drawable.logo_default;
     }
 
+    @Deprecated
     public static Drawable getLogoOLD(Context c) {
         //Check if default Background exists
         //Background file should always exist!
@@ -180,10 +185,10 @@ public class Util {
             try {
                 copyResourceToFile(c, R.raw.logo_default, new File("/sdcard/FrankkieOuyaLauncher/logos/logo_default.png"));
                 copyResourceToFile(c, R.raw.logo_baxy_white_shadow, new File("/sdcard/FrankkieOuyaLauncher/logos/logo_baxy_white_shadow.pngshadow.png"));
-                copyResourceToFile(c, R.raw.logo_baxy_white, new File("/sdcard/FrankkieOuyaLauncher/logos/logo_baxy_white.png"));
-                copyResourceToFile(c, R.raw.logo_ouya_black, new File("/sdcard/FrankkieOuyaLauncher/logos/logo_ouya_black.png"));
-                copyResourceToFile(c, R.raw.logo_ouya_red, new File("/sdcard/FrankkieOuyaLauncher/logos/logo_ouya_red.png"));
-                copyResourceToFile(c, R.raw.logo_ouya_white, new File("/sdcard/FrankkieOuyaLauncher/logos/logo_ouya_white.png"));
+                //copyResourceToFile(c, R.raw.logo_baxy_white, new File("/sdcard/FrankkieOuyaLauncher/logos/logo_baxy_white.png"));
+                //copyResourceToFile(c, R.raw.logo_ouya_black, new File("/sdcard/FrankkieOuyaLauncher/logos/logo_ouya_black.png"));
+                //copyResourceToFile(c, R.raw.logo_ouya_red, new File("/sdcard/FrankkieOuyaLauncher/logos/logo_ouya_red.png"));
+                //copyResourceToFile(c, R.raw.logo_ouya_white, new File("/sdcard/FrankkieOuyaLauncher/logos/logo_ouya_white.png"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
