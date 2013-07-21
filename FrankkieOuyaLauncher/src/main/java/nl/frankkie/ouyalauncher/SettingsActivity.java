@@ -1,6 +1,8 @@
 package nl.frankkie.ouyalauncher;
 
 import android.app.Activity;
+import android.app.WallpaperManager;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -31,26 +33,51 @@ public class SettingsActivity extends Activity {
         Util.setLogo(this);
         Util.setClock(this);
 
-        Button backgroundsBtn = (Button) findViewById(R.id.settings_background);
-        backgroundsBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent();
-                i.setClass(SettingsActivity.this, BackgroundActivity.class);
-                startActivity(i);
-            }
-        });
-
-//        Button logoBtn = (Button) findViewById(R.id.settings_logo);
-//        logoBtn.setOnClickListener(new View.OnClickListener() {
+//        Button backgroundsBtn = (Button) findViewById(R.id.settings_background);
+//        backgroundsBtn.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
 //                Intent i = new Intent();
-//                i.setClass(SettingsActivity.this, LogoActivity.class);
+//                i.setClass(SettingsActivity.this, BackgroundActivity.class);
 //                startActivity(i);
 //            }
 //        });
-//        logoBtn.setEnabled(false);
+
+        Button liveWallpaperBtn = (Button) findViewById(R.id.settings_live_wallpaper);
+        liveWallpaperBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent();
+                //i.setAction(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER);
+                i.setAction(Intent.ACTION_SET_WALLPAPER);
+                //i.setComponent(new ComponentName("com.android.wallpaper.livepicker",".LiveWallpaperActivity"));
+                try {
+                    startActivity(i);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        Button logoBaxyBtn = (Button) findViewById(R.id.settings_logo_baxy);
+        logoBaxyBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
+                prefs.edit().putString("logoType", "BAXY").commit();
+                Util.setLogo(SettingsActivity.this);
+            }
+        });
+
+        Button logoOuyaBtn = (Button) findViewById(R.id.settings_logo_ouya);
+        logoOuyaBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
+                prefs.edit().putString("logoType", "OUYA").commit();
+                Util.setLogo(SettingsActivity.this);
+            }
+        });
 
         Button clockAnalog = (Button) findViewById(R.id.settings_analog_clock);
         clockAnalog.setOnClickListener(new View.OnClickListener() {

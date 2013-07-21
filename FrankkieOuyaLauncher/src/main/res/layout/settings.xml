@@ -8,7 +8,6 @@
               android:layout_width="match_parent"
               android:orientation="vertical"
               android:id="@+id/layout_background"
-              android:background="@drawable/bg_color"
               android:layout_height="match_parent">
 
     <LinearLayout
@@ -120,31 +119,63 @@
                         android:layout_width="match_parent"
                         android:layout_height="25dp"/>
 
+                <!--
                 <Button
                         android:text="Background"
                         android:id="@+id/settings_background"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
-
-                <!--
+                        //-->
                 <Button
-                        android:text="Logo"
-                        android:id="@+id/settings_logo"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-                     //-->
-
-                <Button
-                        android:text="Analog Clock"
-                        android:id="@+id/settings_analog_clock"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-                <Button
-                        android:text="Digital Clock"
-                        android:id="@+id/settings_digital_clock"
+                        android:text="Change Wallpaper"
+                        android:id="@+id/settings_live_wallpaper"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
 
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+
+                    <Button
+                            android:text="BAXY Logo"
+                            android:id="@+id/settings_logo_baxy"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"/>
+
+                    <Button
+                            android:text="OUYA Logo"
+                            android:id="@+id/settings_logo_ouya"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+
+                    <Button
+                            android:text="Analog Clock"
+                            android:id="@+id/settings_analog_clock"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"/>
+
+                    <Button
+                            android:text="Digital Clock"
+                            android:id="@+id/settings_digital_clock"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"/>
+
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -162,6 +193,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         />
+
                 <DigitalClock
                         android:id="@+id/digital_clock"
                         android:layout_width="match_parent"
@@ -169,7 +201,7 @@
                         android:gravity="center"
                         style="@style/ShadowText"
                         android:visibility="gone"
-                        android:textSize="42sp" />
+                        android:textSize="42sp"/>
             </LinearLayout>
         </LinearLayout>
         <!--

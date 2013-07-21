@@ -12,6 +12,8 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextClock;
+import android.widget.TextView;
 
 import com.flurry.android.FlurryAgent;
 
@@ -57,6 +59,7 @@ public class Util {
     }
 
     public static void setBackground(Activity activity) {
+        if (true){return;}
         try {
             activity.findViewById(R.id.layout_background).setBackground(getBackground(activity));
         } catch (Exception e) {
@@ -67,7 +70,12 @@ public class Util {
         }
     }
 
-    public static void setLogo(Activity activity) {
+    public static void setLogo(Activity activity){
+        ImageView imageView = ((ImageView) activity.findViewById(R.id.logo));
+        imageView.setImageResource(getLogo(activity));
+    }
+
+    public static void setLogoOLD(Activity activity) {
         if (true) {
             return;
         }
@@ -76,7 +84,7 @@ public class Util {
             imageView.setScaleType(ImageView.ScaleType.FIT_START);
             imageView.setMaxHeight(80);
             imageView.setAdjustViewBounds(true);
-            imageView.setImageDrawable(getLogo(activity));
+            //imageView.setImageDrawable(getLogo(activity));
             imageView.invalidate();
             //imageView.setBackground(getLogo(activity));
         } catch (Exception e) {
@@ -143,7 +151,18 @@ public class Util {
         return c.getResources().getDrawable(R.drawable.bg_color);
     }
 
-    public static Drawable getLogo(Context c) {
+    public static int getLogo(Context context){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String logoType = prefs.getString("logoType", "BAXY");
+        if (logoType.equals("BAXY")){
+            return R.drawable.logo_default;
+        } else if(logoType.equals("OUYA")){
+            return R.drawable.logo_ouya_red;
+        }
+        return R.drawable.logo_default;
+    }
+
+    public static Drawable getLogoOLD(Context c) {
         //Check if default Background exists
         //Background file should always exist!
         File defaultFile = new File("/sdcard/FrankkieOuyaLauncher/logos/logo_default.png");

@@ -92,7 +92,7 @@ public class Updater {
                     if (myVersion < version) {
                         return jsonObject; //boolean as Object
                     } else {
-                        toast("This app is up to date :-) !");
+                        //toast("This app is up to date :-) !"); //dont toast when its OK
                         return null;
                     }
                 } catch (PackageManager.NameNotFoundException nnfe) {

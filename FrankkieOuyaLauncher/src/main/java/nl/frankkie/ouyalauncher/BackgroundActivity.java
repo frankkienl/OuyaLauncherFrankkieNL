@@ -5,6 +5,7 @@
 package nl.frankkie.ouyalauncher;
 
 import android.app.Activity;
+import android.app.WallpaperManager;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -13,10 +14,13 @@ import android.preference.PreferenceManager;
 import android.view.*;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.flurry.android.FlurryAgent;
+
 import tv.ouya.console.api.OuyaController;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 
 /**
@@ -136,6 +140,14 @@ public class BackgroundActivity extends Activity {
         defaultSharedPreferences.edit().putString("backgroundFile", path).commit();
         Util.logSetBackground(this, path);
         Util.setBackground(this);
+        //
+        try {
+            FileInputStream fis = new FileInputStream(new File(path));
+            setWallpaper(fis);
+            WallpaperManager.getInstance(this).suggestDesiredDimensions(1920,1080);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public class MyBackground {
@@ -154,7 +166,7 @@ public class BackgroundActivity extends Activity {
             SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(BackgroundActivity.this);
             String selectedBackgroundPath = defaultSharedPreferences.getString("backgroundFile", "/sdcard/FrankkieOuyaLauncher/backgrounds/default.png");
             for (String s : list) {
-                if (s.equals(".nomedia")){
+                if (s.equals(".nomedia")) {
                     continue;
                 }
                 MyBackground background = new MyBackground();

@@ -3,12 +3,11 @@
   ~ Copyright (c) 2013. FrankkieNL
   -->
 
-<!-- Layout for the First screen //-->
+<!-- Layout for the First screen android:background="@drawable/bg_color" //-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:orientation="vertical"
               android:id="@+id/layout_background"
-              android:background="@drawable/bg_color"
               android:layout_height="match_parent">
 
     <LinearLayout
