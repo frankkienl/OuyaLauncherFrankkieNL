@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import nl.frankkie.ouyalauncher.databaserows.DatabaseAppWidget;
 import nl.frankkie.ouyalauncher.databaserows.DatabaseFolder;
 import nl.wotuu.database.annotations.DatabaseExclude;
 import nl.wotuu.database.annotations.DatabasePrimaryKey;
@@ -24,7 +25,7 @@ import nl.wotuu.database.exceptions.DatabaseUpgradeException;
  */
 public class DatabaseOpenHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     private static DatabaseOpenHelper instance;
 
@@ -70,6 +71,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
         this.TableNames = new HashMap<String, TableNameMap>();
         this.TableNames.put("appinfo", new TableNameMap("appinfo", DatabaseAppInfo.class));
         this.TableNames.put("folder", new TableNameMap("folder", DatabaseFolder.class));
+        this.TableNames.put("appwidget", new TableNameMap("appwidget", DatabaseAppWidget.class));
 
         this.WriteableDatabase = this.getWritableDatabase();
         this.ReadableDatabase = this.getReadableDatabase();
@@ -124,6 +126,10 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i2) {
+        if (i < 3){
+            //Add AppWidgets Table
+            CreateTable(DatabaseAppWidget.class, "appwidget");
+        }
     }
 
     /**

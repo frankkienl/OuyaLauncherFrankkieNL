@@ -6,49 +6,50 @@ package nl.frankkie.ouyalauncher;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.app.WallpaperManager;
+import android.appwidget.AppWidgetHost;
+import android.appwidget.AppWidgetManager;
+import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.net.Uri;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.view.*;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.flurry.android.FlurryAgent;
 
-import eu.chainfire.libsuperuser.Shell;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import tv.ouya.console.api.OuyaController;
-
-import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.List;
+
+import eu.chainfire.libsuperuser.Shell;
+import nl.frankkie.ouyalauncher.databaserows.DatabaseAppWidget;
+import nl.wotuu.database.DatabaseOpenHelper;
+import tv.ouya.console.api.OuyaController;
 
 /**
  * Created by FrankkieNL on 6-7-13.
  */
 public class StartActivity extends Activity {
+
+    public static final int appWidgetHostId = 1337 + 9001; //Its Over 9000!!Xorz //just some random number
+    private static final int REQUEST_CREATE_APPWIDGET = 5;
+    private static final int REQUEST_PICK_APPWIDGET = 9;
+    AppWidgetHost appWidgetHost;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,17 +57,84 @@ public class StartActivity extends Activity {
         initUI();
         context = this;
         startImageCaching();
+        initWidgets();
     }
+
+    private void initWidgets() {
+        appWidgetHost = new AppWidgetHost(this, appWidgetHostId);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean firstRun = prefs.getBoolean("firstTimeWidgets", true);
+        if (firstRun) {
+            appWidgetHost.deleteHost();
+            prefs.edit().putBoolean("firstTimeWidgets", false).commit();
+        }
+    }
+
+    public void addWidget() {
+        //http://developer.android.com/guide/topics/appwidgets/host.html
+        int appWidgetId = this.appWidgetHost.allocateAppWidgetId();
+        Intent pickIntent = new Intent(AppWidgetManager.ACTION_APPWIDGET_PICK);
+        pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        startActivityForResult(pickIntent, REQUEST_PICK_APPWIDGET);
+    }
+
+    void addAppWidget(Intent data) {
+        int appWidgetId = data.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
+
+        //String customWidget = data.getStringExtra(EXTRA_CUSTOM_WIDGET);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        AppWidgetProviderInfo appWidget = appWidgetManager.getAppWidgetInfo(appWidgetId);
+
+        if (appWidget.configure != null) {
+            // Launch over to configure widget, if needed.
+            Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE);
+            intent.setComponent(appWidget.configure);
+            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+            startActivityForResult(intent, REQUEST_CREATE_APPWIDGET);
+        } else {
+            // Otherwise, finish adding the widget.
+            DatabaseOpenHelper helper = DatabaseOpenHelper.CreateInstance(this);
+            DatabaseAppWidget databaseAppWidget = new DatabaseAppWidget();
+            databaseAppWidget.info = appWidget;
+            databaseAppWidget.appWidgetId = appWidgetId;
+            databaseAppWidget.OnInsert();
+            placeWidget(appWidgetId, appWidget);
+        }
+    }
+
+    public void placeWidget(int appWidgetId, AppWidgetProviderInfo appWidget){
+        View v = appWidgetHost.createView(this, appWidgetId, appWidget);
+        //remove clock to make room for widgets
+        findViewById(R.id.clock_container).setVisibility(View.GONE);
+        ViewGroup group = (ViewGroup) findViewById(R.id.widgets_container);
+        //group.removeAllViews();
+        group.addView(v);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != RESULT_OK){
+            return;
+        }
+        if (requestCode == REQUEST_PICK_APPWIDGET){
+            addAppWidget(data);
+        } else if (requestCode == REQUEST_CREATE_APPWIDGET){
+            //TODO
+        }
+    }
+
+
 
     private void startImageCaching() {
         MakeImageCache task = new MakeImageCache(this);
         task.execute();
     }
 
-    private void fixBackgroundOnFirstUse(){
+    private void fixBackgroundOnFirstUse() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean isFirstRun = prefs.getBoolean("isFirstRun", true);
-        if (isFirstRun){
+        if (isFirstRun) {
             prefs.edit().putBoolean("isFirstRun", false).commit();
             Util.getBackground(this); //place background files on SD
             SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -74,7 +142,7 @@ public class StartActivity extends Activity {
             try {
                 FileInputStream fis = new FileInputStream(new File(path));
                 setWallpaper(fis);
-                WallpaperManager.getInstance(this).suggestDesiredDimensions(1920,1080);
+                WallpaperManager.getInstance(this).suggestDesiredDimensions(1920, 1080);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -222,7 +290,7 @@ public class StartActivity extends Activity {
     private void showMenuDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Menu");
-        String[] items = new String[]{"Launcher Settings", "Running Applications", "Advanced Settings", "Turn Off"};
+        String[] items = new String[]{"Launcher Settings", "Running Applications", "Advanced Settings", "Add Widget", "Turn Off"};
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -240,6 +308,10 @@ public class StartActivity extends Activity {
                         break;
                     }
                     case 3: {
+                        addWidget();
+                        break;
+                    }
+                    case 4: {
                         turnOuyaOff();
                         break;
                     }
@@ -304,6 +376,21 @@ public class StartActivity extends Activity {
         //Update Check
         Updater updater = Updater.getInstance(this);
         updater.startUpdateCheck();
+        //Widgets
+        appWidgetHost.startListening();
+        //check existing widgets!
+        DatabaseOpenHelper helper = DatabaseOpenHelper.CreateInstance(this);
+        Cursor cursor = helper.WriteableDatabase.rawQuery("SELECT id FROM appwidget", null);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        while (cursor.moveToNext()){
+            int id = cursor.getInt(0);
+            DatabaseAppWidget databaseAppWidget = new DatabaseAppWidget(id);
+            databaseAppWidget.OnLoad();
+            AppWidgetProviderInfo appWidget = appWidgetManager.getAppWidgetInfo(databaseAppWidget.appWidgetId);
+            databaseAppWidget.info = appWidget;
+            placeWidget(databaseAppWidget.appWidgetId, appWidget);
+        }
+        cursor.close();
     }
 
     @Override
@@ -311,6 +398,8 @@ public class StartActivity extends Activity {
         super.onStop();
         //ANALYTICS
         FlurryAgent.onEndSession(this);
+        //Widgets
+        appWidgetHost.stopListening();
     }
 
     private class StartDiscoverRootAsyncTask extends AsyncTask<Void, Void, Void> {
