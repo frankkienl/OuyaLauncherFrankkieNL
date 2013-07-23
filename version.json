@@ -1,1 +1,6 @@
-{"newestVersion": 7, "changes": "Live Wallpapers; OUYA Logo; fixed update-notification; bugfixes;"}
+{
+  "newestVersion": 7,
+  "changes": "Live Wallpapers; OUYA Logo; fixed update-notification; bugfixes;"
+  "betaVersion: 8,
+  "betaChanges": "Added Beta-version system"
+}
