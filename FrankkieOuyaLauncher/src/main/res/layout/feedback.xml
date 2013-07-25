@@ -121,7 +121,7 @@
                         style="@style/ShadowText"
                         android:textSize="30sp"
                         android:gravity="center_horizontal"
-                        android:text="Feedback\nTip: Use USB-Keyboard or send email to: baxy@frankkie.nl"
+                        android:text="Feedback\nTip: Use USB-Keyboard or send email to: baxy@frankkie.nl\nPlease add your email address, so we can respond!"
                         />
                 <EditText
                         android:id="@+id/feedback_ed"
