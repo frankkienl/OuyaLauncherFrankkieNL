@@ -25,6 +25,9 @@ Screenshot:
 ![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher22.png "Screenshot")
 
 ![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher23.png "Screenshot")
+You can favorite apps, and put apps in folders.
+
+![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher24.png "Screenshot")
 
 
 Backgrounds:  
