@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2013. FrankkieNL
+  -->
 
+<!-- Layout for the Settings screen //-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:orientation="vertical"
               android:id="@+id/layout_background"
               android:layout_height="match_parent">
+
     <LinearLayout
             android:id="@+id/main_container_of_scrollview"
             android:orientation="vertical"
@@ -21,8 +26,8 @@
                     android:src="@drawable/logo_default"
                     android:layout_margin="10dp"
                     android:scaleType="fitStart"
-                    android:adjustViewBounds="true"
                     android:id="@+id/logo"
+                    android:adjustViewBounds="true"
                     android:layout_marginRight="40dp"
                     android:layout_width="wrap_content"
                     android:layout_height="80dp"/>
@@ -51,66 +56,12 @@
                             android:layout_height="35dp"/>
 
                     <TextView
-                            android:text="Launch"
+                            android:text="OK"
                             android:gravity="bottom"
                             android:layout_marginBottom="5dp"
                             android:layout_marginRight="5dp"
-                            android:textSize="20sp"
                             android:textColor="#FFF"
-                            android:layout_height="match_parent"
-                            android:layout_width="wrap_content"/>
-                </LinearLayout>
-
-                <!--
-                <LinearLayout
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="@drawable/textback_small"
-                        android:layout_width="wrap_content"
-                        android:layout_marginRight="20dp">
-
-                    <ImageView
-                            android:src="@drawable/btn_ouya_y"
-                            android:scaleType="fitStart"
-                            android:adjustViewBounds="true"
-                            android:layout_gravity="bottom"
-                            android:layout_width="wrap_content"
-                            android:layout_height="35dp"/>
-
-                    <TextView
-                            android:text="Kill"
-                            android:gravity="bottom"
-                            android:layout_marginBottom="5dp"
-                            android:layout_marginRight="5dp"
                             android:textSize="20sp"
-                            android:textColor="#FFF"
-                            android:layout_height="match_parent"
-                            android:layout_width="wrap_content"/>
-                </LinearLayout>
-                //-->
-
-                <LinearLayout
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="@drawable/textback_small"
-                        android:layout_width="wrap_content"
-                        android:layout_marginRight="20dp">
-
-                    <ImageView
-                            android:src="@drawable/btn_ouya_u"
-                            android:scaleType="fitStart"
-                            android:adjustViewBounds="true"
-                            android:layout_gravity="bottom"
-                            android:layout_width="wrap_content"
-                            android:layout_height="35dp"/>
-
-                    <TextView
-                            android:text="Refresh"
-                            android:gravity="bottom"
-                            android:layout_marginBottom="5dp"
-                            android:layout_marginRight="5dp"
-                            android:textSize="20sp"
-                            android:textColor="#FFF"
                             android:layout_height="match_parent"
                             android:layout_width="wrap_content"/>
                 </LinearLayout>
@@ -120,6 +71,7 @@
                         android:orientation="horizontal"
                         android:background="@drawable/textback_small"
                         android:layout_width="wrap_content"
+                        android:id="@+id/start_goto_settings"
                         android:layout_marginRight="5dp">
 
                     <ImageView
@@ -133,36 +85,59 @@
                     <TextView
                             android:text="Back"
                             android:gravity="bottom"
-                            android:textColor="#FFF"
                             android:layout_marginBottom="5dp"
-                            android:layout_marginRight="5dp"
+                            android:textColor="#FFF"
                             android:textSize="20sp"
+                            android:layout_marginRight="5dp"
                             android:layout_height="match_parent"
                             android:layout_width="wrap_content"/>
                 </LinearLayout>
             </LinearLayout>
         </RelativeLayout>
 
-
+        <!--
         <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+                //-->
+
+        <LinearLayout
+                android:id="@+id/settings_container"
+                android:orientation="horizontal"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
             <LinearLayout
                     android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/table">
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent">
 
-                <ProgressBar
+                <TextView
                         android:layout_width="match_parent"
-                        android:minHeight="250dp"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/ShadowText"
+                        android:textSize="30sp"
+                        android:gravity="center_horizontal"
+                        android:text="Feedback\nTip: Use USB-Keyboard or send email to: baxy@frankkie.nl"
                         />
+                <EditText
+                        android:id="@+id/feedback_ed"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:lines="3"
+                        />
+                <Button
+                        android:text="Send"
+                        android:id="@+id/feedback_send_btn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
             </LinearLayout>
-
-
+        </LinearLayout>
+        <!--
         </ScrollView>
-
+        //-->
     </LinearLayout>
 </LinearLayout>

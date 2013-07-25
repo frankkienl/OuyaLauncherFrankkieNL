@@ -15,7 +15,7 @@
             android:orientation="vertical"
             android:layout_margin="25dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
         <RelativeLayout
                 android:orientation="horizontal"
@@ -176,18 +176,59 @@
                             android:layout_height="wrap_content"/>
 
                 </LinearLayout>
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                    <TextView
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:textSize="21sp"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            style="@style/ShadowText"
+                            android:text="Enable Beta versions"
+                            />
+                    <ToggleButton
+                            android:id="@+id/settings_version_beta_togglebutton"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"/>
+                </LinearLayout>
+
+                <Button
+                        android:id="@+id/settings_feedback_btn"
+                        android:text="Feedback"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        />
+                <!-- spacer //-->
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"/>
+
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/settings_version_tv"
+                        android:textSize="20sp"
+                        style="@style/ShadowText"
+                        android:text=""
+                        />
             </LinearLayout>
 
             <LinearLayout
                     android:orientation="vertical"
+                    android:gravity="center"
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="match_parent">
-                <!-- spacer //-->
+                <!-- spacer
                 <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="25dp"/>
-
+                //-->
                 <AnalogClock
                         android:id="@+id/analog_clock"
                         android:layout_width="match_parent"

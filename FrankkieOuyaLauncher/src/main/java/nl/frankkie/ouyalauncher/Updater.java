@@ -18,6 +18,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -41,18 +42,19 @@ public class Updater {
     public static final String apkName = "FrankkieOuyaLauncher.apk";
     public static final String versionJsonUrl = "https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/version.json";
     public static final String apkUrl = "https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/FrankkieOuyaLauncher/FrankkieOuyaLauncher.apk";
+    public static final String apkUrlBeta = "https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/FrankkieOuyaLauncher/FrankkieOuyaLauncherBETA.apk";
 
-    public void startUpdateCheck(){
+    public void startUpdateCheck() {
         UpdateCheckAsyncTask task = new UpdateCheckAsyncTask();
         task.execute();
     }
 
-    private Updater(Context context){
+    private Updater(Context context) {
         this.context = context;
     }
 
-    public static Updater getInstance(Context context){
-        if (instance == null){
+    public static Updater getInstance(Context context) {
+        if (instance == null) {
             instance = new Updater(context);
         }
         return instance;
@@ -69,35 +71,18 @@ public class Updater {
 
     public class UpdateCheckAsyncTask extends AsyncTask<Object, Object, JSONObject> {
 
-        Dialog dialog;
-
-        @Override
-        protected void onPreExecute() {
-            //Dont show dialog for this
-            //dialog = ProgressDialog.show(context, "Version Check", "Please Wait...");
-        }
-
         @Override
         protected JSONObject doInBackground(Object... objects) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            if (!(System.currentTimeMillis() > prefs.getLong("updater_stfu_till", 0l))) {
+                return null;
+            }
             HttpClient client = new DefaultHttpClient();
             HttpGet request = new HttpGet(versionJsonUrl);
             try {
                 HttpResponse response = client.execute(request);
                 JSONObject jsonObject = new JSONObject(EntityUtils.toString(response.getEntity()));
-                int version = jsonObject.getInt("newestVersion");
-                String changes = jsonObject.getString("changes");
-                try {
-                    //Get versionCode from Manifest
-                    int myVersion = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
-                    if (myVersion < version) {
-                        return jsonObject; //boolean as Object
-                    } else {
-                        //toast("This app is up to date :-) !"); //dont toast when its OK
-                        return null;
-                    }
-                } catch (PackageManager.NameNotFoundException nnfe) {
-                    toast("Version check failed.. (packagename not found)");
-                }
+                return jsonObject;
             } catch (IOException e) {
                 toast("Version check failed.. (internet is not working)");
             } catch (JSONException je) {
@@ -108,50 +93,82 @@ public class Updater {
 
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
-            try {
-               // dialog.dismiss();
-            } catch (Exception e) {
-                //ignore
+            if (jsonObject == null) {
+                return;
             }
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            if (jsonObject != null && System.currentTimeMillis() > prefs.getLong("updater_stfu_till", 0l)) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("New Version Available !");
-                String changes = "";
+            try {
+                int version = jsonObject.getInt("newestVersion");
+                String changes = jsonObject.getString("changes");
+                int betaVersion = jsonObject.getInt("betaVersion");
+                String betaChanges = jsonObject.getString("betaChanges");
+                //
+                final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                boolean betaEnabled = prefs.getBoolean(Util.PREFS_BETA_ENABLED, false);
+
                 try {
-                    String temp = jsonObject.getString("changes");
-                    changes = "Changes:\n" + temp + "\n";
-                } catch (JSONException e){
-                    //ignore
+                    //Get versionCode from Manifest
+                    int myVersion = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
+                    if (betaEnabled) {
+                        if (myVersion < betaVersion) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            builder.setTitle("New BETA Version Available !");
+                            String changesString = "Changes:\n" + changes + "\n";
+                            builder.setMessage(changesString + "Download now?");
+                            builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    downloadViaAsyncTask(apkUrlBeta);
+                                }
+                            });
+                            builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    //nothing, just remove dialog
+                                    //Don't annoy the user for another hour or so !
+                                    prefs.edit().putLong("updater_stfu_till", System.currentTimeMillis() + (1000 * 60 * 60)).commit();
+                                }
+                            });
+                            builder.create().show();
+                        }
+                    } else {
+                        if (myVersion < version) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            builder.setTitle("New Version Available !");
+                            String changesString = "Changes:\n" + changes + "\n";
+                            builder.setMessage(changesString + "Download now?");
+                            builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    downloadViaAsyncTask(apkUrl);
+                                }
+                            });
+                            builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    //nothing, just remove dialog
+                                    //Don't annoy the user for another hour or so !
+                                    prefs.edit().putLong("updater_stfu_till", System.currentTimeMillis() + (1000 * 60 * 60)).commit();
+                                }
+                            });
+                            builder.create().show();
+                        }
+                    }
+                } catch (PackageManager.NameNotFoundException nnfe) {
+                    toast("Version check failed.. (packagename not found)");
                 }
-                builder.setMessage(changes + "Download now?");
-                builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        downloadViaAsyncTask();
-                    }
-                });
-                builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        //nothing, just remove dialog
-                        //Don't annoy the user for another hour or so !
-                        prefs.edit().putLong("updater_stfu_till", System.currentTimeMillis() + (1000 * 60 * 60)).commit();
-//                        toast("Ok, I will not alert you about updates for an hour.");
-                    }
-                });
-                builder.create().show();
+            } catch (JSONException e) {
+                e.printStackTrace();
+                toast("Version check failed.. (JSON Error)");
             }
         }
     }
 
-
-    public void downloadViaAsyncTask() {
+    public void downloadViaAsyncTask(String which) {
         DownloadAsyncTask task = new DownloadAsyncTask();
-        task.execute("Sure"); //some string, doesn't care
+        task.execute(which); //some string, doesn't care
     }
 
-    public class DownloadAsyncTask extends AsyncTask<Object, Integer, Boolean> {
+    public class DownloadAsyncTask extends AsyncTask<String, Integer, Boolean> {
         ProgressDialog dialog;
 
         @Override
@@ -168,11 +185,11 @@ public class Updater {
         }
 
         @Override
-        protected Boolean doInBackground(Object... objects) {
+        protected Boolean doInBackground(String... urls) {
             try {
                 //Thanks to:
                 //http://stackoverflow.com/questions/3028306/download-a-file-with-android-and-showing-the-progress-in-a-progressdialog
-                URL url = new URL(apkUrl);
+                URL url = new URL(urls[0]);
                 URLConnection connection = url.openConnection();
                 connection.connect();
                 // this will be useful so that you can show a typical 0-100% progress bar
@@ -221,7 +238,7 @@ public class Updater {
                     i.setData(Uri.parse("file://" + Environment.getExternalStorageDirectory().getPath() + "/" + apkName));
                     context.startActivity(i);
                 } catch (Exception e) {
-                    toast("Cannot update application.. Please use a filemanager (like Total Commander) and select '"+apkName+"'.");
+                    toast("Cannot update application.. Please use a filemanager (like Total Commander) and select '" + apkName + "'.");
                 }
             }
         }

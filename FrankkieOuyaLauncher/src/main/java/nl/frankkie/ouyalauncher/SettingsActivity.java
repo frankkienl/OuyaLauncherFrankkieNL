@@ -5,12 +5,17 @@ import android.app.WallpaperManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.flurry.android.FlurryAgent;
 
@@ -97,6 +102,33 @@ public class SettingsActivity extends Activity {
                 Util.setClock(SettingsActivity.this);
             }
         });
+        ToggleButton betaToggleButton = (ToggleButton) findViewById(R.id.settings_version_beta_togglebutton);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        betaToggleButton.setChecked(prefs.getBoolean(Util.PREFS_BETA_ENABLED, false));
+        betaToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                prefs.edit().putBoolean(Util.PREFS_BETA_ENABLED, b).commit();
+            }
+        });
+        Button feedbackBtn = (Button) findViewById(R.id.settings_feedback_btn);
+        feedbackBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent();
+                i.setClass(SettingsActivity.this, FeedbackActivity.class);
+                startActivity(i);
+            }
+        });
+
+        TextView versionTextView = (TextView) findViewById(R.id.settings_version_tv);
+        try {
+            int myVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+            String myVersionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            versionTextView.setText("Version: " + myVersion + "-" + myVersionName);
+        } catch (PackageManager.NameNotFoundException nnfe) {
+            nnfe.printStackTrace();
+        }
     }
 
     @Override

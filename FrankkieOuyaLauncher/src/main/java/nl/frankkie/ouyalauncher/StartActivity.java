@@ -33,6 +33,7 @@ import com.flurry.android.FlurryAgent;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import eu.chainfire.libsuperuser.Shell;
@@ -290,7 +291,7 @@ public class StartActivity extends Activity {
     private void showMenuDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Menu");
-        String[] items = new String[]{"Launcher Settings", "Running Applications", "Advanced Settings", "Add Widget", "Turn Off"};
+        String[] items = new String[]{"Launcher Settings", "Running Applications", "Advanced Settings", "Add Widget", "Remove all Widgets", "Turn Off"};
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -312,6 +313,10 @@ public class StartActivity extends Activity {
                         break;
                     }
                     case 4: {
+                        removeAllWidgets();
+                        break;
+                    }
+                    case 5: {
                         turnOuyaOff();
                         break;
                     }
@@ -378,6 +383,33 @@ public class StartActivity extends Activity {
         updater.startUpdateCheck();
         //Widgets
         appWidgetHost.startListening();
+        refreshWidgets();
+    }
+
+    public void removeAllWidgets(){
+        ViewGroup group = (ViewGroup) findViewById(R.id.widgets_container);
+        group.removeAllViews();
+        //Get Clock Back :P
+        findViewById(R.id.clock_container).setVisibility(View.VISIBLE);
+        //
+        DatabaseOpenHelper helper = DatabaseOpenHelper.CreateInstance(this);
+        Cursor cursor = helper.WriteableDatabase.rawQuery("SELECT id FROM appwidget", null);
+        ArrayList<Integer> ids = new ArrayList<Integer>();
+        while (cursor.moveToNext()){
+            int id = cursor.getInt(0);
+            ids.add(id);
+        }
+        cursor.close();
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        for (int id : ids){
+            DatabaseAppWidget databaseAppWidget = new DatabaseAppWidget(id);
+            //databaseAppWidget.OnLoad();
+            appWidgetHost.deleteAppWidgetId(id);
+            databaseAppWidget.OnDelete();
+        }
+    }
+
+    public void refreshWidgets(){
         //check existing widgets!
         DatabaseOpenHelper helper = DatabaseOpenHelper.CreateInstance(this);
         Cursor cursor = helper.WriteableDatabase.rawQuery("SELECT id FROM appwidget", null);

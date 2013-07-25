@@ -35,6 +35,8 @@ import nl.frankkie.ouyalauncher.databaserows.DatabaseAppInfo;
  */
 public class Util {
 
+    public static final String PREFS_BETA_ENABLED = "betaEnabled";
+
     public static String loadedBackgroundString;
     public static Drawable loadedBackground;
     public static String loadedLogoString;

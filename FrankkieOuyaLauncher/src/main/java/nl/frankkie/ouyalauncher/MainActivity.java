@@ -66,18 +66,18 @@ public class MainActivity extends Activity {
     Handler handler = new Handler();
 
 
-    public void showAppInfo() {
+    public void showAppInfo(boolean viaMenu) {
 //        View v = getCurrentFocus();
-        if (selectedItem != null) {
+        if (!viaMenu) {
             selectedItem = getCurrentFocus(); //via Y, not via Menu
             if (selectedItem == null) {
                 return;
             }
-            TextView tv_packagename = (TextView) ((ViewGroup) selectedItem).findViewById(R.id.item_packagename);
-            String packagename = tv_packagename.getText().toString();
-            showInstalledAppDetails(this, packagename);
-            Util.logAppInfo(MainActivity.this, packagename);
         }
+        TextView tv_packagename = (TextView) ((ViewGroup) selectedItem).findViewById(R.id.item_packagename);
+        String packagename = tv_packagename.getText().toString();
+        showInstalledAppDetails(this, packagename);
+        Util.logAppInfo(MainActivity.this, packagename);
     }
 
     public void showFilters() {
@@ -214,15 +214,11 @@ public class MainActivity extends Activity {
         }
         //Do consume U and Y
         if (event.getKeyCode() == OuyaController.BUTTON_U) {
-            showAppInfo();
+            showAppInfo(false);
             return true;
         }
         if (event.getKeyCode() == OuyaController.BUTTON_Y) {
             showFilters();
-            return true;
-        }
-        if (event.getKeyCode() == OuyaController.BUTTON_A) {
-            pressedA();
             return true;
         }
         //check menu-key
@@ -251,7 +247,7 @@ public class MainActivity extends Activity {
                         break;
                     }
                     case 1: {
-                        showAppInfo();
+                        showAppInfo(true);
                         break;
                     }
                     case 2: {
@@ -356,7 +352,7 @@ public class MainActivity extends Activity {
         builder.create().show();
     }
 
-    public void makeNewFolder(final  DatabaseAppInfo info){
+    public void makeNewFolder(final DatabaseAppInfo info) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Enter Folder Name");
         final EditText editText = new EditText(this);
@@ -441,21 +437,6 @@ public class MainActivity extends Activity {
         //Refresh
         filter();
         fillTable();
-    }
-
-    public void pressedA() {
-//        startDiscover();
-    }
-
-    public void startDiscover() {
-        Intent i = new Intent();
-//        i.setClassName("tv.ouya.console","tv.ouya.console.launcher.store.adapter.DiscoverActivity");
-        i.setClassName("tv.ouya.console", "tv.ouya.console.launcher.store.OldDiscoverActivity");
-        try {
-            startActivity(i);
-        } catch (Exception e) {
-            Log.e("FrankkieLauncher", "ERROR", e);
-        }
     }
 
     @Override

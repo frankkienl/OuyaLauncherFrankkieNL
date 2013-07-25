@@ -3,5 +3,5 @@
   "changes": "Live Wallpapers; OUYA Logo; fixed update-notification; bugfixes;",
   "betaVersion" : 8,
   "betaChanges": "Added Beta-version system",
-  "comment": "Fixed AppInfo (U)"
+  "comment": "Fixed AppInfo (U); Removed KILL button from Running apps; added feedback system;"
 }

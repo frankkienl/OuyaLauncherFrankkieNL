@@ -243,6 +243,7 @@ public class RunningAppsActivity extends Activity {
     public void killApp() {
         View v = getCurrentFocus();
         if (v != null) {
+            Toast.makeText(this,"Killing apps does not work. This is a Bug in OUYA.\nSorry for the inconvenience.\nFor more information, see the BAXY Thread on OUYAForum.com\n(http://ouyaforum.com/showthread.php?4436-BAXY-Custom-Launcher)",Toast.LENGTH_LONG).show();
             TextView tv_packagename = (TextView) ((ViewGroup) v).findViewById(R.id.item_packagename);
             String packagename = tv_packagename.getText().toString();
             killApp(packagename);
