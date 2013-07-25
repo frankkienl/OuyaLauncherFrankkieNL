@@ -1,7 +1,7 @@
 {
-  "newestVersion": 7,
-  "changes": "Live Wallpapers; OUYA Logo; fixed update-notification; bugfixes;",
-  "betaVersion" : 8,
-  "betaChanges": "Added Beta-version system",
-  "comment": "Fixed AppInfo (U); Removed KILL button from Running apps; added feedback system;"
-}
+   "newestVersion": 7,
+   "changes": "Fixed AppInfo (U); Removed KILL button from Running apps; Added feedback system; Added Beta-system; You can now see the version in the Settings Screen; Fixed height of Clock; Fixed the AppInfo-problem; Bugfix;",
+   "betaVersion" : 10,
+   "betaChanges": "Added Widgets",
+   "comment": ""
+ }
