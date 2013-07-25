@@ -3,7 +3,7 @@ Alternative OUYA Launcher by FrankkieNL
 
 The name of this Launcher: BAXY !
 
-![Logo](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/FrankkieOuyaLauncher/src/main/res/drawable/baxy_white_shad.png "Logo")
+![Logo](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/FrankkieOuyaLauncher/src/main/res/drawable/logo_default.png "Logo")
 
 
 Download APK: https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/FrankkieOuyaLauncher/FrankkieOuyaLauncher.apk
@@ -20,20 +20,12 @@ Note: you must install SuperUser or SuperSu to turn off the console via this Lau
 
 Screenshot:
 
-![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher11.png "Screenshot")
-![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher12.png "Screenshot")
+![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher21.png "Screenshot")
 
-You can now filter on OUYA apps and Non-OUYA apps. (Press Y)
+![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher22.png "Screenshot")
 
-![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher5.png "Screenshot")
+![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher23.png "Screenshot")
 
-![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher6.png "Screenshot")
-
-![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher4.png "Screenshot")
-
-It is possible to change the background.
-
-![Screenshot](https://raw.github.com/frankkienl/OuyaLauncherFrankkieNL/master/screenshots/ouya_launcher10.png "Screenshot")
 
 Backgrounds:  
 http://lebannehn.deviantart.com/art/OUYA-controller-wallpaper-320123284   
