@@ -291,7 +291,9 @@ public class StartActivity extends Activity {
     private void showMenuDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Menu");
-        String[] items = new String[]{"Launcher Settings", "Running Applications", "Advanced Settings", "Add Widget", "Remove all Widgets", "Turn Off"};
+        String[] items = new String[]{"Launcher Settings", "Running Applications", "Advanced Settings",
+                "Add Widget", "Remove all Widgets",
+                "Turn Off"};
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {

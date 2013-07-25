@@ -112,7 +112,7 @@ public class Updater {
                         if (myVersion < betaVersion) {
                             AlertDialog.Builder builder = new AlertDialog.Builder(context);
                             builder.setTitle("New BETA Version Available !");
-                            String changesString = "Changes:\n" + changes + "\n";
+                            String changesString = "Changes:\n" + betaChanges + "\n";
                             builder.setMessage(changesString + "Download now?");
                             builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 @Override
