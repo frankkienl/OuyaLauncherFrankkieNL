@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="nl.frankkie.ouyalauncher"
-          android:versionCode="9"
-          android:versionName="1.0.3">
+          android:versionCode="10"
+          android:versionName="1.0.4-beta">
 
     <uses-sdk
             android:minSdkVersion="16"
             android:targetSdkVersion="16"/>
 
     <!-- Backgrounds and Thumbnails //-->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <!-- Turn off and Discover //-->
     <uses-permission android:name="android.permission.ACCESS_SUPERUSER"/>
     <!-- Analytics //-->

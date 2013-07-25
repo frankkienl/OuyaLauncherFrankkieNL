@@ -30,6 +30,9 @@ public class DatabaseAppInfo extends DatabaseRow implements IGridItem{
     public Drawable icon;
 
     @DatabaseExclude
+    public String animationPath;
+
+    @DatabaseExclude
     public Intent intent;
 
     public DatabaseAppInfo() {

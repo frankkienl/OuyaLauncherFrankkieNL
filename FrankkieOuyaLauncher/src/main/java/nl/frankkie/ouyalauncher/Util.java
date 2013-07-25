@@ -186,7 +186,7 @@ public class Util {
             }
             try {
                 copyResourceToFile(c, R.raw.logo_default, new File("/sdcard/FrankkieOuyaLauncher/logos/logo_default.png"));
-                copyResourceToFile(c, R.raw.logo_baxy_white_shadow, new File("/sdcard/FrankkieOuyaLauncher/logos/logo_baxy_white_shadow.pngshadow.png"));
+//                copyResourceToFile(c, R.raw.logo_baxy_white_shadow, new File("/sdcard/FrankkieOuyaLauncher/logos/logo_baxy_white_shadow.pngshadow.png"));
                 //copyResourceToFile(c, R.raw.logo_baxy_white, new File("/sdcard/FrankkieOuyaLauncher/logos/logo_baxy_white.png"));
                 //copyResourceToFile(c, R.raw.logo_ouya_black, new File("/sdcard/FrankkieOuyaLauncher/logos/logo_ouya_black.png"));
                 //copyResourceToFile(c, R.raw.logo_ouya_red, new File("/sdcard/FrankkieOuyaLauncher/logos/logo_ouya_red.png"));

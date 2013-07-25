@@ -803,6 +803,30 @@ public class MainActivity extends Activity {
         }
     }
 
+    public void getAppAnimation(DatabaseAppInfo info){
+        if (true){
+            return;
+        }
+        String packageName = info.intent.getComponent().getPackageName();
+        try {
+            android.content.pm.ApplicationInfo applicationInfo = getPackageManager().getApplicationInfo(packageName, 0);
+            Resources resources = getPackageManager().getResourcesForApplication(applicationInfo);
+            int identifier3 = resources.getIdentifier(packageName + ":raw/icon_animation", "", "");
+//            info.icon = getPackageManager().getResourcesForApplication(applicationInfo).getAssets();
+            //info.filtered = true;
+            ///////////////////
+            Bitmap bitmap = ((BitmapDrawable) info.icon).getBitmap();
+            // Scale it //http://stackoverflow.com/questions/4609456/android-set-drawable-size-programatically
+            BitmapDrawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, 480, 270, true));
+            //Save to file //http://stackoverflow.com/questions/649154/save-bitmap-to-location
+            FileOutputStream out = new FileOutputStream("/sdcard/FrankkieOuyaLauncher/thumbnails/" + packageName + ".png");
+            d.getBitmap().compress(Bitmap.CompressFormat.PNG, 90, out);
+            Runtime.getRuntime().gc(); //important
+        } catch (Exception e) {
+            Log.e("FrankkieOuyaLauncher", "ERROR", e);
+        }
+    }
+
     public void getIconImageOUYA(DatabaseAppInfo info) {
         String packageName = info.intent.getComponent().getPackageName();
         try {
@@ -891,7 +915,10 @@ public class MainActivity extends Activity {
             appInfo.icon = resolveInfo.loadIcon(getPackageManager());
             getIconImageAndroidApps(appInfo);
         }
-
+        //Animation
+        if (appInfo.isOUYA()){
+            getAppAnimation(appInfo);
+        }
         if (!appInfo.InDatabase()) {
             appInfo.OnInsert();
         } else {
