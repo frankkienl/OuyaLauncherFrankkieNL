@@ -18,13 +18,21 @@
                   android:layout_width="match_parent"
                   android:layout_height="match_parent">
 
-        <ImageView
-                android:scaleType="fitCenter"
-                android:adjustViewBounds="true"
-                android:id="@+id/item_image"
-                android:src="@drawable/ic_launcher"
+        <LinearLayout
+                android:id="@+id/item_image_container"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:gravity="center_horizontal"
+                android:layout_height="wrap_content">
+
+            <ImageView
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
+                    android:id="@+id/item_image"
+                    android:src="@drawable/ic_launcher"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+        </LinearLayout>
 
         <TextView
                 android:id="@+id/item_text"
@@ -44,6 +52,7 @@
                 android:layout_width="1px"
                 android:layout_height="1px"/>
     </LinearLayout>
+
     <ImageView
             android:layout_marginLeft="10dp"
             android:layout_marginTop="2dp"

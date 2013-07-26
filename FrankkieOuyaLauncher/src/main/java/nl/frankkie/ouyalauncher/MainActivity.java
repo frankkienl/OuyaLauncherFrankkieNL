@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.drm.DrmStore;
 import android.graphics.*;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -26,6 +27,7 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.*;
+import android.webkit.WebView;
 import android.widget.*;
 
 import com.flurry.android.FlurryAgent;
@@ -38,6 +40,7 @@ import tv.ouya.console.api.OuyaController;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -204,8 +207,8 @@ public class MainActivity extends Activity {
                 OuyaController.BUTTON_DPAD_UP,
                 OuyaController.BUTTON_DPAD_LEFT,
                 OuyaController.BUTTON_DPAD_RIGHT,
-                OuyaController.BUTTON_O,
-                OuyaController.BUTTON_A
+                OuyaController.BUTTON_O
+                //OuyaController.BUTTON_A
         };
         for (int i : ignoreList) {
             if (event.getKeyCode() == i) {
@@ -221,6 +224,10 @@ public class MainActivity extends Activity {
             showFilters();
             return true;
         }
+        if (event.getKeyCode() == OuyaController.BUTTON_A) {
+            pressedA();
+            return true;
+        }
         //check menu-key
         if (event.getKeyCode() == OuyaController.BUTTON_MENU || event.getKeyCode() == KeyEvent.KEYCODE_MENU) {
             pressedMenu();
@@ -229,6 +236,16 @@ public class MainActivity extends Activity {
         //Let the SDK take care of the rest
         boolean handled = OuyaController.onKeyDown(keyCode, event);
         return handled || super.onKeyDown(keyCode, event);
+    }
+
+    public void pressedA() {
+        if (currentFolder.length() > 1) {
+            currentFolder = "";
+            filter();
+            fillTable();
+        } else {
+            finish();
+        }
     }
 
     public void makeAppMenu(final DatabaseAppInfo info) {
@@ -687,6 +704,30 @@ public class MainActivity extends Activity {
         }
         ImageView img = (ImageView) layout.findViewById(R.id.item_image);
         img.setImageDrawable(info.getImage());
+        if (info.isOUYA() && !info.isFolder()){
+            if (info instanceof DatabaseAppInfo){
+                DatabaseAppInfo app = (DatabaseAppInfo) info;
+                if (app.animationPath != null && app.animationPath.length() > 1){
+                    ViewGroup group = (ViewGroup) layout.findViewById(R.id.item_image_container);
+                    img.setVisibility(View.GONE);
+                    WebView webView = new WebView(this);
+                    ViewGroup.LayoutParams params = webView.getLayoutParams();
+                    if (params == null){
+                        params = new ViewGroup.LayoutParams(240,135);
+                    }
+                    //Google should slap me in the face for this
+                    params.width = 240; //hard
+                    params.height = 135; //coded
+                    //ENDOF slap in face
+                    webView.setLayoutParams(params);
+                    webView.setEnabled(false);
+                    webView.setFocusable(false);
+                    webView.setInitialScale(100);
+                    webView.loadUrl("file://" + app.animationPath);
+                    group.addView(webView);
+                }
+            }
+        }
         ///
         if (info.isFavorite()) {
             layout.findViewById(R.id.item_star).setVisibility(View.VISIBLE);
@@ -803,26 +844,31 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void getAppAnimation(DatabaseAppInfo info){
-        if (true){
-            return;
-        }
+    public void getAppAnimation(DatabaseAppInfo info) {
         String packageName = info.intent.getComponent().getPackageName();
         try {
             android.content.pm.ApplicationInfo applicationInfo = getPackageManager().getApplicationInfo(packageName, 0);
             Resources resources = getPackageManager().getResourcesForApplication(applicationInfo);
-            int identifier3 = resources.getIdentifier(packageName + ":raw/icon_animation", "", "");
-//            info.icon = getPackageManager().getResourcesForApplication(applicationInfo).getAssets();
-            //info.filtered = true;
-            ///////////////////
-            Bitmap bitmap = ((BitmapDrawable) info.icon).getBitmap();
-            // Scale it //http://stackoverflow.com/questions/4609456/android-set-drawable-size-programatically
-            BitmapDrawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, 480, 270, true));
-            //Save to file //http://stackoverflow.com/questions/649154/save-bitmap-to-location
-            FileOutputStream out = new FileOutputStream("/sdcard/FrankkieOuyaLauncher/thumbnails/" + packageName + ".png");
-            d.getBitmap().compress(Bitmap.CompressFormat.PNG, 90, out);
+            int identifier = resources.getIdentifier(packageName + ":raw/icon_animation", "", "");
+            if (identifier != 0) {
+                InputStream in = resources.openRawResource(identifier);
+                //Save to file //http://stackoverflow.com/questions/649154/save-bitmap-to-location
+                FileOutputStream out = new FileOutputStream("/sdcard/FrankkieOuyaLauncher/animations/" + packageName + ".gif");
+                byte[] buff = new byte[1024];
+                int read = 0;
+                try {
+                    while ((read = in.read(buff)) > 0) {
+                        out.write(buff, 0, read);
+                    }
+                } finally {
+                    in.close();
+                    out.close();
+                }
+                info.animationPath = "/sdcard/FrankkieOuyaLauncher/animations/" + packageName + ".gif";
+            }
             Runtime.getRuntime().gc(); //important
         } catch (Exception e) {
+            info.animationPath = "";
             Log.e("FrankkieOuyaLauncher", "ERROR", e);
         }
     }
@@ -911,13 +957,15 @@ public class MainActivity extends Activity {
             } else {
                 getIconImageOUYA(appInfo);
             }
+            File animationFile = new File("/sdcard/FrankkieOuyaLauncher/animations/" + appInfo.packageName + ".gif");
+            if (animationFile.exists()) {
+                appInfo.animationPath = animationFile.getPath();
+            } else {
+                getAppAnimation(appInfo);
+            }
         } else {
             appInfo.icon = resolveInfo.loadIcon(getPackageManager());
             getIconImageAndroidApps(appInfo);
-        }
-        //Animation
-        if (appInfo.isOUYA()){
-            getAppAnimation(appInfo);
         }
         if (!appInfo.InDatabase()) {
             appInfo.OnInsert();

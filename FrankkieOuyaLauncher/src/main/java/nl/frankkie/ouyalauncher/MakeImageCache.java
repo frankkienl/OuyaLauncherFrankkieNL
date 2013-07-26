@@ -20,6 +20,7 @@ import android.os.AsyncTask;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 public class MakeImageCache extends AsyncTask<Void, Void, Void> {
@@ -33,11 +34,21 @@ public class MakeImageCache extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... voids) {
         //Make folder
-        File folder = new File("/sdcard/FrankkieOuyaLauncher/thumbnails/");
-        folder.mkdirs();
+        File thumbnailsFolder = new File("/sdcard/FrankkieOuyaLauncher/thumbnails/");
+        thumbnailsFolder.mkdirs();
         try {
             //add .nomedia
             File noMedia = new File("/sdcard/FrankkieOuyaLauncher/thumbnails/.nomedia");
+            noMedia.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //Make folder
+        File animationsFolder = new File("/sdcard/FrankkieOuyaLauncher/animations/");
+        animationsFolder.mkdirs();
+        try {
+            //add .nomedia
+            File noMedia = new File("/sdcard/FrankkieOuyaLauncher/animations/.nomedia");
             noMedia.createNewFile();
         } catch (IOException e) {
             e.printStackTrace();
@@ -95,6 +106,36 @@ public class MakeImageCache extends AsyncTask<Void, Void, Void> {
                     e.printStackTrace();
                 }
             }
+            //Animation
+            File animationFile = new File("/sdcard/FrankkieOuyaLauncher/animations/" + packageName + ".gif");
+            if (!animationFile.exists()) {
+                try {
+                    resources = packageManager.getResourcesForApplication(info.activityInfo.applicationInfo);
+                    int identifier = resources.getIdentifier(packageName + ":raw/icon_animation", "", "");
+                    if (identifier != 0) {
+                        InputStream in = resources.openRawResource(identifier);
+                        //Save to file //http://stackoverflow.com/questions/649154/save-bitmap-to-location
+                        FileOutputStream out = new FileOutputStream("/sdcard/FrankkieOuyaLauncher/animations/" + packageName + ".gif");
+                        byte[] buff = new byte[1024];
+                        int read = 0;
+                        try {
+                            while ((read = in.read(buff)) > 0) {
+                                out.write(buff, 0, read);
+                            }
+                        } finally {
+                            in.close();
+                            out.close();
+                        }
+                    }
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (Resources.NotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+            Runtime.getRuntime().gc();
         }
         return null;
     }

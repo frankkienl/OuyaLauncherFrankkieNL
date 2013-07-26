@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="nl.frankkie.ouyalauncher"
-          android:versionCode="10"
+          android:versionCode="11"
           android:versionName="1.0.4-beta">
 
     <uses-sdk
@@ -32,6 +32,7 @@
     http://developer.android.com/guide/topics/appwidgets/host.html
     <uses-permission android:name="android.permission.BIND_APPWIDGET" />
     //-->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
             android:allowBackup="true"
