@@ -6,6 +6,7 @@ package nl.frankkie.ouyalauncher;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.nfc.tech.IsoDep;
@@ -36,6 +37,7 @@ import nl.frankkie.ouyalauncher.databaserows.DatabaseAppInfo;
 public class Util {
 
     public static final String PREFS_BETA_ENABLED = "betaEnabled";
+    public static final String PREFS_MUSIC_FILE = "musicFile";
 
     public static String loadedBackgroundString;
     public static Drawable loadedBackground;
@@ -316,6 +318,20 @@ public class Util {
         params.put("packagename", info.packageName);
         params.put("title", info.getTitle());
         FlurryAgent.logEvent("AddRemove", params);
+    }
+
+    public static void onStop(Context context){
+        Intent i = new Intent();
+        i.setClass(context, BackgroundMusicService.class);
+        i.putExtra("cmd",BackgroundMusicService.CMD_CHECK);
+        context.startService(i);
+    }
+
+    public static void onStart(Context context){
+        Intent i = new Intent();
+        i.setClass(context, BackgroundMusicService.class);
+        i.putExtra("cmd",BackgroundMusicService.CMD_CHECK);
+        context.startService(i);
     }
 
 }

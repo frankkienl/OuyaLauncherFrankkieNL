@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.flurry.android.FlurryAgent;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -77,15 +79,17 @@ public class FeedbackActivity extends Activity {
             HttpClient client = new DefaultHttpClient();
             HttpPost request = new HttpPost("http://frankkie.nl/baxy/feedbackmail.php");
             ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+            String message = strings[0];
             String add = "";
             try {
                 int myVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
                 String myVersionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
                 add = "\nVersion: " + myVersion + "-" + myVersionName;
+                message += add;
             } catch (PackageManager.NameNotFoundException nnfe) {
                 nnfe.printStackTrace();
             }
-            params.add(new BasicNameValuePair("message", strings[0]));
+            params.add(new BasicNameValuePair("message", message));
             try {
                 request.setEntity(new UrlEncodedFormEntity(params));
             } catch (UnsupportedEncodingException e) {
@@ -125,5 +129,21 @@ public class FeedbackActivity extends Activity {
                 Toast.makeText(FeedbackActivity.this, s, Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Util.onStart(this);
+        //ANALYTICS
+        FlurryAgent.onStartSession(this, "MDHSMF65TV4JCSW3QN63");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Util.onStop(this);
+        //ANALYTICS
+        FlurryAgent.onEndSession(this);
     }
 }

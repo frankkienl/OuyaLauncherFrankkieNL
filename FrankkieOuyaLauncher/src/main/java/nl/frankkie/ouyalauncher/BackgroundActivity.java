@@ -40,7 +40,7 @@ public class BackgroundActivity extends Activity {
     }
 
     private void initBackgrounds() {
-        BackgroundsLoaderAsynTask task = new BackgroundsLoaderAsynTask();
+        BackgroundsLoaderAsyncTask task = new BackgroundsLoaderAsyncTask();
         task.execute();
     }
 
@@ -157,7 +157,7 @@ public class BackgroundActivity extends Activity {
         boolean isSelected = false;
     }
 
-    public class BackgroundsLoaderAsynTask extends AsyncTask<Void, Void, Void> {
+    public class BackgroundsLoaderAsyncTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... voids) {
             File dir = new File("/sdcard/FrankkieOuyaLauncher/backgrounds/");
@@ -197,6 +197,7 @@ public class BackgroundActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
+        Util.onStart(this);
         //ANALYTICS
         FlurryAgent.onStartSession(this, "MDHSMF65TV4JCSW3QN63");
     }
@@ -204,6 +205,7 @@ public class BackgroundActivity extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
+        Util.onStop(this);
         //ANALYTICS
         FlurryAgent.onEndSession(this);
     }

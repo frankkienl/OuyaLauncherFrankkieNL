@@ -35,4 +35,10 @@ http://lebannehn.deviantart.com/art/OUYA-controller-wallpaper-320123284
 http://browse.deviantart.com/art/MLP-wallpaper-288574310  
 http://browse.deviantart.com/art/Tux-Wallpaper-56168169
 
+Icons:
+http://www.iconarchive.com/show/multimedia-icons-by-aha-soft/music-note-SH-icon.html
+
+Music:
+http://www.jamendo.com/en/search?qs=q=tags_idstr:%22electronic%22%20AND%20tags_idstr:%22ambient%22%20AND%20tags_idstr:%22videogame%22
+
 This file was created by Android Studio (I/O Preview) AI-130.729444 for binding GitHub repository

@@ -1,7 +1,7 @@
 {
-   "newestVersion": 9,
-   "changes": "Fixed AppInfo (U); Removed KILL button from Running apps; Added feedback system; Added Beta-system; You can now see the version in the Settings Screen; Fixed height of Clock; Fixed the AppInfo-problem; Bugfix;",
-   "betaVersion" : 11,
-   "betaChanges": "Small BETA changes",
+   "newestVersion": 12,
+   "changes": "Back out of Folder with back-key; improved feedback; Added 'are you sure' at beta-button; refresh clock and logo;",
+   "betaVersion" : 13,
+   "betaChanges": "refresh clock and logo; small change in feedback; change in adding widgets (with config); Added 'are you sure' to beta; Experimental Background music",
    "comment": ""
  }

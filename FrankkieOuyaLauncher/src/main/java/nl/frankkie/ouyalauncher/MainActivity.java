@@ -704,27 +704,30 @@ public class MainActivity extends Activity {
         }
         ImageView img = (ImageView) layout.findViewById(R.id.item_image);
         img.setImageDrawable(info.getImage());
-        if (info.isOUYA() && !info.isFolder()){
-            if (info instanceof DatabaseAppInfo){
-                DatabaseAppInfo app = (DatabaseAppInfo) info;
-                if (app.animationPath != null && app.animationPath.length() > 1){
-                    ViewGroup group = (ViewGroup) layout.findViewById(R.id.item_image_container);
-                    img.setVisibility(View.GONE);
-                    WebView webView = new WebView(this);
-                    ViewGroup.LayoutParams params = webView.getLayoutParams();
-                    if (params == null){
-                        params = new ViewGroup.LayoutParams(240,135);
+        boolean beta = false;
+        if (beta) {
+            if (info.isOUYA() && !info.isFolder()) {
+                if (info instanceof DatabaseAppInfo) {
+                    DatabaseAppInfo app = (DatabaseAppInfo) info;
+                    if (app.animationPath != null && app.animationPath.length() > 1) {
+                        ViewGroup group = (ViewGroup) layout.findViewById(R.id.item_image_container);
+                        img.setVisibility(View.GONE);
+                        WebView webView = new WebView(this);
+                        ViewGroup.LayoutParams params = webView.getLayoutParams();
+                        if (params == null) {
+                            params = new ViewGroup.LayoutParams(240, 135);
+                        }
+                        //Google should slap me in the face for this
+                        params.width = 240; //hard
+                        params.height = 135; //coded
+                        //ENDOF slap in face
+                        webView.setLayoutParams(params);
+                        webView.setEnabled(false);
+                        webView.setFocusable(false);
+                        webView.setInitialScale(100);
+                        webView.loadUrl("file://" + app.animationPath);
+                        group.addView(webView);
                     }
-                    //Google should slap me in the face for this
-                    params.width = 240; //hard
-                    params.height = 135; //coded
-                    //ENDOF slap in face
-                    webView.setLayoutParams(params);
-                    webView.setEnabled(false);
-                    webView.setFocusable(false);
-                    webView.setInitialScale(100);
-                    webView.loadUrl("file://" + app.animationPath);
-                    group.addView(webView);
                 }
             }
         }
@@ -911,6 +914,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
+        Util.onStart(this);
         //ANALYTICS
         FlurryAgent.onStartSession(this, "MDHSMF65TV4JCSW3QN63");
     }
@@ -918,6 +922,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
+        Util.onStop(this);
         //ANALYTICS
         FlurryAgent.onEndSession(this);
     }

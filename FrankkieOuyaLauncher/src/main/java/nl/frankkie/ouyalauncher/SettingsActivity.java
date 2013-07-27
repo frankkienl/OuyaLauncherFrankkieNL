@@ -1,8 +1,10 @@
 package nl.frankkie.ouyalauncher;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.WallpaperManager;
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -102,13 +104,33 @@ public class SettingsActivity extends Activity {
                 Util.setClock(SettingsActivity.this);
             }
         });
-        ToggleButton betaToggleButton = (ToggleButton) findViewById(R.id.settings_version_beta_togglebutton);
+        final ToggleButton betaToggleButton = (ToggleButton) findViewById(R.id.settings_version_beta_togglebutton);
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         betaToggleButton.setChecked(prefs.getBoolean(Util.PREFS_BETA_ENABLED, false));
         betaToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                prefs.edit().putBoolean(Util.PREFS_BETA_ENABLED, b).commit();
+                if (b) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
+                    builder.setTitle("Are you sure?");
+                    builder.setMessage("Are you sure you want enable BETA?\nThe BETA-version Will have bugs and Strange Features!\nIf you are not sure you can handle that stick with stable releases.");
+                    builder.setPositiveButton("Enable BETA", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            prefs.edit().putBoolean(Util.PREFS_BETA_ENABLED, true).commit();
+                        }
+                    });
+                    builder.setNegativeButton("No thank you", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            prefs.edit().putBoolean(Util.PREFS_BETA_ENABLED, false).commit();
+                            betaToggleButton.setChecked(false);
+                        }
+                    });
+                    builder.create().show();
+                } else {
+                    prefs.edit().putBoolean(Util.PREFS_BETA_ENABLED, false).commit();
+                }
             }
         });
         Button feedbackBtn = (Button) findViewById(R.id.settings_feedback_btn);
@@ -117,6 +139,17 @@ public class SettingsActivity extends Activity {
             public void onClick(View view) {
                 Intent i = new Intent();
                 i.setClass(SettingsActivity.this, FeedbackActivity.class);
+                startActivity(i);
+            }
+        });
+
+        Button musicBtn = (Button) findViewById(R.id.settings_music);
+        musicBtn.setVisibility(View.GONE); //BETA
+        musicBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent();
+                i.setClass(SettingsActivity.this, BackgroundMusicActivity.class);
                 startActivity(i);
             }
         });
@@ -134,6 +167,7 @@ public class SettingsActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
+        Util.onStart(this);
         //ANALYTICS
         FlurryAgent.onStartSession(this, "MDHSMF65TV4JCSW3QN63");
     }
@@ -141,6 +175,7 @@ public class SettingsActivity extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
+        Util.onStop(this);
         //ANALYTICS
         FlurryAgent.onEndSession(this);
     }

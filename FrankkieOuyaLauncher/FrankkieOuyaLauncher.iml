@@ -6,6 +6,7 @@
         <option name="SELECTED_BUILD_VARIANT" value="Debug" />
         <option name="ASSEMBLE_TASK_NAME" value="assembleDebug" />
         <option name="ASSEMBLE_TEST_TASK_NAME" value="assembleTest" />
+        <option name="SOURCE_GEN_TASK_NAME" value="TODO" />
         <option name="ALLOW_USER_CONFIGURATION" value="false" />
         <option name="MANIFEST_FILE_RELATIVE_PATH" value="/src/main/AndroidManifest.xml" />
         <option name="RES_FOLDER_RELATIVE_PATH" value="/src/main/res" />
@@ -67,10 +68,10 @@
     </content>
     <orderEntry type="jdk" jdkName="Android 4.2.2 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="android-support-v4" level="project" />
-    <orderEntry type="library" name="ouya-sdk" level="project" />
-    <orderEntry type="library" name="Flurry_3.2.1" level="project" />
-    <orderEntry type="library" name="annotations" level="project" />
+    <orderEntry type="library" exported="" name="android-support-v4" level="project" />
+    <orderEntry type="library" exported="" name="ouya-sdk" level="project" />
+    <orderEntry type="library" exported="" name="Flurry_3.2.1" level="project" />
+    <orderEntry type="library" exported="" name="annotations" level="project" />
   </component>
 </module>
 

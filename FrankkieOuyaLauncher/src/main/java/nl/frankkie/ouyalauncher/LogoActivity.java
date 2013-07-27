@@ -143,6 +143,7 @@ public class LogoActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
+        Util.onStart(this);
         //ANALYTICS
         FlurryAgent.onStartSession(this, "MDHSMF65TV4JCSW3QN63");
     }
@@ -150,6 +151,7 @@ public class LogoActivity extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
+        Util.onStop(this);
         //ANALYTICS
         FlurryAgent.onEndSession(this);
     }

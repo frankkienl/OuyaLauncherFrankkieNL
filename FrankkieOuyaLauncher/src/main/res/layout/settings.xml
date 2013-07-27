@@ -177,6 +177,13 @@
 
                 </LinearLayout>
 
+                <Button
+                        android:id="@+id/settings_music"
+                        android:text="Background Music"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        />
+
                 <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

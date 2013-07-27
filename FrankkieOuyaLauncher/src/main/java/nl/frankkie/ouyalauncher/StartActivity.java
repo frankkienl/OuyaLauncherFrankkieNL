@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -121,7 +122,17 @@ public class StartActivity extends Activity {
         if (requestCode == REQUEST_PICK_APPWIDGET){
             addAppWidget(data);
         } else if (requestCode == REQUEST_CREATE_APPWIDGET){
-            //TODO
+            // Otherwise, finish adding the widget.
+            Log.e("BAXY", "requestCode == REQUEST_CREATE_APPWIDGET");
+            int appWidgetId = data.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+            AppWidgetProviderInfo appWidget = appWidgetManager.getAppWidgetInfo(appWidgetId);
+            DatabaseOpenHelper helper = DatabaseOpenHelper.CreateInstance(this);
+            DatabaseAppWidget databaseAppWidget = new DatabaseAppWidget();
+            databaseAppWidget.info = appWidget;
+            databaseAppWidget.appWidgetId = appWidgetId;
+            databaseAppWidget.OnInsert();
+            placeWidget(appWidgetId, appWidget);
         }
     }
 
@@ -160,8 +171,8 @@ public class StartActivity extends Activity {
         //Fix Background on First Use (update)
         fixBackgroundOnFirstUse();
         ///
-        Util.setLogo(this);
-        Util.setClock(this);
+        //Util.setLogo(this); moved to refreshWidgets();
+        //Util.setClock(this);
         Button btnAll = (Button) findViewById(R.id.start_all);
         Button btnGames = (Button) findViewById(R.id.start_games);
         Button btnApps = (Button) findViewById(R.id.start_apps);
@@ -310,15 +321,15 @@ public class StartActivity extends Activity {
                         goToAdvancedSettings();
                         break;
                     }
+//                    case 3: {
+//                        addWidget();
+//                        break;
+//                    }
+//                    case 4: {
+//                        removeAllWidgets();
+//                        break;
+//                    }
                     case 3: {
-                        addWidget();
-                        break;
-                    }
-                    case 4: {
-                        removeAllWidgets();
-                        break;
-                    }
-                    case 5: {
                         turnOuyaOff();
                         break;
                     }
@@ -380,6 +391,8 @@ public class StartActivity extends Activity {
         super.onStart();
         //ANALYTICS
         FlurryAgent.onStartSession(this, "MDHSMF65TV4JCSW3QN63");
+        //
+        Util.onStart(this);
         //Update Check
         Updater updater = Updater.getInstance(this);
         updater.startUpdateCheck();
@@ -412,6 +425,8 @@ public class StartActivity extends Activity {
     }
 
     public void refreshWidgets(){
+        Util.setClock(this);
+        Util.setLogo(this);
         //check existing widgets!
         DatabaseOpenHelper helper = DatabaseOpenHelper.CreateInstance(this);
         Cursor cursor = helper.WriteableDatabase.rawQuery("SELECT id FROM appwidget", null);
@@ -430,10 +445,11 @@ public class StartActivity extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
-        //ANALYTICS
-        FlurryAgent.onEndSession(this);
+        Util.onStop(this);
         //Widgets
         appWidgetHost.stopListening();
+        //ANALYTICS
+        FlurryAgent.onEndSession(this);
     }
 
     private class StartDiscoverRootAsyncTask extends AsyncTask<Void, Void, Void> {
