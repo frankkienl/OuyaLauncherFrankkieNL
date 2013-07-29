@@ -36,6 +36,8 @@ import nl.frankkie.ouyalauncher.databaserows.DatabaseAppInfo;
  */
 public class Util {
 
+    public static final boolean BETA = true; //!!!
+
     public static final String PREFS_BETA_ENABLED = "betaEnabled";
     public static final String PREFS_MUSIC_FILE = "musicFile";
 

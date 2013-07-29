@@ -144,7 +144,9 @@ public class SettingsActivity extends Activity {
         });
 
         Button musicBtn = (Button) findViewById(R.id.settings_music);
-        musicBtn.setVisibility(View.GONE); //BETA
+        if (!Util.BETA) {
+            musicBtn.setVisibility(View.GONE); //BETA
+        }
         musicBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

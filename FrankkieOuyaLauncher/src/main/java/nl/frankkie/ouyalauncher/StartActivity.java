@@ -104,7 +104,7 @@ public class StartActivity extends Activity {
         }
     }
 
-    public void placeWidget(int appWidgetId, AppWidgetProviderInfo appWidget){
+    public void placeWidget(int appWidgetId, AppWidgetProviderInfo appWidget) {
         View v = appWidgetHost.createView(this, appWidgetId, appWidget);
         //remove clock to make room for widgets
         findViewById(R.id.clock_container).setVisibility(View.GONE);
@@ -116,12 +116,12 @@ public class StartActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 //        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != RESULT_OK){
+        if (resultCode != RESULT_OK) {
             return;
         }
-        if (requestCode == REQUEST_PICK_APPWIDGET){
+        if (requestCode == REQUEST_PICK_APPWIDGET) {
             addAppWidget(data);
-        } else if (requestCode == REQUEST_CREATE_APPWIDGET){
+        } else if (requestCode == REQUEST_CREATE_APPWIDGET) {
             // Otherwise, finish adding the widget.
             Log.e("BAXY", "requestCode == REQUEST_CREATE_APPWIDGET");
             int appWidgetId = data.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
@@ -135,7 +135,6 @@ public class StartActivity extends Activity {
             placeWidget(appWidgetId, appWidget);
         }
     }
-
 
 
     private void startImageCaching() {
@@ -302,9 +301,15 @@ public class StartActivity extends Activity {
     private void showMenuDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Menu");
-        String[] items = new String[]{"Launcher Settings", "Running Applications", "Advanced Settings",
-                "Add Widget", "Remove all Widgets",
-                "Turn Off"};
+        String[] items = null;
+        if (Util.BETA) {
+            items = new String[]{"Launcher Settings", "Running Applications", "Advanced Settings",
+                    "Add Widget", "Remove all Widgets",
+                    "Turn Off"};
+        } else {
+            items = new String[]{"Launcher Settings", "Running Applications", "Advanced Settings",
+                    "Turn Off"};
+        }
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -321,15 +326,19 @@ public class StartActivity extends Activity {
                         goToAdvancedSettings();
                         break;
                     }
-//                    case 3: {
-//                        addWidget();
-//                        break;
-//                    }
-//                    case 4: {
-//                        removeAllWidgets();
-//                        break;
-//                    }
                     case 3: {
+                        if (Util.BETA) {
+                            addWidget();
+                        } else {
+                            turnOuyaOff();
+                        }
+                        break;
+                    }
+                    case 4: {
+                        removeAllWidgets();
+                        break;
+                    }
+                    case 5: {
                         turnOuyaOff();
                         break;
                     }
@@ -401,7 +410,7 @@ public class StartActivity extends Activity {
         refreshWidgets();
     }
 
-    public void removeAllWidgets(){
+    public void removeAllWidgets() {
         ViewGroup group = (ViewGroup) findViewById(R.id.widgets_container);
         group.removeAllViews();
         //Get Clock Back :P
@@ -410,13 +419,13 @@ public class StartActivity extends Activity {
         DatabaseOpenHelper helper = DatabaseOpenHelper.CreateInstance(this);
         Cursor cursor = helper.WriteableDatabase.rawQuery("SELECT id FROM appwidget", null);
         ArrayList<Integer> ids = new ArrayList<Integer>();
-        while (cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             int id = cursor.getInt(0);
             ids.add(id);
         }
         cursor.close();
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-        for (int id : ids){
+        for (int id : ids) {
             DatabaseAppWidget databaseAppWidget = new DatabaseAppWidget(id);
             //databaseAppWidget.OnLoad();
             appWidgetHost.deleteAppWidgetId(id);
@@ -424,14 +433,14 @@ public class StartActivity extends Activity {
         }
     }
 
-    public void refreshWidgets(){
+    public void refreshWidgets() {
         Util.setClock(this);
         Util.setLogo(this);
         //check existing widgets!
         DatabaseOpenHelper helper = DatabaseOpenHelper.CreateInstance(this);
         Cursor cursor = helper.WriteableDatabase.rawQuery("SELECT id FROM appwidget", null);
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-        while (cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             int id = cursor.getInt(0);
             DatabaseAppWidget databaseAppWidget = new DatabaseAppWidget(id);
             databaseAppWidget.OnLoad();
