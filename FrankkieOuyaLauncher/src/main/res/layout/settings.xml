@@ -23,7 +23,7 @@
                 android:layout_height="wrap_content">
 
             <ImageView
-                    android:src="@drawable/logo_default"
+                    android:src="@drawable/logo_default_old"
                     android:layout_margin="10dp"
                     android:scaleType="fitStart"
                     android:id="@+id/logo"

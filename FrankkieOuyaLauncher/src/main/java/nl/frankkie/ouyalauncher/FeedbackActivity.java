@@ -1,5 +1,7 @@
 package nl.frankkie.ouyalauncher;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -8,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -56,6 +59,7 @@ public class FeedbackActivity extends Activity {
             public void onClick(View view) {
                 SendFeedbackTask task = new SendFeedbackTask(FeedbackActivity.this);
                 task.execute(editText.getText().toString());
+                Util.logSendFeedback(FeedbackActivity.this);
             }
         });
 
@@ -85,6 +89,8 @@ public class FeedbackActivity extends Activity {
                 int myVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
                 String myVersionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
                 add = "\nVersion: " + myVersion + "-" + myVersionName;
+                String email = AccountManager.get(FeedbackActivity.this).getAccountsByType("tv.ouya.account.v1")[0].name;
+                add += "\nEmail: " + email;
                 message += add;
             } catch (PackageManager.NameNotFoundException nnfe) {
                 nnfe.printStackTrace();

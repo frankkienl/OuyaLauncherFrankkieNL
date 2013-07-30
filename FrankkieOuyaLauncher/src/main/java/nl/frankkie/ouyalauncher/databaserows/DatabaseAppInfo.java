@@ -165,7 +165,7 @@ public class DatabaseAppInfo extends DatabaseRow implements IGridItem{
         if (iGridItem.isFolder()){
             return 1;
         } else {
-            return getTitle().compareTo(iGridItem.getTitle()); //compare by name
+            return getTitle().toLowerCase().compareTo(iGridItem.getTitle().toLowerCase()); //compare by name
         }
     }
 }

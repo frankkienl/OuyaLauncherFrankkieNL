@@ -99,6 +99,8 @@ public class BackgroundMusicActivity extends Activity {
         i.setClass(this,BackgroundMusicService.class);
         i.putExtra("cmd",BackgroundMusicService.CMD_RESTART);
         startService(i);
+        //
+        Util.logSetMusic(this,path);
     }
 
     public class MyMusic{

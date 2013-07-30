@@ -93,6 +93,7 @@ public class StartActivity extends Activity {
             intent.setComponent(appWidget.configure);
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             startActivityForResult(intent, REQUEST_CREATE_APPWIDGET);
+            Util.logAddWidgetConfigure(this, appWidget.provider.getPackageName());
         } else {
             // Otherwise, finish adding the widget.
             DatabaseOpenHelper helper = DatabaseOpenHelper.CreateInstance(this);
@@ -101,6 +102,7 @@ public class StartActivity extends Activity {
             databaseAppWidget.appWidgetId = appWidgetId;
             databaseAppWidget.OnInsert();
             placeWidget(appWidgetId, appWidget);
+            Util.logAddWidget(this, appWidget.provider.getPackageName());
         }
     }
 

@@ -704,8 +704,7 @@ public class MainActivity extends Activity {
         }
         ImageView img = (ImageView) layout.findViewById(R.id.item_image);
         img.setImageDrawable(info.getImage());
-        boolean beta = true;
-        if (beta) {
+        if (Util.BETA) {
             if (info.isOUYA() && !info.isFolder()) {
                 if (info instanceof DatabaseAppInfo) {
                     DatabaseAppInfo app = (DatabaseAppInfo) info;

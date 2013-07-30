@@ -9,24 +9,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
-import android.nfc.tech.IsoDep;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextClock;
-import android.widget.TextView;
 
 import com.flurry.android.FlurryAgent;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import nl.frankkie.ouyalauncher.databaserows.DatabaseAppInfo;
 
@@ -169,7 +160,7 @@ public class Util {
         } else if(logoType.equals("OUYA")){
             return R.drawable.logo_ouya_red;
         }
-        return R.drawable.logo_default;
+        return R.drawable.logo_default_old;
     }
 
     @Deprecated
@@ -199,7 +190,7 @@ public class Util {
                 e.printStackTrace();
             }
             //Return Default !
-            return c.getResources().getDrawable(R.drawable.logo_default);
+            return c.getResources().getDrawable(R.drawable.logo_default_old);
         }
 
         //Check preference
@@ -210,7 +201,7 @@ public class Util {
             //The selected custom background does not exist..
             //Return Default !
             Log.e("FrankkieOuyaLauncher", "Selected Logo does not exist !! (return default)");
-            return c.getResources().getDrawable(R.drawable.logo_default);
+            return c.getResources().getDrawable(R.drawable.logo_default_old);
         }
         //File does exist
         //Check if already loaded
@@ -229,7 +220,7 @@ public class Util {
             e.printStackTrace();
         }
         //Default
-        return c.getResources().getDrawable(R.drawable.logo_default);
+        return c.getResources().getDrawable(R.drawable.logo_default_old);
     }
 
     public static void copyResourceToFile(Context c, int resourceId, File file) throws IOException {
@@ -320,6 +311,48 @@ public class Util {
         params.put("packagename", info.packageName);
         params.put("title", info.getTitle());
         FlurryAgent.logEvent("AddRemove", params);
+    }
+
+    public static void logAddWidgetConfigure(Context context, String packagename){
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("packagename", packagename);
+        FlurryAgent.logEvent("AddWidgetConfigure", params);
+    }
+
+    public static void logAddWidget(Context context, String packagename){
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("packagename", packagename);
+        FlurryAgent.logEvent("AddWidget", params);
+    }
+
+    public static void logSetClock(Context context, String type){
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("type", type);
+        FlurryAgent.logEvent("SetClock", params);
+    }
+
+    public static void logSetLogo(Context context, String type){
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("type", type);
+        FlurryAgent.logEvent("SetLogo", params);
+    }
+
+    public static void logSetMusic(Context context, String path){
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("path", path);
+        FlurryAgent.logEvent("SetMusic", params);
+    }
+
+    public static void logSendFeedback(Context context){
+        FlurryAgent.logEvent("SetMusic");
+    }
+
+    public static void logBetaEnable(Context context){
+        FlurryAgent.logEvent("BetaEnable");
+    }
+
+    public static void logBetaDisable(Context context){
+        FlurryAgent.logEvent("BetaDisable");
     }
 
     public static void onStop(Context context){

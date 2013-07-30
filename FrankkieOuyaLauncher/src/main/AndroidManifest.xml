@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="nl.frankkie.ouyalauncher"
-          android:versionCode="12"
-          android:versionName="1.0.4">
+          android:versionCode="9001"
+          android:versionName="1.0.6-beta">
 
     <uses-sdk
             android:minSdkVersion="16"
@@ -24,6 +24,8 @@
     <uses-permission android:name="com.android.launcher.permission.WRITE_SETTINGS"/>
     <uses-permission android:name="android.permission.SET_WALLPAPER"/>
     <uses-permission android:name="android.permission.SET_WALLPAPER_HINTS"/>
+    <!-- get email for feedback //-->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <!--
     This will only be granted to system apps
     <uses-permission android:name="android.permission.BIND_WALLPAPER" />

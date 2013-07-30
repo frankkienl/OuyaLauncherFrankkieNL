@@ -96,7 +96,7 @@ public class DatabaseFolder extends DatabaseRow implements IGridItem {
     @Override
     public int compareTo(IGridItem iGridItem) {
         if (iGridItem.isFolder()){
-            return getFolderName().compareTo(iGridItem.getFolderName()); //compare by name
+            return getFolderName().toLowerCase().compareTo(iGridItem.getFolderName().toLowerCase()); //compare by name
         } else {
             return -1; //always before non foldes
         }

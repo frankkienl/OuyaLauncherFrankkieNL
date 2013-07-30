@@ -73,6 +73,7 @@ public class SettingsActivity extends Activity {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
                 prefs.edit().putString("logoType", "BAXY").commit();
                 Util.setLogo(SettingsActivity.this);
+                Util.logSetLogo(SettingsActivity.this,"BAXY");
             }
         });
 
@@ -83,6 +84,7 @@ public class SettingsActivity extends Activity {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
                 prefs.edit().putString("logoType", "OUYA").commit();
                 Util.setLogo(SettingsActivity.this);
+                Util.logSetLogo(SettingsActivity.this,"OUYA");
             }
         });
 
@@ -93,6 +95,7 @@ public class SettingsActivity extends Activity {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
                 prefs.edit().putString("clockType", "analog").commit();
                 Util.setClock(SettingsActivity.this);
+                Util.logSetClock(SettingsActivity.this,"analog");
             }
         });
         Button clockDigital = (Button) findViewById(R.id.settings_digital_clock);
@@ -102,22 +105,29 @@ public class SettingsActivity extends Activity {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
                 prefs.edit().putString("clockType", "digital").commit();
                 Util.setClock(SettingsActivity.this);
+                Util.logSetClock(SettingsActivity.this,"digital");
             }
         });
         final ToggleButton betaToggleButton = (ToggleButton) findViewById(R.id.settings_version_beta_togglebutton);
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         betaToggleButton.setChecked(prefs.getBoolean(Util.PREFS_BETA_ENABLED, false));
+        if (Util.BETA){
+            betaToggleButton.setChecked(true);
+            betaToggleButton.setEnabled(false);
+            prefs.edit().putBoolean(Util.PREFS_BETA_ENABLED, true).commit();
+        }
         betaToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
                     builder.setTitle("Are you sure?");
-                    builder.setMessage("Are you sure you want enable BETA?\nThe BETA-version Will have bugs and Strange Features!\nIf you are not sure you can handle that stick with stable releases.");
+                    builder.setMessage("Are you sure you want enable BETA?\nThe BETA-version Will have bugs and Strange Features!\nIf you are not sure you can handle that stick with stable releases.\nAlso: There is no turning back! (Or you will need to reinstall BAXY)");
                     builder.setPositiveButton("Enable BETA", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             prefs.edit().putBoolean(Util.PREFS_BETA_ENABLED, true).commit();
+                            Util.logBetaEnable(SettingsActivity.this);
                         }
                     });
                     builder.setNegativeButton("No thank you", new DialogInterface.OnClickListener() {
@@ -125,6 +135,7 @@ public class SettingsActivity extends Activity {
                         public void onClick(DialogInterface dialogInterface, int i) {
                             prefs.edit().putBoolean(Util.PREFS_BETA_ENABLED, false).commit();
                             betaToggleButton.setChecked(false);
+                            Util.logBetaDisable(SettingsActivity.this);
                         }
                     });
                     builder.create().show();
