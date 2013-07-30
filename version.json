@@ -1,7 +1,7 @@
 {
-   "newestVersion": 12,
-   "changes": "Back out of Folder with back-key; improved feedback; Added 'are you sure' at beta-button; refresh clock and logo;",
-   "betaVersion" : 13,
-   "betaChanges": "refresh clock and logo; small change in feedback; change in adding widgets (with config); Added 'are you sure' to beta; Experimental Background music",
-   "comment": ""
+   "newestVersion": 15,
+   "changes": "Feedback improvement; Sorting fixed; new BAXY Logo; fixed menu at start;",
+   "betaVersion" : 9001,
+   "betaChanges": "Feedback improvement; Sorting fixed; new BAXY Logo",
+   "comment": "widgets; background music; icon animation"
  }
