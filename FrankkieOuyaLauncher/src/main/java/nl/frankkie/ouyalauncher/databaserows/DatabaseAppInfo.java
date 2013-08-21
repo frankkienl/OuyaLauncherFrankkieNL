@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 
+import flexjson.JSON;
 import nl.frankkie.ouyalauncher.IGridItem;
 import nl.wotuu.database.DatabaseOpenHelper;
 import nl.wotuu.database.DatabaseRow;
@@ -34,6 +35,7 @@ public class DatabaseAppInfo extends DatabaseRow implements IGridItem{
 
     @DatabaseExclude
     public Intent intent;
+
 
     public DatabaseAppInfo() {
         super(DatabaseOpenHelper.GetInstance().GetTableName(DatabaseAppInfo.class));
@@ -105,61 +107,73 @@ public class DatabaseAppInfo extends DatabaseRow implements IGridItem{
         return title;
     }
 
+    @JSON(include = false)
     @Override
     public Drawable getImage() {
         return icon;
     }
 
+    @JSON(include = false)
     @Override
     public boolean isOUYA() {
         return (isOUYA == 1);
     }
 
+    @JSON(include = false)
     @Override
     public boolean isOUYAGame() {
         return (isOUYAGame == 1);
     }
 
+    @JSON(include = false)
     @Override
     public boolean isFavorite() {
         return (isFavorite == 1);
     }
 
+    @JSON(include = false)
     @Override
     public boolean isFolder() {
         return false;
     }
 
+    @JSON(include = false)
     @Override
     public boolean isInFolder() {
         return (folder != null && folder.length() > 1);
     }
 
+    @JSON(include = false)
     @Override
     public String getFolderName() {
         return folder;
     }
 
+    @JSON(include = false)
     @Override
     public int getGridWidth() {
         return 1;
     }
 
+    @JSON(include = false)
     @Override
     public int getGridHeight() {
         return 1;
     }
 
+    @JSON(include = false)
     @Override
     public int getGridPosX() {
         return 0;
     }
 
+    @JSON(include = false)
     @Override
     public int getGridPosY() {
         return 0;
     }
 
+    @JSON(include = false)
     @Override
     public int compareTo(IGridItem iGridItem){
         if (iGridItem.isFolder()){

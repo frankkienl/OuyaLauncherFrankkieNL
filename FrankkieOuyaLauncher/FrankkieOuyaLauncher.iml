@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.path="C:\Dropbox\AndroidStudio_apps2\OuyaLauncherFrankkieNL" external.system.id="GRADLE" type="JAVA_MODULE" version="4">
+<module external.linked.project.path="$MODULE_DIR$" external.system.id="GRADLE" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="android" name="Android">
       <configuration>
@@ -72,6 +72,8 @@
     <orderEntry type="library" exported="" name="ouya-sdk" level="project" />
     <orderEntry type="library" exported="" name="Flurry_3.2.1" level="project" />
     <orderEntry type="library" exported="" name="annotations" level="project" />
+    <orderEntry type="library" exported="" name="urlimageviewhelper-1.0.4" level="project" />
+    <orderEntry type="library" exported="" name="flexjson-2.1" level="project" />
   </component>
 </module>
 

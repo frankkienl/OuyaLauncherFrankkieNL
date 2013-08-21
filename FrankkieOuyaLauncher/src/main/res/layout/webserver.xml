@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:orientation="vertical"
+              android:id="@+id/layout_background"
+              android:layout_height="match_parent">
+
+    <LinearLayout
+            android:id="@+id/main_container_of_scrollview"
+            android:orientation="vertical"
+            android:layout_margin="25dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <RelativeLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <ImageView
+                    android:src="@drawable/logo_default_old"
+                    android:layout_margin="10dp"
+                    android:scaleType="fitStart"
+                    android:adjustViewBounds="true"
+                    android:id="@+id/logo"
+                    android:layout_marginRight="40dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="80dp"/>
+
+            <LinearLayout
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="@drawable/textback_small"
+                    android:layout_centerHorizontal="true"
+                    android:layout_width="wrap_content"
+                    android:layout_marginTop="100dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="20dp">
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="22sp"
+                        android:textColor="#FFF"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:id="@+id/webserver_tv1"
+                        android:text="Please use our browser on your PC and go to:\n"
+                        />
+            </LinearLayout>
+
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_gravity="bottom"
+                    android:layout_margin="10dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                <LinearLayout
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@drawable/textback_small"
+                        android:layout_width="wrap_content"
+                        android:layout_marginRight="20dp">
+
+                    <ImageView
+                            android:src="@drawable/btn_ouya_o"
+                            android:scaleType="fitStart"
+                            android:adjustViewBounds="true"
+                            android:layout_gravity="bottom"
+                            android:layout_width="wrap_content"
+                            android:layout_height="35dp"/>
+
+                    <TextView
+                            android:text="OK"
+                            android:gravity="bottom"
+                            android:layout_marginBottom="5dp"
+                            android:layout_marginRight="5dp"
+                            android:textSize="20sp"
+                            android:textColor="#FFF"
+                            android:layout_height="match_parent"
+                            android:layout_width="wrap_content"/>
+                </LinearLayout>
+
+                <LinearLayout
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@drawable/textback_small"
+                        android:layout_width="wrap_content"
+                        android:layout_marginRight="5dp">
+
+                    <ImageView
+                            android:src="@drawable/btn_ouya_a"
+                            android:scaleType="fitStart"
+                            android:adjustViewBounds="true"
+                            android:layout_gravity="bottom"
+                            android:layout_width="wrap_content"
+                            android:layout_height="35dp"/>
+
+                    <TextView
+                            android:text="Back"
+                            android:gravity="bottom"
+                            android:textColor="#FFF"
+                            android:layout_marginBottom="5dp"
+                            android:layout_marginRight="5dp"
+                            android:textSize="20sp"
+                            android:layout_height="match_parent"
+                            android:layout_width="wrap_content"/>
+                </LinearLayout>
+            </LinearLayout>
+        </RelativeLayout>
+
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/webserver_qr"
+                    />
+
+            <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/table">
+
+                    <TextView
+                            android:id="@+id/webserver_tv2"
+                            android:text="Log:"
+                            android:textSize="25sp"
+                            style="@style/ShadowText"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            />
+                </LinearLayout>
+            </ScrollView>
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

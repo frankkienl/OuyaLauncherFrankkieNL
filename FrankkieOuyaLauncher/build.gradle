@@ -8,11 +8,17 @@ buildscript {
 }
 apply plugin: 'android'
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     compile files('libs/android-support-v4.jar')
     compile files('libs/ouya-sdk.jar')
     compile files('libs/Flurry_3.2.1.jar')
     compile files('libs/annotations.jar')
+    compile files('libs/urlimageviewhelper-1.0.4.jar')
+    compile files('libs/flexjson-2.1.jar')
 }
 
 android {

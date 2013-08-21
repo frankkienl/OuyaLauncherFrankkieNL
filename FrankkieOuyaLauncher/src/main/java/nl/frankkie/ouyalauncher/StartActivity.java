@@ -307,7 +307,7 @@ public class StartActivity extends Activity {
         if (Util.BETA) {
             items = new String[]{"Launcher Settings", "Running Applications", "Advanced Settings",
                     "Add Widget", "Remove all Widgets",
-                    "Turn Off"};
+                    "Turn Off"}; //todo webserver
         } else {
             items = new String[]{"Launcher Settings", "Running Applications", "Advanced Settings",
                     "Turn Off"};
@@ -344,10 +344,20 @@ public class StartActivity extends Activity {
                         turnOuyaOff();
                         break;
                     }
+                    case 6: {
+                        startWebserver();
+                        break;
+                    }
                 }
             }
         });
         builder.create().show();
+    }
+
+    private void startWebserver() {
+        Intent i = new Intent();
+        i.setClass(this, WebserverActivity.class);
+        startActivity(i);
     }
 
     private void goToAdvancedSettings() {
@@ -373,11 +383,18 @@ public class StartActivity extends Activity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Turn off console?");
 //        builder.setTitle("OUYA");
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        builder.setNeutralButton("Yes (Standby)", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 TurnOffAsyncTask task = new TurnOffAsyncTask();
-                task.execute();
+                task.execute("standby");
+            }
+        });
+        builder.setPositiveButton("Yes (Really off)", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                TurnOffAsyncTask task = new TurnOffAsyncTask();
+                task.execute("off");
             }
         });
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -491,19 +508,49 @@ public class StartActivity extends Activity {
 
     }
 
-    private class TurnOffAsyncTask extends AsyncTask<Void, Void, Void> {
+    private class TurnOffAsyncTask extends AsyncTask<String, Void, Void> {
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Void doInBackground(String... params) {
+            boolean reallyOff = params[0].equals("off"); //else standby
             // Let's do some SU stuff
             boolean suAvailable = Shell.SU.available();
             if (suAvailable) {
                 //String suVersion = Shell.SU.version(false);
                 //String suVersionInternal = Shell.SU.version(true);
                 Util.logTurnOff(StartActivity.this);
-                List<String> suResult = Shell.SU.run(new String[]{
-                        "am broadcast --user 0 -a tv.ouya.console.action.TURN_OFF"
-                });
+                if (!reallyOff) {
+                    List<String> suResult = Shell.SU.run(new String[]{
+                            "am broadcast --user 0 -a tv.ouya.console.action.TURN_OFF"
+                    });
+                } else {
+                    List<String> suResult = Shell.SU.run(new String[]{
+                            "reboot -p"
+                            /*
+                            "input keyevent 26",
+                            http://forum.xda-developers.com/showthread.php?t=2063741
+                            //GETEVENT
+                            "sendevent /dev/input/event1 0001 0074 00000001",
+                            "sendevent /dev/input/event1 0000 0000 00000000",
+                            "sleep 2",
+                            "sendevent /dev/input/event1 0001 0074 00000000",
+                            "sendevent /dev/input/event1 0000 0000 00000000",
+                            ///XDA
+                            "sendevent /dev/input/event0 0001 116 1",
+                            "sendevent /dev/input/event0 0000 0000 00000000",
+                            "sleep 2",
+                            "sendevent /dev/input/event0 0001 116 00000000",
+                            "sendevent /dev/input/event0 0000 0000 00000000"
+                            */
+                    });
+                    StringBuilder sb = new StringBuilder();
+                    if (suResult != null) {
+                        for (String line : suResult) {
+                            sb.append(line).append((char)10);
+                        }
+                    }
+                    Log.e("BAXY","BAXY\n" + sb.toString());
+                }
             } else {
                 toast(context, "Root is not Available..");
             }

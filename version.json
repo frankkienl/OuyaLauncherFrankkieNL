@@ -1,7 +1,7 @@
 {
    "newestVersion": 15,
    "changes": "Feedback improvement; Sorting fixed; new BAXY Logo; fixed menu at start;",
-   "betaVersion" : 9001,
-   "betaChanges": "Feedback improvement; Sorting fixed; new BAXY Logo",
+   "betaVersion" : 9002,
+   "betaChanges": "Improved the Turn-Off function",
    "comment": "widgets; background music; icon animation"
  }

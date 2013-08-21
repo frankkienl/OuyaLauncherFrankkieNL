@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -57,8 +58,16 @@ public class FeedbackActivity extends Activity {
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //super secret new feature starter
+                String text = editText.getText().toString();
+                if (text.equals("f")){
+                    Intent i = new Intent();
+                    i.setClass(FeedbackActivity.this, WebserverActivity.class);
+                    startActivity(i);
+                    return;
+                }
                 SendFeedbackTask task = new SendFeedbackTask(FeedbackActivity.this);
-                task.execute(editText.getText().toString());
+                task.execute(text);
                 Util.logSendFeedback(FeedbackActivity.this);
             }
         });
