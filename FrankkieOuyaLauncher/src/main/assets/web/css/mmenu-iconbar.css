@@ -1,0 +1,44 @@
+html, body
+{
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+}
+.mm-page
+{
+	background: inherit;
+	min-height: 100%;
+	position: relative;
+	margin-left: 60px;
+}
+.mm-menu
+{
+	position: fixed;
+}
+html.mm-left.mm-opened .mm-page
+{
+	margin-left: 60px;
+}
+html.mm-left.mm-opening .mm-page
+{
+	margin-left: -65px;
+}
+.mm-menu.mm-left.mm-horizontal
+{
+	display: block;
+	width: 90%;
+}
+.mm-menu.mm-left.mm-horizontal ul
+{
+	width: 100%;
+}
+
+.mm-menu.mm-left.mm-horizontal.mm-opened
+{
+	width: 2500px;
+}
+.mm-menu.mm-left.mm-horizontal.mm-opened ul
+{
+	width: 20%;
+}

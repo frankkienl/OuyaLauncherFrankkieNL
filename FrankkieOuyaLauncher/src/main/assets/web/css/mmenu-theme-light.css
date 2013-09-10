@@ -1,0 +1,119 @@
+/*
+	CSS for a menu with light colors.
+*/
+
+/*
+	Menu, submenus, items
+	- Styling (light background)
+*/
+.mm-menu
+{
+	background: #f6f6f6;
+}
+.mm-menu *
+{
+	text-shadow: none;
+}
+.mm-menu li
+{
+	border-bottom-color: rgba( 255, 255, 255, 0.7 );
+}
+.mm-menu li:after
+{
+	border-bottom-color: rgba( 0, 0, 0, 0.1 );
+}
+.mm-menu li,
+.mm-menu li > a,
+.mm-menu li > a:hover,
+.mm-menu li > span
+{
+	color: rgba( 0, 0, 0, 0.5 );
+	text-decoration: none;
+}
+.mm-menu li.mm-selected > a,
+.mm-menu li.mm-selected > span
+{
+	background: rgba( 255, 255, 255, 0.6 );
+}
+
+/* subopen/close */
+.mm-menu a.mm-subopen
+{
+	border-left-color: rgba( 255, 255, 255, 0.7 );
+}
+.mm-menu a.mm-subopen:before
+{
+	border-left-color: rgba( 0, 0, 0, 0.1 );
+}
+.mm-menu a.mm-subclose
+{
+	background: rgba( 255, 255, 255, 0.6 );
+}
+
+/* vertical submenu */
+.mm-menu.mm-vertical li.mm-opened > a.mm-subopen,
+.mm-menu.mm-vertical li.mm-opened > ul
+{
+	background: rgba( 0, 0, 0, 0.05 );
+}
+
+/* page + blocker */
+html.mm-opened .mm-page
+{
+	box-shadow: 0 0 10px rgba( 0, 0, 0, 0.6 );
+}
+
+
+/*
+	Labels
+	- Styling
+*/
+.mm-menu li.mm-label
+{
+	background: rgba( 0, 0, 0, 0.05 );
+	color: rgba( 0, 0, 0, 0.4 );
+}
+
+
+/*
+	Counters
+	- Styling
+*/
+.mm-menu em.mm-counter
+{
+	background: rgba( 0, 0, 0, 0.2 );
+	box-shadow: none;
+	color: rgba( 255, 255, 255, 0.8 );
+}
+
+
+/*
+	Arrows
+	- Styling
+*/
+.mm-menu a.mm-subopen:after,
+.mm-menu a.mm-subclose:before
+{
+	border-color: rgba( 0, 0, 0, 0.2 );
+}
+
+
+/*
+	Search
+	- Styling
+*/
+.mm-menu div.mm-search
+{
+	background: rgba( 0, 0, 0, 0.2 );
+	border-bottom-color: rgba( 0, 0, 0, 0.1 );
+}
+.mm-menu div.mm-search input
+{
+	background: rgba( 255, 255, 255, 0.8 );
+	border: none;
+	color: rgba( 0, 0, 0, 0.7 );
+}
+.mm-menu li.mm-noresults
+{
+	color: rgba( 0, 0, 0, 0.5 );
+}

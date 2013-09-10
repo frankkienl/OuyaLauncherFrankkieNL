@@ -2,6 +2,7 @@ package nl.frankkie.ouyalauncher;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -15,6 +16,9 @@ import com.koushikdutta.urlimageviewhelper.UrlImageViewHelper;
 
 import org.apache.http.conn.util.InetAddressUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Collections;
@@ -41,7 +45,7 @@ public class WebserverActivity extends Activity {
         initQR();
     }
 
-    public void initQR(){
+    public void initQR() {
         ImageView imageView = (ImageView) findViewById(R.id.webserver_qr);
         //String adres = "http%3A%2F%2F192.168.1.108%3A1234%2F";
         String adres = "http%3A%2F%2F" + getIPAddress(true) + "%3A" + portNumber + "%2F";
@@ -49,8 +53,48 @@ public class WebserverActivity extends Activity {
     }
 
     public void initWebserverStuff() {
+        //check files
+        putFiles();
         //https://github.com/NanoHttpd/nanohttpd
         MyServer.main(this);
+    }
+
+    public void putFiles() {
+        File webDir = new File("/sdcard/FrankkieOuyaLauncher/web/");
+        if (!webDir.exists()) {
+            webDir.mkdirs();
+            File webJsDir = new File("/sdcard/FrankkieOuyaLauncher/web/js/");
+            File webCssDir = new File("/sdcard/FrankkieOuyaLauncher/web/css/");
+            webJsDir.mkdirs();
+            webCssDir.mkdirs();
+            try {
+                AssetManager asm = getAssets();
+                String[] l = asm.list("");
+                String[] m = asm.list("webkit");
+                String[] list = asm.list("web/js");
+                for (String s : list) {
+                    InputStream in = asm.open("web/js/" + s);
+                    try {
+                        Util.copyAsset(in, new File("/sdcard/FrankkieOuyaLauncher/web/js/" + s));
+                    } catch (Exception e) {
+                        //
+                        e.printStackTrace();
+                    }
+                }
+                String[] list2 = asm.list("web/css");
+                for (String s : list2) {
+                    InputStream in = asm.open("web/css/" + s);
+                    try {
+                        Util.copyAsset(in, new File("/sdcard/FrankkieOuyaLauncher/web/css/" + s));
+                    } catch (Exception e) {
+                        //
+                        e.printStackTrace();
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void initUI() {
@@ -77,7 +121,7 @@ public class WebserverActivity extends Activity {
         });
     }
 
-    public void logHandler(String s){
+    public void logHandler(String s) {
         Log.e("BAXY", s);
         tv2sb.insert(0, s + "\n");
         tv2.setText(tv2sb.toString());

@@ -1,0 +1,93 @@
+/*
+	CSS for having the menu always opened.
+	To use on widescreens only, include it using a mediaquery:
+	<link type="text/css" href="mmenu-widescreen.css" media="all and (min-width: 900px)"/>
+*/
+
+/* positioning and sizing */
+html, body
+{
+	height: 100%;
+}
+body
+{
+	position: relative;
+}
+#mm-blocker
+{
+	display: none !important;
+}
+.mm-page
+{
+	box-shadow: none !important;
+	background: inherit;
+	width: 70% !important;
+	min-height: 100%;
+	margin: 0 !important;
+	left: 30% !important;
+	top: 0 !important;
+	position: relative;
+	z-index: 1;
+
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+
+/* forcing transitionend */
+html.mm-opened .mm-page
+{
+	border-color: rgba( 0, 0, 0, 0 );
+}
+html.mm-opening .mm-page
+{
+	border-color: rgba( 1, 1, 1, 0 );
+}
+
+.mm-menu
+{
+	position: fixed;
+	z-index: 0;
+}
+.mm-menu > ul
+{
+	padding-right: 0 !important;
+	padding-left: 0 !important;
+}
+.mm-menu.mm-vertical
+{
+	width: 30% !important;
+}
+.mm-menu.mm-horizontal
+{
+	width: 150% !important;
+}
+.mm-menu.mm-right.mm-horizontal
+{
+	left: 0;
+	right: auto;
+}
+.mm-menu a.mm-subopen
+{
+	right: 0;
+}
+.mm-menu.mm-right a.mm-subclose:before
+{
+	left: 20px;
+}
+.mm-menu em.mm-counter
+{
+	right: 40px;
+}
+.mm-menu div.mm-search
+{
+	width: 20% !important;
+	padding: 10px !important;
+}
+
+.mm-menu:first-child,
+.mm-menu.mm-opened
+{
+	display: block;
+}

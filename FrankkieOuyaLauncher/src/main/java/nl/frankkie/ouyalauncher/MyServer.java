@@ -10,12 +10,15 @@ import nl.frankkie.ouyalauncher.web.AppImage;
 import nl.frankkie.ouyalauncher.web.Apps;
 import nl.frankkie.ouyalauncher.web.Error404;
 import nl.frankkie.ouyalauncher.web.GetApps;
+import nl.frankkie.ouyalauncher.web.GetDirectory;
 import nl.frankkie.ouyalauncher.web.Index;
 import nl.frankkie.ouyalauncher.web.InstallAPK;
+import nl.frankkie.ouyalauncher.web.SetBackground;
 import nl.frankkie.ouyalauncher.web.StartApp;
 import nl.frankkie.ouyalauncher.web.UninstallApp;
 import nl.frankkie.ouyalauncher.web.Upload;
 import nl.frankkie.ouyalauncher.web.WebPage;
+import nl.frankkie.ouyalauncher.web.WebUtil;
 
 public class MyServer extends NanoHTTPD {
 
@@ -39,6 +42,8 @@ public class MyServer extends NanoHTTPD {
             put("/apps", Apps.class);
             put("/startApp", StartApp.class);
             put("/uninstallApp", UninstallApp.class);
+            put("/setBackground", SetBackground.class);
+            put("/getDirectory", GetDirectory.class);
         }
     };
 
@@ -143,7 +148,7 @@ public class MyServer extends NanoHTTPD {
     Response serveFile(String uri, Map<String, String> header, File homeDir) {
         Response res = null;
         log("" + uri);
-        uri = uri.replace("/files", "/");
+        uri = uri.replace("/files", "/").replace("//", "/"); //remove unuses /-s
         // Make sure we won't die of an exception later
         if (!homeDir.isDirectory()) {
             res = new Response(Response.Status.INTERNAL_ERROR, NanoHTTPD.MIME_PLAINTEXT, "INTERNAL ERRROR: serveFile(): given homeDir is not a directory.");
@@ -274,12 +279,7 @@ public class MyServer extends NanoHTTPD {
 
     private String listDirectory(String uri, File f) {
         String heading = "Directory " + uri;
-        String msg = "<html><head><title>" + heading + "</title><style><!--\n" +
-                "span.dirname { font-weight: bold; }\n" +
-                "span.filesize { font-size: 75%; }\n" +
-                "// -->\n" +
-                "</style>" +
-                "</head><body><h1>" + heading + "</h1><a href=\"/\">HOME</a><br />\n";
+        String msg = WebUtil.top + "<section id=\"files\"><div><h2>Files</h2>" + heading;
 
         String up = null;
         if (uri.length() > 1) {
@@ -307,7 +307,7 @@ public class MyServer extends NanoHTTPD {
         if (up != null || directories.size() + files.size() > 0) {
             msg += "<ul>";
             if (up != null || directories.size() > 0) {
-                msg += "<section class=\"directories\">";
+                //msg += "<section class=\"directories\">";
                 if (up != null) {
                     msg += "<li><a rel=\"directory\" href=\"/files" + up + "\"><span class=\"dirname\">..</span></a></b></li>";
                 }
@@ -315,10 +315,10 @@ public class MyServer extends NanoHTTPD {
                     String dir = directories.get(i) + "/";
                     msg += "<li><a rel=\"directory\" href=\"/files" + encodeUri(uri + dir) + "\"><span class=\"dirname\">" + dir + "</span></a></b></li>";
                 }
-                msg += "</section>";
+               // msg += "</section>";
             }
             if (files.size() > 0) {
-                msg += "<section class=\"files\">";
+                //msg += "<section class=\"files\">";
                 for (int i = 0; i < files.size(); i++) {
                     String file = files.get(i);
 
@@ -334,11 +334,13 @@ public class MyServer extends NanoHTTPD {
                         msg += len / (1024 * 1024) + "." + len % (1024 * 1024) / 10 % 100 + " MB";
                     msg += ")</span></li>";
                 }
-                msg += "</section>";
+               // msg += "</section>";
             }
             msg += "</ul>";
         }
-        msg += "</body></html>";
+        //msg += "</body></html>";
+        msg += "</div></section>";
+        msg += WebUtil.footer;
         return msg;
     }
 

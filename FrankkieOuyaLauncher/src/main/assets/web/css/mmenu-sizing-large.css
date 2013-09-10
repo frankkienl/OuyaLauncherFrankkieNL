@@ -1,0 +1,113 @@
+/*
+	CSS for larger buttons in the menu.
+*/
+
+/* items */
+.mm-menu li > a,
+.mm-menu li > span
+{
+	line-height: 60px;
+}
+
+/* subopen/close */
+.mm-menu a.mm-subopen
+{
+	width: 60px;
+	height: 60px;
+}
+.mm-menu a.mm-subopen + a,
+.mm-menu a.mm-subopen + span
+{
+	padding-right: 65px;
+}
+
+/* vertical submenu */
+.mm-menu.mm-vertical ul ul
+{
+	padding: 20px 0 20px 20px;
+}
+.mm-menu.mm-vertical li.mm-opened.mm-selected > a.mm-subopen + a,
+.mm-menu.mm-vertical li.mm-opened.mm-selected > a.mm-subopen + span
+{
+	margin-right: 60px;
+}
+.mm-menu.mm-vertical li.mm-opened.mm-selected > em.mm-counter + a.mm-subopen + a,
+.mm-menu.mm-vertical li.mm-opened.mm-selected > em.mm-counter + a.mm-subopen + span
+{
+	margin-right: 95px;
+}
+
+
+/*
+	Menu, submenus, items
+	- Styling (default: dark background)
+*/
+.mm-menu *
+{
+	font-size: 16px;
+}
+
+
+/*
+	Labels
+	- Sizing and positioning
+*/
+.mm-menu li.mm-label
+{
+	line-height: 30px;
+}
+
+
+/*
+	Labels
+	- Styling
+*/
+.mm-menu li.mm-label
+{
+	font-size: 12px;
+}
+
+
+/*
+	Counters
+	- Sizing and positioning
+*/
+.mm-menu em.mm-counter
+{
+	right: 60px;
+	top: 20px;
+}
+.mm-menu em.mm-counter + a.mm-subopen
+{
+	padding-left: 45px;
+}
+.mm-menu em.mm-counter + a.mm-subopen + a,
+.mm-menu em.mm-counter + a.mm-subopen + span
+{
+	padding-right: 110px;
+}
+.mm-menu em.mm-counter + a.mm-fullsubopen + a,
+.mm-menu em.mm-counter + a.mm-fullsubopen + span
+{
+	padding-right: 100px;
+}
+
+
+/*
+	Arrows
+	- Sizing and positioning
+*/
+.mm-menu a.mm-subopen:after,
+.mm-menu a.mm-subclose:before
+{
+	border-width: 5px;
+}
+.mm-menu a.mm-subopen:after
+{
+	right: 26px;
+	top: 26px;
+}
+.mm-menu a.mm-subclose:before
+{
+	top: 45px;
+}

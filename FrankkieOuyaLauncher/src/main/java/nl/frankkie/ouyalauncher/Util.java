@@ -239,6 +239,21 @@ public class Util {
         }
     }
 
+    public static void copyAsset(InputStream in, File file) throws IOException {
+        //file.createNewFile();
+        FileOutputStream out = new FileOutputStream(file);
+        byte[] buff = new byte[1024];
+        int read = 0;
+        try {
+            while ((read = in.read(buff)) > 0) {
+                out.write(buff, 0, read);
+            }
+        } finally {
+            in.close();
+            out.close();
+        }
+    }
+
     //Analytics
 
     public static void logAppLaunch(Context context, AppInfo info) {
