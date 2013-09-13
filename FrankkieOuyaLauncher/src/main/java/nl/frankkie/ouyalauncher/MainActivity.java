@@ -836,7 +836,7 @@ public class MainActivity extends Activity {
             ///////////////////
             Bitmap bitmap = ((BitmapDrawable) info.icon).getBitmap();
             // Scale it //http://stackoverflow.com/questions/4609456/android-set-drawable-size-programatically
-            BitmapDrawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, 480, 270, true));
+            BitmapDrawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, Util.THUMBNAIL_SMALL_WIDTH, Util.THUMBNAIL_SMALL_HEIGHT, true));
             //Save to file //http://stackoverflow.com/questions/649154/save-bitmap-to-location
             FileOutputStream out = new FileOutputStream("/sdcard/FrankkieOuyaLauncher/thumbnails/" + packageName + ".png");
             d.getBitmap().compress(Bitmap.CompressFormat.PNG, 90, out);
@@ -886,7 +886,7 @@ public class MainActivity extends Activity {
             ///////////////////
             Bitmap bitmap = ((BitmapDrawable) info.icon).getBitmap();
             // Scale it //http://stackoverflow.com/questions/4609456/android-set-drawable-size-programatically
-            BitmapDrawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, 480, 270, true));
+            BitmapDrawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, Util.THUMBNAIL_SMALL_WIDTH, Util.THUMBNAIL_SMALL_HEIGHT, true));
             //Save to file //http://stackoverflow.com/questions/649154/save-bitmap-to-location
             FileOutputStream out = new FileOutputStream("/sdcard/FrankkieOuyaLauncher/thumbnails/" + packageName + ".png");
             d.getBitmap().compress(Bitmap.CompressFormat.PNG, 90, out);

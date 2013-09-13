@@ -37,6 +37,9 @@ public class Util {
     public static String loadedLogoString;
     public static Drawable loadedLogo;
 
+    public static final int THUMBNAIL_SMALL_WIDTH = 140;
+    public static final int THUMBNAIL_SMALL_HEIGHT = 79;
+
     public static void setClock(Activity activity) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
         try {
